@@ -1,22 +1,22 @@
 :root {
-    --primary-50: #FFF7F3;
-    --primary-100: #FFE5DF;
-    --primary-200: #FFBCB0;
-    --primary-300: #FE7465;
-    --primary-400: #BB463C;
-    --primary-500: #A21A16;
+    --primary-50: #fff7f3;
+    --primary-100: #ffe5df;
+    --primary-200: #ffbcb0;
+    --primary-300: #fe7465;
+    --primary-400: #bb463c;
+    --primary-500: #a21a16;
     --white: #fff;
-    --bg: #F5F5F5;
-    --border: #E8E8E8;
-    --text: #1A1A2E;
-    --text2: #6B7280;
-    --text3: #9CA3AF;
-    --green: #22C55E;
-    --green-bg: #F0FDF4;
-    --red: #EF4444;
-    --red-bg: #FEF2F2;
-    --orange: #F59E0B;
-    --orange-bg: #FFFBEB;
+    --bg: #f5f5f5;
+    --border: #e8e8e8;
+    --text: #1a1a2e;
+    --text2: #6b7280;
+    --text3: #9ca3af;
+    --green: #22c55e;
+    --green-bg: #f0fdf4;
+    --red: #ef4444;
+    --red-bg: #fef2f2;
+    --orange: #f59e0b;
+    --orange-bg: #fffbeb;
     --sidebar-w: 240px;
     --header-h: 64px;
     --r-sm: 8px;
@@ -36,7 +36,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
     background: var(--bg);
     color: var(--text);
     display: flex;
@@ -52,6 +52,7 @@ button {
     border: none;
     background: none;
     cursor: pointer;
+    /* doi hinh con tro */
     font-family: inherit;
 }
 
@@ -262,7 +263,7 @@ table {
     background: var(--white);
     border-radius: var(--r-md);
     padding: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .stat-card__header {
@@ -331,7 +332,7 @@ table {
     background: var(--white);
     border-radius: var(--r-md);
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .chart-card__header {
@@ -361,6 +362,7 @@ table {
     font-size: 0.86rem;
     color: var(--text2);
     cursor: pointer;
+    /* cursor de doi con tro chuot thanh hinh ...(pointer)  */
 }
 
 .chart-card__date-picker i {
@@ -409,7 +411,7 @@ table {
     background: var(--white);
     border-radius: var(--r-md);
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .orders-card__header {
@@ -491,7 +493,7 @@ table {
     background: var(--white);
     border-radius: var(--r-md);
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .bestseller-card h2 {
@@ -558,7 +560,7 @@ table {
     background: var(--white);
     border-radius: var(--r-md);
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .warehouse-card h2 {
