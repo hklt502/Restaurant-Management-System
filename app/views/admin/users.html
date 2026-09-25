@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" href="../../../public/asset/css/admin/users.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <i class="bx bx-restaurant"></i>
+            <span>Nhóm 3</span>
+        </div>
+
+        <nav class="sidebar__nav">
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">CHUNG</p>
+                <a href="overview.html" class="sidebar__link"><i class="bx bxs-dashboard"></i><span>Tổng quan</span></a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">VẬN HÀNH</p>
+                <a href="#" class="sidebar__link"><i class="bx bx-food-menu"></i><span>Quản lý vé Buffet</span></a>
+                <a href="#" class="sidebar__link"><i class="bx bx-book-open"></i><span>Quản lý Menu</span></a>
+                <a href="tables.html" class="sidebar__link"><i class="bx bx-table"></i><span>Quản lý bàn</span></a>
+                <a href="#" class="sidebar__link"><i class="bx bx-receipt"></i><span>Quản lý đơn hàng</span></a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">MARKETING & KHO</p>
+                <a href="#" class="sidebar__link"><i class="bx bx-purchase-tag"></i><span>Voucher & Khuyến
+                        mãi</span></a>
+                <a href="#" class="sidebar__link"><i class="bx bx-box"></i><span>Quản lý Kho</span></a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">HỆ THỐNG</p>
+                <a href="users.html" class="sidebar__link active"><i class="bx bx-user"></i><span>Người dùng</span></a>
+                <a href="#" class="sidebar__link"><i class="bx bx-line-chart"></i><span>Thống kê</span></a>
+            </div>
+        </nav>
+
+        <div class="sidebar__profile">
+            <div class="sidebar__profile-avatar"></div>
+            <div class="sidebar__profile-info">
+                <p class="sidebar__profile-name">Trần Hoàng Nam</p>
+                <p class="sidebar__profile-role">Quản trị viên</p>
+            </div>
+            <button class="sidebar__profile-logout" type="button"><i class="bx bx-log-out"></i></button>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+
+        <header class="header">
+            <div class="header__search">
+                <i class="bx bx-search"></i>
+                <input type="text" placeholder="Tìm kiếm người dùng...">
+            </div>
+            <button class="header__notification" type="button"><i class="bx bx-bell"></i></button>
+        </header>
+
+        <main class="main">
+
+            <!-- PAGE TITLE -->
+            <div class="page-title">
+                <div>
+                    <h1 class="page-title__heading">Quản lý người dùng</h1>
+                    <p class="page-title__desc">Quản lý tài khoản nhân viên, khách hàng và phân quyền hệ thống.</p>
+                </div>
+                <button class="btn btn--primary" id="btnAddUser" type="button">
+                    <i class="bx bx-plus"></i> Thêm người dùng
+                </button>
+            </div>
+
+            <!-- STAT CARDS -->
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--blue"><i class="bx bx-group"></i></div>
+                        <span class="stat-card__badge stat-card__badge--up">+8.2%</span>
+                    </div>
+                    <p class="stat-card__label">Tổng người dùng</p>
+                    <p class="stat-card__value">256</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--green"><i class="bx bx-check-circle"></i></div>
+                    </div>
+                    <p class="stat-card__label">Đang hoạt động</p>
+                    <p class="stat-card__value">218</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--orange"><i class="bx bx-user-plus"></i></div>
+                        <span class="stat-card__badge stat-card__badge--up">+12</span>
+                    </div>
+                    <p class="stat-card__label">Mới trong tháng</p>
+                    <p class="stat-card__value">34</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--red"><i class="bx bx-block"></i></div>
+                    </div>
+                    <p class="stat-card__label">Bị khóa</p>
+                    <p class="stat-card__value">4</p>
+                </div>
+            </div>
+
+            <!-- TOOLBAR -->
+            <div class="users-card">
+                <div class="toolbar">
+                    <div class="toolbar__left">
+                        <div class="toolbar__search">
+                            <i class="bx bx-search"></i>
+                            <input type="text" placeholder="Tìm theo tên, email, SĐT...">
+                        </div>
+                        <div class="toolbar__filter">
+                            <select class="toolbar__select">
+                                <option value="">Tất cả vai trò</option>
+                                <option value="admin">Quản trị viên</option>
+                                <option value="manager">Quản lý</option>
+                                <option value="staff">Nhân viên</option>
+                                <option value="customer">Khách hàng</option>
+                            </select>
+                        </div>
+                        <div class="toolbar__filter">
+                            <select class="toolbar__select">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="active">Hoạt động</option>
+                                <option value="inactive">Không hoạt động</option>
+                                <option value="locked">Bị khóa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="toolbar__right">
+                        <button class="toolbar__btn" type="button" title="Xuất Excel">
+                            <i class="bx bx-export"></i> Xuất file
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABLE -->
+                <div class="table-wrapper">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" id="checkAll">
+                                        <span class="custom-checkbox__mark"></span>
+                                    </label>
+                                </th>
+                                <th>NGƯỜI DÙNG</th>
+                                <th>EMAIL</th>
+                                <th>SỐ ĐIỆN THOẠI</th>
+                                <th>VAI TRÒ</th>
+                                <th>TRẠNG THÁI</th>
+                                <th>NGÀY TẠO</th>
+                                <th>HÀNH ĐỘNG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox">
+                                        <span class="custom-checkbox__mark"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-info__avatar">TN</div>
+                                        <div>
+                                            <p class="user-info__name">Trần Hoàng Nam</p>
+                                            <p class="user-info__id">#USR001</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>nam.tran@email.com</td>
+                                <td>0901 234 567</td>
+                                <td><span class="role-badge role-badge--admin">Quản trị viên</span></td>
+                                <td><span class="status-badge status-badge--active">Hoạt động</span></td>
+                                <td>15/01/2026</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn" title="Xem chi tiết"><i class="bx bx-show"></i></button>
+                                        <button class="action-btn" title="Chỉnh sửa"><i class="bx bx-edit-alt"></i></button>
+                                        <button class="action-btn action-btn--danger" title="Khóa"><i class="bx bx-lock-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox">
+                                        <span class="custom-checkbox__mark"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-info__avatar user-info__avatar--green">HA</div>
+                                        <div>
+                                            <p class="user-info__name">Nguyễn Hữu An</p>
+                                            <p class="user-info__id">#USR002</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>an.nguyen@email.com</td>
+                                <td>0912 345 678</td>
+                                <td><span class="role-badge role-badge--manager">Quản lý</span></td>
+                                <td><span class="status-badge status-badge--active">Hoạt động</span></td>
+                                <td>20/02/2026</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn" title="Xem chi tiết"><i class="bx bx-show"></i></button>
+                                        <button class="action-btn" title="Chỉnh sửa"><i class="bx bx-edit-alt"></i></button>
+                                        <button class="action-btn action-btn--danger" title="Khóa"><i class="bx bx-lock-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox">
+                                        <span class="custom-checkbox__mark"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-info__avatar user-info__avatar--purple">HG</div>
+                                        <div>
+                                            <p class="user-info__name">Lê Thị Hương Giang</p>
+                                            <p class="user-info__id">#USR003</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>giang.le@email.com</td>
+                                <td>0923 456 789</td>
+                                <td><span class="role-badge role-badge--staff">Nhân viên</span></td>
+                                <td><span class="status-badge status-badge--active">Hoạt động</span></td>
+                                <td>05/03/2026</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn" title="Xem chi tiết"><i class="bx bx-show"></i></button>
+                                        <button class="action-btn" title="Chỉnh sửa"><i class="bx bx-edit-alt"></i></button>
+                                        <button class="action-btn action-btn--danger" title="Khóa"><i class="bx bx-lock-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox">
+                                        <span class="custom-checkbox__mark"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-info__avatar user-info__avatar--orange">MD</div>
+                                        <div>
+                                            <p class="user-info__name">Trần Minh Đức</p>
+                                            <p class="user-info__id">#USR004</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>duc.tran@email.com</td>
+                                <td>0934 567 890</td>
+                                <td><span class="role-badge role-badge--customer">Khách hàng</span></td>
+                                <td><span class="status-badge status-badge--active">Hoạt động</span></td>
+                                <td>12/04/2026</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn" title="Xem chi tiết"><i class="bx bx-show"></i></button>
+                                        <button class="action-btn" title="Chỉnh sửa"><i class="bx bx-edit-alt"></i></button>
+                                        <button class="action-btn action-btn--danger" title="Khóa"><i class="bx bx-lock-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox">
+                                        <span class="custom-checkbox__mark"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-info__avatar user-info__avatar--blue">VT</div>
+                                        <div>
+                                            <p class="user-info__name">Phạm Văn Toàn</p>
+                                            <p class="user-info__id">#USR005</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>toan.pham@email.com</td>
+                                <td>0945 678 901</td>
+                                <td><span class="role-badge role-badge--staff">Nhân viên</span></td>
+                                <td><span class="status-badge status-badge--inactive">Không hoạt động</span></td>
+                                <td>28/05/2026</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn" title="Xem chi tiết"><i class="bx bx-show"></i></button>
+                                        <button class="action-btn" title="Chỉnh sửa"><i class="bx bx-edit-alt"></i></button>
+                                        <button class="action-btn action-btn--danger" title="Khóa"><i class="bx bx-lock-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox">
+                                        <span class="custom-checkbox__mark"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-info__avatar user-info__avatar--red">TH</div>
+                                        <div>
+                                            <p class="user-info__name">Đỗ Thanh Hà</p>
+                                            <p class="user-info__id">#USR006</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>ha.do@email.com</td>
+                                <td>0956 789 012</td>
+                                <td><span class="role-badge role-badge--customer">Khách hàng</span></td>
+                                <td><span class="status-badge status-badge--locked">Bị khóa</span></td>
+                                <td>03/06/2026</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn" title="Xem chi tiết"><i class="bx bx-show"></i></button>
+                                        <button class="action-btn" title="Chỉnh sửa"><i class="bx bx-edit-alt"></i></button>
+                                        <button class="action-btn action-btn--success" title="Mở khóa"><i class="bx bx-lock-open-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox">
+                                        <span class="custom-checkbox__mark"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-info__avatar user-info__avatar--green">KL</div>
+                                        <div>
+                                            <p class="user-info__name">Ngô Khánh Linh</p>
+                                            <p class="user-info__id">#USR007</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>linh.ngo@email.com</td>
+                                <td>0967 890 123</td>
+                                <td><span class="role-badge role-badge--staff">Nhân viên</span></td>
+                                <td><span class="status-badge status-badge--active">Hoạt động</span></td>
+                                <td>18/07/2026</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn" title="Xem chi tiết"><i class="bx bx-show"></i></button>
+                                        <button class="action-btn" title="Chỉnh sửa"><i class="bx bx-edit-alt"></i></button>
+                                        <button class="action-btn action-btn--danger" title="Khóa"><i class="bx bx-lock-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINATION -->
+                <div class="pagination">
+                    <div class="pagination__info">
+                        Hiển thị <strong>1 - 7</strong> trong <strong>256</strong> người dùng
+                    </div>
+                    <div class="pagination__controls">
+                        <button class="pagination__btn" disabled><i class="bx bx-chevron-left"></i></button>
+                        <button class="pagination__btn pagination__btn--active">1</button>
+                        <button class="pagination__btn">2</button>
+                        <button class="pagination__btn">3</button>
+                        <span class="pagination__dots">...</span>
+                        <button class="pagination__btn">37</button>
+                        <button class="pagination__btn"><i class="bx bx-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL: THÊM / SỬA NGƯỜI DÙNG -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal__header">
+                <h2 class="modal__title">Thêm người dùng mới</h2>
+                <button class="modal__close" id="btnCloseModal" type="button"><i class="bx bx-x"></i></button>
+            </div>
+            <div class="modal__body">
+                <form class="modal-form" id="userForm">
+                    <div class="modal-form__row">
+                        <div class="modal-form__group">
+                            <label class="modal-form__label">Họ và tên <span>*</span></label>
+                            <div class="modal-form__input-wrapper">
+                                <i class="bx bx-user"></i>
+                                <input type="text" class="modal-form__input" placeholder="Nhập họ và tên" required>
+                            </div>
+                        </div>
+                        <div class="modal-form__group">
+                            <label class="modal-form__label">Email <span>*</span></label>
+                            <div class="modal-form__input-wrapper">
+                                <i class="bx bx-envelope"></i>
+                                <input type="email" class="modal-form__input" placeholder="Nhập email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-form__row">
+                        <div class="modal-form__group">
+                            <label class="modal-form__label">Số điện thoại <span>*</span></label>
+                            <div class="modal-form__input-wrapper">
+                                <i class="bx bx-phone"></i>
+                                <input type="tel" class="modal-form__input" placeholder="Nhập số điện thoại" required>
+                            </div>
+                        </div>
+                        <div class="modal-form__group">
+                            <label class="modal-form__label">Vai trò <span>*</span></label>
+                            <div class="modal-form__input-wrapper">
+                                <i class="bx bx-shield-quarter"></i>
+                                <select class="modal-form__input" required>
+                                    <option value="">Chọn vai trò</option>
+                                    <option value="admin">Quản trị viên</option>
+                                    <option value="manager">Quản lý</option>
+                                    <option value="staff">Nhân viên</option>
+                                    <option value="customer">Khách hàng</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-form__row">
+                        <div class="modal-form__group">
+                            <label class="modal-form__label">Mật khẩu <span>*</span></label>
+                            <div class="modal-form__input-wrapper">
+                                <i class="bx bx-lock-alt"></i>
+                                <input type="password" class="modal-form__input" placeholder="Nhập mật khẩu" required>
+                            </div>
+                        </div>
+                        <div class="modal-form__group">
+                            <label class="modal-form__label">Xác nhận mật khẩu <span>*</span></label>
+                            <div class="modal-form__input-wrapper">
+                                <i class="bx bx-lock"></i>
+                                <input type="password" class="modal-form__input" placeholder="Nhập lại mật khẩu" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-form__group">
+                        <label class="modal-form__label">Trạng thái</label>
+                        <div class="toggle-group">
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle__slider"></span>
+                            </label>
+                            <span class="toggle-group__text">Kích hoạt tài khoản</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--ghost" id="btnCancel" type="button">Hủy bỏ</button>
+                <button class="btn btn--primary" type="submit" form="userForm">
+                    <i class="bx bx-save"></i> Lưu người dùng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal
+        const modal = document.getElementById('userModal');
+        const btnAdd = document.getElementById('btnAddUser');
+        const btnClose = document.getElementById('btnCloseModal');
+        const btnCancel = document.getElementById('btnCancel');
+
+        function openModal() { modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { modal.classList.remove('active'); document.body.style.overflow = ''; }
+
+        btnAdd.addEventListener('click', openModal);
+        btnClose.addEventListener('click', closeModal);
+        btnCancel.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        // Check all
+        const checkAll = document.getElementById('checkAll');
+        const rowChecks = document.querySelectorAll('.users-table tbody input[type="checkbox"]');
+        checkAll.addEventListener('change', () => {
+            rowChecks.forEach(cb => cb.checked = checkAll.checked);
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhà hàng Nhóm 3 - Tinh hoa ẩm thực</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../public/asset/css/client/home.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <div class="container navbar__inner">
+            <a href="#" class="navbar__logo">
+                <i class="bx bx-restaurant"></i>
+                <span>Nhóm 3</span>
+            </a>
+
+            <ul class="navbar__menu" id="navMenu">
+                <li><a href="#hero" class="navbar__link active">Trang chủ</a></li>
+                <li><a href="#about" class="navbar__link">Giới thiệu</a></li>
+                <li><a href="#menu" class="navbar__link">Thực đơn</a></li>
+                <li><a href="#testimonials" class="navbar__link">Đánh giá</a></li>
+                <li><a href="#contact" class="navbar__link">Liên hệ</a></li>
+            </ul>
+
+            <div class="navbar__actions">
+                <a href="../auth/login.html" class="btn btn--outline-white">Đăng nhập</a>
+                <a href="../auth/register.html" class="btn btn--primary">Đăng ký</a>
+            </div>
+
+            <button class="navbar__toggle" id="navToggle" type="button" aria-label="Menu">
+                <i class="bx bx-menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu__overlay" id="mobileOverlay"></div>
+        <div class="mobile-menu__panel">
+            <div class="mobile-menu__header">
+                <a href="#" class="navbar__logo">
+                    <i class="bx bx-restaurant"></i>
+                    <span>Nhóm 3</span>
+                </a>
+                <button class="mobile-menu__close" id="mobileClose" type="button"><i class="bx bx-x"></i></button>
+            </div>
+            <ul class="mobile-menu__list">
+                <li><a href="#hero" class="mobile-menu__link">Trang chủ</a></li>
+                <li><a href="#about" class="mobile-menu__link">Giới thiệu</a></li>
+                <li><a href="#menu" class="mobile-menu__link">Thực đơn</a></li>
+                <li><a href="#testimonials" class="mobile-menu__link">Đánh giá</a></li>
+                <li><a href="#contact" class="mobile-menu__link">Liên hệ</a></li>
+            </ul>
+            <div class="mobile-menu__actions">
+                <a href="../auth/login.html" class="btn btn--outline btn--block">Đăng nhập</a>
+                <a href="../auth/register.html" class="btn btn--primary btn--block">Đăng ký</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="hero__bg"></div>
+        <div class="container hero__inner">
+            <div class="hero__content">
+                <span class="hero__badge"><i class="bx bxs-star"></i> Nhà hàng hàng đầu 2026</span>
+                <h1 class="hero__title">Tinh hoa ẩm thực,<br>trọn vẹn trải nghiệm</h1>
+                <p class="hero__desc">Khám phá hương vị đặc sắc từ những đầu bếp hàng đầu trong không gian sang trọng và ấm cúng. Đặt bàn ngay để tận hưởng bữa ăn tuyệt vời nhất.</p>
+                <div class="hero__buttons">
+                    <a href="#menu" class="btn btn--primary btn--lg"><i class="bx bx-book-open"></i> Xem thực đơn</a>
+                    <a href="#contact" class="btn btn--outline-white btn--lg"><i class="bx bx-phone"></i> Đặt bàn ngay</a>
+                </div>
+                <div class="hero__stats">
+                    <div class="hero__stat">
+                        <span class="hero__stat-number">5+</span>
+                        <span class="hero__stat-label">Năm kinh nghiệm</span>
+                    </div>
+                    <div class="hero__stat-divider"></div>
+                    <div class="hero__stat">
+                        <span class="hero__stat-number">50+</span>
+                        <span class="hero__stat-label">Món ăn đặc sắc</span>
+                    </div>
+                    <div class="hero__stat-divider"></div>
+                    <div class="hero__stat">
+                        <span class="hero__stat-number">10K+</span>
+                        <span class="hero__stat-label">Khách hàng hài lòng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero__shape hero__shape--1"></div>
+        <div class="hero__shape hero__shape--2"></div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about section" id="about">
+        <div class="container">
+            <div class="section__header">
+                <span class="section__tag">Về chúng tôi</span>
+                <h2 class="section__title">Câu chuyện của chúng tôi</h2>
+                <p class="section__desc">Hơn 5 năm phục vụ, chúng tôi tự hào mang đến trải nghiệm ẩm thực tuyệt vời nhất cho mọi thực khách.</p>
+            </div>
+            <div class="about__grid">
+                <div class="about__image">
+                    <div class="about__image-placeholder">
+                        <i class="bx bx-restaurant"></i>
+                    </div>
+                </div>
+                <div class="about__content">
+                    <div class="about__feature">
+                        <div class="about__feature-icon"><i class="bx bx-check-shield"></i></div>
+                        <div>
+                            <h3>Nguyên liệu tươi ngon</h3>
+                            <p>100% nguyên liệu được chọn lọc kỹ lưỡng, đảm bảo an toàn vệ sinh thực phẩm.</p>
+                        </div>
+                    </div>
+                    <div class="about__feature">
+                        <div class="about__feature-icon"><i class="bx bx-star"></i></div>
+                        <div>
+                            <h3>Đầu bếp chuyên nghiệp</h3>
+                            <p>Đội ngũ đầu bếp giàu kinh nghiệm, từng làm việc tại các nhà hàng 5 sao.</p>
+                        </div>
+                    </div>
+                    <div class="about__feature">
+                        <div class="about__feature-icon"><i class="bx bx-heart"></i></div>
+                        <div>
+                            <h3>Không gian sang trọng</h3>
+                            <p>Thiết kế hiện đại, ấm cúng, phù hợp cho mọi dịp từ gia đình đến doanh nghiệp.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENU -->
+    <section class="menu section" id="menu">
+        <div class="container">
+            <div class="section__header">
+                <span class="section__tag">Thực đơn</span>
+                <h2 class="section__title">Món ăn nổi bật</h2>
+                <p class="section__desc">Khám phá những món ăn đặc sắc nhất được yêu thích bởi hàng ngàn thực khách.</p>
+            </div>
+
+            <div class="menu__tabs">
+                <button class="menu__tab active" data-category="all">Tất cả</button>
+                <button class="menu__tab" data-category="starter">Khai vị</button>
+                <button class="menu__tab" data-category="main">Món chính</button>
+                <button class="menu__tab" data-category="dessert">Tráng miệng</button>
+                <button class="menu__tab" data-category="drink">Đồ uống</button>
+            </div>
+
+            <div class="menu__grid">
+                <div class="menu-card" data-category="main">
+                    <div class="menu-card__image">
+                        <div class="menu-card__image-placeholder"><i class="bx bx-bowl-hot"></i></div>
+                        <span class="menu-card__badge">Hot</span>
+                    </div>
+                    <div class="menu-card__body">
+                        <h3 class="menu-card__name">Bò Mỹ Thượng Hạng</h3>
+                        <p class="menu-card__desc">Thịt bò Mỹ cao cấp nướng than hoa, ướp gia vị đặc biệt.</p>
+                        <div class="menu-card__footer">
+                            <span class="menu-card__price">450.000đ</span>
+                            <button class="menu-card__btn"><i class="bx bx-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-card" data-category="main">
+                    <div class="menu-card__image">
+                        <div class="menu-card__image-placeholder"><i class="bx bx-bowl-hot"></i></div>
+                    </div>
+                    <div class="menu-card__body">
+                        <h3 class="menu-card__name">Sủi Cảo Tôm Hấp</h3>
+                        <p class="menu-card__desc">Sủi cảo nhân tôm tươi hấp, chấm sốt tương đặc biệt.</p>
+                        <div class="menu-card__footer">
+                            <span class="menu-card__price">180.000đ</span>
+                            <button class="menu-card__btn"><i class="bx bx-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-card" data-category="starter">
+                    <div class="menu-card__image">
+                        <div class="menu-card__image-placeholder"><i class="bx bx-bowl-hot"></i></div>
+                    </div>
+                    <div class="menu-card__body">
+                        <h3 class="menu-card__name">Salad Cá Hồi</h3>
+                        <p class="menu-card__desc">Cá hồi Na Uy tươi sống kết hợp rau củ organic theo mùa.</p>
+                        <div class="menu-card__footer">
+                            <span class="menu-card__price">220.000đ</span>
+                            <button class="menu-card__btn"><i class="bx bx-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-card" data-category="main">
+                    <div class="menu-card__image">
+                        <div class="menu-card__image-placeholder"><i class="bx bx-bowl-hot"></i></div>
+                        <span class="menu-card__badge">New</span>
+                    </div>
+                    <div class="menu-card__body">
+                        <h3 class="menu-card__name">Hải Sản Nướng BBQ</h3>
+                        <p class="menu-card__desc">Combo hải sản tươi sống nướng trên bếp than hồng.</p>
+                        <div class="menu-card__footer">
+                            <span class="menu-card__price">550.000đ</span>
+                            <button class="menu-card__btn"><i class="bx bx-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-card" data-category="dessert">
+                    <div class="menu-card__image">
+                        <div class="menu-card__image-placeholder"><i class="bx bx-cake"></i></div>
+                    </div>
+                    <div class="menu-card__body">
+                        <h3 class="menu-card__name">Bánh Flan Caramel</h3>
+                        <p class="menu-card__desc">Bánh flan mịn màng với lớp caramel thơm ngọt tan chảy.</p>
+                        <div class="menu-card__footer">
+                            <span class="menu-card__price">65.000đ</span>
+                            <button class="menu-card__btn"><i class="bx bx-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-card" data-category="drink">
+                    <div class="menu-card__image">
+                        <div class="menu-card__image-placeholder"><i class="bx bx-drink"></i></div>
+                    </div>
+                    <div class="menu-card__body">
+                        <h3 class="menu-card__name">Trà Sen Vàng</h3>
+                        <p class="menu-card__desc">Trà ướp hương sen thanh mát, hương vị truyền thống Việt Nam.</p>
+                        <div class="menu-card__footer">
+                            <span class="menu-card__price">45.000đ</span>
+                            <button class="menu-card__btn"><i class="bx bx-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu__more">
+                <a href="#" class="btn btn--outline btn--lg">Xem toàn bộ thực đơn <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials section" id="testimonials">
+        <div class="container">
+            <div class="section__header">
+                <span class="section__tag">Đánh giá</span>
+                <h2 class="section__title">Khách hàng nói gì về chúng tôi</h2>
+                <p class="section__desc">Hàng ngàn khách hàng đã tin tưởng và yêu thích nhà hàng của chúng tôi.</p>
+            </div>
+            <div class="testimonials__grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-card__stars">
+                        <i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i>
+                    </div>
+                    <p class="testimonial-card__text">"Không gian rất đẹp và sang trọng. Món bò Mỹ nướng tuyệt vời, nhân viên phục vụ rất nhiệt tình. Chắc chắn sẽ quay lại!"</p>
+                    <div class="testimonial-card__author">
+                        <div class="testimonial-card__avatar"></div>
+                        <div>
+                            <p class="testimonial-card__name">Nguyễn Hữu An</p>
+                            <p class="testimonial-card__role">Khách hàng thân thiết</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-card__stars">
+                        <i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i>
+                    </div>
+                    <p class="testimonial-card__text">"Tôi thường đặt bàn ở đây cho các buổi tiệc công ty. Thức ăn luôn ngon, dịch vụ chuyên nghiệp và giá cả hợp lý."</p>
+                    <div class="testimonial-card__author">
+                        <div class="testimonial-card__avatar"></div>
+                        <div>
+                            <p class="testimonial-card__name">Lê Thị Hương Giang</p>
+                            <p class="testimonial-card__role">Doanh nhân</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-card__stars">
+                        <i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bx-star"></i>
+                    </div>
+                    <p class="testimonial-card__text">"Lần đầu đến nhưng ấn tượng rất tốt. Món sủi cảo tôm hấp ngon xuất sắc, nước chấm đặc biệt không đâu có được!"</p>
+                    <div class="testimonial-card__author">
+                        <div class="testimonial-card__avatar"></div>
+                        <div>
+                            <p class="testimonial-card__name">Trần Minh Đức</p>
+                            <p class="testimonial-card__role">Food Blogger</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container cta__inner">
+            <div class="cta__content">
+                <h2 class="cta__title">Sẵn sàng cho bữa ăn tuyệt vời?</h2>
+                <p class="cta__desc">Đăng ký tài khoản ngay để nhận ưu đãi 20% cho lần đầu đặt bàn và cập nhật thực đơn mới nhất.</p>
+            </div>
+            <div class="cta__buttons">
+                <a href="../auth/register.html" class="btn btn--white btn--lg"><i class="bx bx-user-plus"></i> Đăng ký ngay</a>
+                <a href="../auth/login.html" class="btn btn--outline-white btn--lg"><i class="bx bx-log-in"></i> Đăng nhập</a>
+            </div>
+        </div>
+        <div class="cta__shape cta__shape--1"></div>
+        <div class="cta__shape cta__shape--2"></div>
+    </section>
+
+    <!-- CONTACT / FOOTER -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer__grid">
+                <div class="footer__brand">
+                    <a href="#" class="footer__logo">
+                        <i class="bx bx-restaurant"></i>
+                        <span>Nhà hàng Nhóm 3</span>
+                    </a>
+                    <p class="footer__brand-desc">Nơi hội tụ tinh hoa ẩm thực, mang đến cho bạn những trải nghiệm ăn uống đáng nhớ nhất.</p>
+                    <div class="footer__socials">
+                        <a href="#" class="footer__social"><i class="bx bxl-facebook-circle"></i></a>
+                        <a href="#" class="footer__social"><i class="bx bxl-instagram-alt"></i></a>
+                        <a href="#" class="footer__social"><i class="bx bxl-tiktok"></i></a>
+                        <a href="#" class="footer__social"><i class="bx bxl-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer__col">
+                    <h4 class="footer__col-title">Liên kết</h4>
+                    <ul class="footer__links">
+                        <li><a href="#hero">Trang chủ</a></li>
+                        <li><a href="#about">Giới thiệu</a></li>
+                        <li><a href="#menu">Thực đơn</a></li>
+                        <li><a href="#testimonials">Đánh giá</a></li>
+                    </ul>
+                </div>
+                <div class="footer__col">
+                    <h4 class="footer__col-title">Giờ mở cửa</h4>
+                    <ul class="footer__hours">
+                        <li><span>Thứ 2 - Thứ 6</span><span>10:00 - 22:00</span></li>
+                        <li><span>Thứ 7 - CN</span><span>09:00 - 23:00</span></li>
+                    </ul>
+                </div>
+                <div class="footer__col">
+                    <h4 class="footer__col-title">Liên hệ</h4>
+                    <ul class="footer__contact">
+                        <li><i class="bx bx-map"></i> 123 Đường ABC, Quận 1, TP.HCM</li>
+                        <li><i class="bx bx-phone"></i> (028) 1234 5678</li>
+                        <li><i class="bx bx-envelope"></i> info@nhahangn3.vn</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Nhà hàng Nhóm 3. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCROLL TO TOP -->
+    <button class="scroll-top" id="scrollTop" type="button" aria-label="Lên đầu trang">
+        <i class="bx bx-chevron-up"></i>
+    </button>
+
+    <script>
+        // ====== NAVBAR SCROLL ======
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('navbar--scrolled', window.scrollY > 50);
+        });
+
+        // ====== MOBILE MENU ======
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileClose = document.getElementById('mobileClose');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const mobileLinks = document.querySelectorAll('.mobile-menu__link');
+
+        function openMobile() { mobileMenu.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeMobile() { mobileMenu.classList.remove('active'); document.body.style.overflow = ''; }
+
+        navToggle.addEventListener('click', openMobile);
+        mobileClose.addEventListener('click', closeMobile);
+        mobileOverlay.addEventListener('click', closeMobile);
+        mobileLinks.forEach(link => link.addEventListener('click', closeMobile));
+
+        // ====== ACTIVE NAV LINK ON SCROLL ======
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.navbar__link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const top = section.offsetTop - 100;
+                if (window.scrollY >= top) current = section.getAttribute('id');
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+            });
+        });
+
+        // ====== MENU TABS ======
+        const menuTabs = document.querySelectorAll('.menu__tab');
+        const menuCards = document.querySelectorAll('.menu-card');
+
+        menuTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                menuTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const category = tab.dataset.category;
+
+                menuCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = '';
+                        requestAnimationFrame(() => card.classList.add('show'));
+                    } else {
+                        card.classList.remove('show');
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Init: show all
+        menuCards.forEach(card => card.classList.add('show'));
+
+        // ====== SCROLL TO TOP ======
+        const scrollTopBtn = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => {
+            scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ====== SMOOTH SCROLL ======
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
+
