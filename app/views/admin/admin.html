@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemori - Quản lý người dùng</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="admin-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span>✦</span> Gemori
+        </div>
+
+        <p class="menu-title">QUẢN LÝ</p>
+
+        <a href="admin.html" class="menu active">
+            👤 Quản lý người dùng
+        </a>
+
+        <a href="tables.html" class="menu">
+            ▦ Quản lý bàn
+        </a>
+
+        <a href="login.html" class="menu logout">
+            ↪ Đăng xuất
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <div class="top">
+
+            <div>
+                <p class="small-title">ADMIN</p>
+                <h1>Quản lý người dùng</h1>
+            </div>
+
+            <div class="admin-name">
+                Admin
+            </div>
+
+        </div>
+
+
+        <!-- THỐNG KÊ -->
+        <div class="cards">
+
+            <div class="card">
+                <p>Tổng người dùng</p>
+                <h2>24</h2>
+            </div>
+
+            <div class="card">
+                <p>Đang hoạt động</p>
+                <h2>20</h2>
+            </div>
+
+            <div class="card">
+                <p>Tài khoản Admin</p>
+                <h2>2</h2>
+            </div>
+
+        </div>
+
+
+        <!-- DANH SÁCH NGƯỜI DÙNG -->
+        <div class="content-box">
+
+            <div class="box-header">
+
+                <div>
+                    <h2>Danh sách người dùng</h2>
+                    <p>Quản lý tài khoản trong hệ thống</p>
+                </div>
+
+                <button class="add-button">
+                    + Thêm người dùng
+                </button>
+
+            </div>
+
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Họ tên</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>1</td>
+                        <td>Nguyễn Văn An</td>
+                        <td>nguyenvanan</td>
+                        <td>Admin</td>
+
+                        <td>
+                            <span class="status active-status">
+                                Hoạt động
+                            </span>
+                        </td>
+
+                        <td>
+                            <button class="action-button">Sửa</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>Trần Thị Mai</td>
+                        <td>tranthimai</td>
+                        <td>Nhân viên</td>
+
+                        <td>
+                            <span class="status active-status">
+                                Hoạt động
+                            </span>
+                        </td>
+
+                        <td>
+                            <button class="action-button">Sửa</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>Lê Văn Bình</td>
+                        <td>levanbinh</td>
+                        <td>Nhân viên</td>
+
+                        <td>
+                            <span class="status inactive-status">
+                                Không hoạt động
+                            </span>
+                        </td>
+
+                        <td>
+                            <button class="action-button">Sửa</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

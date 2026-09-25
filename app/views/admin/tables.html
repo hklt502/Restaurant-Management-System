@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemori - Quản lý bàn</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="admin-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span>✦</span> Gemori
+        </div>
+
+        <p class="menu-title">QUẢN LÝ</p>
+
+        <a href="admin.html" class="menu">
+            👤 Quản lý người dùng
+        </a>
+
+        <a href="tables.html" class="menu active">
+            ▦ Quản lý bàn
+        </a>
+
+        <a href="login.html" class="menu logout">
+            ↪ Đăng xuất
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <div class="top">
+
+            <div>
+                <p class="small-title">ADMIN</p>
+                <h1>Quản lý bàn</h1>
+            </div>
+
+            <div class="admin-name">
+                Admin
+            </div>
+
+        </div>
+
+
+        <!-- THỐNG KÊ -->
+        <div class="cards">
+
+            <div class="card">
+                <p>Tổng số bàn</p>
+                <h2>20</h2>
+            </div>
+
+            <div class="card">
+                <p>Bàn trống</p>
+                <h2>12</h2>
+            </div>
+
+            <div class="card">
+                <p>Đang sử dụng</p>
+                <h2>8</h2>
+            </div>
+
+        </div>
+
+
+        <!-- DANH SÁCH BÀN -->
+        <div class="content-box">
+
+            <div class="box-header">
+
+                <div>
+                    <h2>Danh sách bàn</h2>
+                    <p>Quản lý trạng thái các bàn trong nhà hàng</p>
+                </div>
+
+                <button class="add-button">
+                    + Thêm bàn
+                </button>
+
+            </div>
+
+
+            <div class="table-grid">
+
+                <div class="restaurant-table empty">
+                    <h3>Bàn 01</h3>
+                    <p>4 chỗ</p>
+                    <span>Trống</span>
+                </div>
+
+                <div class="restaurant-table using">
+                    <h3>Bàn 02</h3>
+                    <p>4 chỗ</p>
+                    <span>Đang sử dụng</span>
+                </div>
+
+                <div class="restaurant-table empty">
+                    <h3>Bàn 03</h3>
+                    <p>6 chỗ</p>
+                    <span>Trống</span>
+                </div>
+
+                <div class="restaurant-table using">
+                    <h3>Bàn 04</h3>
+                    <p>6 chỗ</p>
+                    <span>Đang sử dụng</span>
+                </div>
+
+                <div class="restaurant-table empty">
+                    <h3>Bàn 05</h3>
+                    <p>4 chỗ</p>
+                    <span>Trống</span>
+                </div>
+
+                <div class="restaurant-table empty">
+                    <h3>Bàn 06</h3>
+                    <p>8 chỗ</p>
+                    <span>Trống</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>
