@@ -286,19 +286,6 @@ table {
     cursor: pointer;
 }
 
-.btn--primary {
-    background: var(--primary-300);
-    color: var(--white);
-}
-
-.btn--primary:hover {
-    background: var(--primary-400);
-}
-
-.btn i {
-    font-size: 1.2rem;
-}
-
 /* FILTER CARD */
 .filter-card {
     background: var(--white);
