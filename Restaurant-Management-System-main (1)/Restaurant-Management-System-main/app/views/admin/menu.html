@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../../public/asset/css/admin/menu.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <title>Menu</title>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <i class="bx bx-restaurant"></i>
+            <span>Nhóm 3</span>
+        </div>
+
+        <nav class="sidebar__nav">
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">CHUNG</p>
+                <a href="../admin/overview.html" class="sidebar__link "><i class="bx bxs-dashboard"></i><span>Tổng
+                        quan</span></a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">VẬN HÀNH</p>
+                <a href="#" class="sidebar__link active"><i class="bx bx-book-open"></i><span>Quản lý Menu</span></a>
+                <a href="#" class="sidebar__link"><i class="bx bx-table"></i><span>Quản lý bàn</span></a>
+                <a href="#" class="sidebar__link"><i class="bx bx-receipt"></i><span>Quản lý đơn hàng</span></a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">MARKETING & KHO</p>
+                <a href="#" class="sidebar__link"><i class="bx bx-purchase-tag"></i><span>Voucher & Khuyến
+                        mãi</span></a>
+                <a href="../admin/warehouse.html" class="sidebar__link"><i class="bx bx-box"></i><span>Quản lý
+                        Kho</span></a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">HỆ THỐNG</p>
+                <a href="#" class="sidebar__link"><i class="bx bx-user"></i><span>Người dùng</span></a>
+                <a href="#" class="sidebar__link"><i class="bx bx-line-chart"></i><span>Thống kê</span></a>
+            </div>
+        </nav>
+
+        <div class="sidebar__profile">
+            <div class="sidebar__profile-avatar"></div>
+            <div class="sidebar__profile-info">
+                <p class="sidebar__profile-name">Hồ Kim Lưu Thống</p>
+                <p class="sidebar__profile-role">Quản trị viên</p>
+            </div>
+            <button class="sidebar__profile-logout" type="button"><i class="bx bx-log-out"></i></button>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="header">
+            <div class="header__search">
+                <i class="bx bx-search"></i>
+                <input type="text" placeholder="Tìm kiếm đơn hàng, khách hàng, bàn...">
+            </div>
+            <button class="header__notification" type="button"><i class="bx bx-bell"></i></button>
+        </header>
+
+        <main class="main">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-header__left">
+                    <h1 class="page-header__title">Quản lý Menu</h1>
+                    <p class="page-header__subtitle">Quản lý danh sách các món ăn, trạng thái món và giá cả thực đơn.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Filter Bar -->
+            <div class="filter-card">
+                <span class="filter-card__label">LỌC NHANH:</span>
+                <div class="filter-card__tags">
+                    <button type="button" class="filter-tag filter-tag--active">Tất cả</button>
+                    <button type="button" class="filter-tag">Thịt</button>
+                    <button type="button" class="filter-tag">Viên thả lẩu</button>
+                    <button type="button" class="filter-tag">Hải sản</button>
+                    <button type="button" class="filter-tag">Nội tạng</button>
+                    <button type="button" class="filter-tag">Rau củ</button>
+                </div>
+            </div>
+
+            <!-- Data Table Card -->
+            <div class="table-card">
+                <table class="menu-table">
+                    <thead>
+                        <tr>
+                            <th>ẢNH MÓN</th>
+                            <th>TÊN MÓN</th>
+                            <th>DANH MỤC</th>
+                            <th>TRẠNG THÁI</th>
+                            <th>HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Row 1: Active -->
+                        <tr>
+                            <td>
+                                <img src="/public/asset/img/thitbo.png">
+                            </td>
+                            <td>
+                                <div class="dish-info">
+                                    <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
+                                    <p class="dish-info__code">001</p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge--category">Thịt bò</span>
+                            </td>
+                            <td>
+                                <span class="active-text">Đang bán</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="action-btn" title="Sửa"><i
+                                            class="bx bx-pencil"></i></button>
+                                    <button type="button" class="action-btn" title="Xóa"><i
+                                            class="bx bx-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Row 2: Active -->
+                        <tr>
+                            <td>
+                                <img src="#" alt="">
+                            </td>
+                            <td>
+                                <div class="dish-info">
+                                    <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
+                                    <p class="dish-info__code">Mã: 001</p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge--category">Thịt bò</span>
+                            </td>
+                            <td>
+                                <span class="active-text">Đang bán</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="action-btn" title="Sửa"><i
+                                            class="bx bx-pencil"></i></button>
+                                    <button type="button" class="action-btn" title="Xóa"><i
+                                            class="bx bx-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Row 3: Inactive -->
+                        <tr>
+                            <td>
+                                <img src="#" alt="">
+                            </td>
+                            <td>
+                                <div class="dish-info">
+                                    <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
+                                    <p class="dish-info__code">Mã: 001</p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge--category">Thịt bò</span>
+                            </td>
+                            <td>
+                                <span class="inactive-text">Ngưng bán</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="action-btn" title="Sửa"><i
+                                            class="bx bx-pencil"></i></button>
+                                    <button type="button" class="action-btn" title="Xóa"><i
+                                            class="bx bx-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Row 4: Active -->
+                        <tr>
+                            <td>
+                                <img src="#" alt="">
+                            </td>
+                            <td>
+                                <div class="dish-info">
+                                    <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
+                                    <p class="dish-info__code">Mã: 001</p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge--category">Thịt bò</span>
+                            </td>
+                            <td>
+                                <span class="active-text">Đang bán</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="action-btn" title="Sửa"><i
+                                            class="bx bx-pencil"></i></button>
+                                    <button type="button" class="action-btn" title="Xóa"><i
+                                            class="bx bx-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Row 5: Active -->
+                        <tr>
+                            <td>
+                                <img src="#" alt="">
+
+                            </td>
+                            <td>
+                                <div class="dish-info">
+                                    <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
+                                    <p class="dish-info__code">Mã: 001</p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge--category">Thịt bò</span>
+                            </td>
+                            <td>
+                                <span class="active-text">Đang bán</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="action-btn" title="Sửa"><i
+                                            class="bx bx-pencil"></i></button>
+                                    <button type="button" class="action-btn" title="Xóa"><i
+                                            class="bx bx-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Row 6: Inactive -->
+                        <tr>
+                            <td>
+                                <img src="#" alt="">
+                            </td>
+                            <td>
+                                <div class="dish-info">
+                                    <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
+                                    <p class="dish-info__code">Mã: 001</p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge--category">Thịt bò</span>
+                            </td>
+                            <td>
+                                <span class="inactive-text">Ngưng bán</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="action-btn" title="Sửa"><i
+                                            class="bx bx-pencil"></i></button>
+                                    <button type="button" class="action-btn" title="Xóa"><i
+                                            class="bx bx-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Row 7: Active -->
+                        <tr>
+                            <td>
+                                <img src="#" alt="">
+                            </td>
+                            <td>
+                                <div class="dish-info">
+                                    <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
+                                    <p class="dish-info__code">Mã: 001</p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge--category">Thịt bò</span>
+                            </td>
+                            <td>
+                                <span class="active-text">Đang bán</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="action-btn" title="Sửa"><i
+                                            class="bx bx-pencil"></i></button>
+                                    <button type="button" class="action-btn" title="Xóa"><i
+                                            class="bx bx-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- CRUD form -->
+            <div class="CRUD">
+                <div id="title">
+                    <p>CRUD</p>
+                </div>
+
+                <form action="#" method="">
+                    <div>
+                        <label for="id">ID</label>
+                        <input type="number" name="id">
+                        <label for="food">Tên món</label>
+                        <input type="text" name="food">
+                        <label for="list">Danh mục</label>
+                        <select name="list" id="list">
+                            <option value="orther">Khác</option>
+                            <option value="meats">Thịt</option>
+                            <option value="toppings">Viên thả lẩu</option>
+                            <option value="seafoods">Hải sản</option>
+                            <option value="Offal">Nội tại</option>
+                            <option value="vegetables">Rau củ</option>
+                        </select>
+                        <label for="desc">Mô tả</label>
+                        <input type="text">
+                        <label for="photos">Ảnh</label>
+                        <input type="file" name="photos">
+                    </div>
+                    <div class="buttonForm">
+                        <button type="submit" id="btn_insert">Thêm</button>
+                        <button type="submit" id="btn_update">Cập nhật</button>
+                        <button type="submit" id="btn_delete">Xoá</button>
+                        <button type="submit" id="btn_get">Lấy</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
