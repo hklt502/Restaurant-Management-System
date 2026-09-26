@@ -4,216 +4,213 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trang Chủ — Hương Vị Việt</title>
-  <meta name="description"
-    content="Nhà hàng Hương Vị Việt — ẩm thực truyền thống Việt Nam, bếp lửa truyền qua ba thế hệ từ năm 1987." />
+  <title>Trang Chủ — Nhóm 3</title>
   <link rel="icon"
-    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230f0b08'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='700' fill='%23c9a84c' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f0b08'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='19' font-weight='700' fill='%23c9a84c' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" />
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500;600&display=swap" />
   <link rel="stylesheet" href="../../../public/asset/css/client/style.css" />
 </head>
 
 <body>
 
-  <!-- ===================== NAV ===================== -->
-  <header class="nav">
-    <input type="checkbox" id="nav-toggle" class="sr-only" aria-label="Mở menu điều hướng" />
+  <!-- ===================== THANH MENU ===================== -->
+  <div id="header">
+    <input type="checkbox" id="nav-toggle" />
 
-    <div class="nav__inner">
-      <a class="nav__logo" href="trangchu.html">Hương Vị Việt</a>
+    <div class="header-inner">
+      <a class="logo" href="trangchu.html">Nhóm 3</a>
 
-      <nav class="nav__desktop">
-        <a class="nav__link is-active" href="trangchu.html">Trang Chủ</a>
-        <a class="nav__link" href="thucdon.html">Thực Đơn</a>
-        <a class="nav__cta" href="datban.html">Đặt Bàn</a>
-      </nav>
+      <div id="menu">
+        <a class="active" href="trangchu.html">Trang Chủ</a>
+        <a href="thucdon.html">Thực Đơn</a>
+        <a href="khuyenmai.html">Khuyến Mãi</a>
+        <a class="menu-button" href="datban.html">Đặt Bàn</a>
+      </div>
 
-      <label class="nav__burger" for="nav-toggle">
+      <a class="header-user" href="canhan.html">👤 Nguyễn Văn A</a>
+
+      <label class="burger" for="nav-toggle">
         <span></span><span></span><span></span>
       </label>
     </div>
 
-    <nav class="nav__mobile">
-      <a class="is-active" href="trangchu.html">Trang Chủ</a>
+    <div class="mobile-menu">
+      <a class="active" href="trangchu.html">Trang Chủ</a>
       <a href="thucdon.html">Thực Đơn</a>
+      <a href="khuyenmai.html">Khuyến Mãi</a>
       <a href="datban.html">Đặt Bàn</a>
-    </nav>
-  </header>
+      <a href="dangnhap.html">Đăng Nhập</a>
+      <a href="dangky.html">Đăng Ký</a>
+      <a href="canhan.html">Trang Cá Nhân</a>
+      <a href="doimatkhau.html">Đổi Mật Khẩu</a>
+    </div>
+  </div>
 
-  <main>
+  <!-- ===================== PHẦN MỞ ĐẦU ===================== -->
+  <div class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">— Ẩm Thực Truyền Thống Việt Nam</p>
 
-    <!-- ===================== HERO ===================== -->
-    <section class="hero">
-      <img class="hero__bg"
-        src="https://images.unsplash.com/photo-1709548145082-04d0cde481d4?w=1600&h=900&fit=crop&auto=format"
-        alt="Không gian nhà hàng Hương Vị Việt" />
-      <div class="hero__veil"></div>
+      <h1>Hương Vị Trọn Vẹn<br /><span class="accent">Từ Bếp Lửa Nhà Nhóm 3</span></h1>
 
-      <div class="hero__inner">
-        <p class="eyebrow hero__eyebrow">— Ẩm Thực Truyền Thống Việt Nam</p>
-        <h1 class="hero__title">
-          Hương Vị<br /><em class="accent">Từ Trái Tim</em>
-        </h1>
-        <p class="hero__lede">
-          Từng món ăn là câu chuyện của quê hương — nơi ký ức, hương thơm và tình yêu
-          hoà quyện trong từng muỗng canh nóng hổi.
-        </p>
-        <div class="hero__actions">
-          <a class="btn btn--gold" href="thucdon.html">Xem Thực Đơn</a>
-          <a class="btn btn--ghost" href="datban.html">Đặt Bàn Ngay</a>
-        </div>
+      <p>Hơn 120 món ăn Việt Nam, nguyên liệu tươi mỗi ngày và công thức
+        gia truyền được giữ nguyên từ năm 1987.</p>
+
+      <div class="hero-buttons">
+        <a class="button button-gold" href="thucdon.html">Xem Thực Đơn</a>
+        <a class="button button-outline" href="datban.html">Đặt Bàn Ngay</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== DẢI SỐ LIỆU ===================== -->
+  <div class="stats">
+    <div class="stats-inner">
+
+      <div class="stat">
+        <p class="stat-number">1987</p>
+        <p class="stat-title">Năm thành lập</p>
+        <p class="stat-note">Hơn 35 năm giữ lửa</p>
       </div>
 
-      <div class="scroll-cue">
-        <p class="scroll-cue__label">Cuộn xuống</p>
-        <div class="scroll-cue__line"></div>
-      </div>
-    </section>
-
-    <!-- ===================== SỐ LIỆU ===================== -->
-    <section class="stats">
-      <div class="stats__grid">
-        <div class="stat">
-          <p class="stat__num">1987</p>
-          <p class="stat__label">Năm thành lập</p>
-          <p class="stat__note">Hơn 35 năm giữ lửa</p>
-        </div>
-        <div class="stat">
-          <p class="stat__num">120+</p>
-          <p class="stat__label">Món ăn đặc sắc</p>
-          <p class="stat__note">Từ Bắc vào Nam</p>
-        </div>
-        <div class="stat">
-          <p class="stat__num">4.9★</p>
-          <p class="stat__label">Đánh giá khách hàng</p>
-          <p class="stat__note">Trên Google &amp; Foody</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== CÂU CHUYỆN ===================== -->
-    <section class="story">
-      <div>
-        <p class="eyebrow eyebrow--sm story__eyebrow">Câu chuyện của chúng tôi</p>
-        <h2 class="story__title">
-          Bếp lửa truyền qua<br /><em class="accent">ba thế hệ</em>
-        </h2>
-        <p class="story__text">
-          Khởi đầu từ gánh hàng ăn nhỏ của bà nội tại chợ Bến Thành năm 1987, Hương Vị Việt
-          được xây dựng trên triết lý đơn giản: nguyên liệu tươi mỗi ngày, công thức gia truyền
-          không thay đổi.
-        </p>
-        <p class="story__text story__text--last">
-          Đến nay, thế hệ thứ ba vẫn giữ nguyên linh hồn của những món ăn đó — chỉ thêm không
-          gian đẹp hơn cho thực khách thưởng thức.
-        </p>
-        <a class="link-underline" href="thucdon.html">Khám phá thực đơn →</a>
+      <div class="stat">
+        <p class="stat-number">120+</p>
+        <p class="stat-title">Món ăn đặc sắc</p>
+        <p class="stat-note">Từ Bắc vào Nam</p>
       </div>
 
-      <div class="story__media">
-        <img class="story__photo"
-          src="https://images.unsplash.com/photo-1641440615059-42c8ed3af8c8?w=700&h=860&fit=crop&auto=format"
-          alt="Các món ăn đặc sắc của nhà hàng" />
-        <figure class="quote-card">
-          <p class="quote-card__text">"Ăn là để nhớ, không phải chỉ để no."</p>
-          <p class="quote-card__by">— Bà Nguyễn Thị Hoa, người sáng lập</p>
-        </figure>
+      <div class="stat">
+        <p class="stat-number">4.9★</p>
+        <p class="stat-title">Đánh giá khách hàng</p>
+        <p class="stat-note">Trên Google &amp; Foody</p>
       </div>
-    </section>
 
-    <!-- ===================== MÓN NỔI BẬT ===================== -->
-    <section class="featured">
-      <div class="shell">
-        <div class="featured__head">
-          <div>
-            <p class="eyebrow eyebrow--sm featured__eyebrow">Được yêu thích nhất</p>
-            <h2 class="section-title featured__title">Món Nổi Bật</h2>
-          </div>
-          <a class="btn--outline" href="thucdon.html">Xem tất cả →</a>
-        </div>
+    </div>
+  </div>
 
-        <div class="featured__grid">
-          <a class="dish-tile" href="thucdon.html">
-            <img class="dish-tile__img"
-              src="https://images.unsplash.com/photo-1701480253822-1842236c9a97?w=600&h=400&fit=crop&auto=format"
-              alt="Phở Bò Đặc Biệt" />
-            <div class="dish-tile__overlay">
-              <p class="dish-tile__desc">Nước dùng hầm xương 12 tiếng, thịt bò tái, gân, gầu, kèm rau thơm.</p>
-            </div>
-            <div class="dish-tile__meta">
-              <p class="dish-tile__name">Phở Bò Đặc Biệt</p>
-              <p class="dish-tile__price">85.000₫</p>
-            </div>
-          </a>
+  <!-- ===================== CÂU CHUYỆN ===================== -->
+  <div class="story">
 
-          <a class="dish-tile" href="thucdon.html">
-            <img class="dish-tile__img"
-              src="https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&h=400&fit=crop&auto=format"
-              alt="Bún Bò Huế" />
-            <div class="dish-tile__overlay">
-              <p class="dish-tile__desc">Nước dùng sả cay đặc trưng, bò &amp; chả, bún sợi to, huyết luộc.</p>
-            </div>
-            <div class="dish-tile__meta">
-              <p class="dish-tile__name">Bún Bò Huế</p>
-              <p class="dish-tile__price">75.000₫</p>
-            </div>
-          </a>
+    <div>
+      <p class="eyebrow">Câu chuyện của chúng tôi</p>
 
-          <a class="dish-tile" href="thucdon.html">
-            <img class="dish-tile__img"
-              src="https://images.unsplash.com/photo-1533787761082-492a5b83e614?w=600&h=400&fit=crop&auto=format"
-              alt="Cháo Gà Ta" />
-            <div class="dish-tile__overlay">
-              <p class="dish-tile__desc">Cháo gạo lứt nấu từ gà ta thả vườn, hành lá, gừng tươi.</p>
-            </div>
-            <div class="dish-tile__meta">
-              <p class="dish-tile__name">Cháo Gà Ta</p>
-              <p class="dish-tile__price">65.000₫</p>
-            </div>
-          </a>
-        </div>
+      <h2>Bếp lửa truyền qua<br /><span class="accent">ba thế hệ</span></h2>
+
+      <p>Khởi đầu từ gánh hàng ăn nhỏ của bà nội tại chợ Bến Thành năm 1987,
+        Nhóm 3 được xây dựng trên triết lý đơn giản: nguyên liệu tươi mỗi ngày,
+        công thức gia truyền không thay đổi.</p>
+
+      <p>Đến nay, thế hệ thứ ba vẫn giữ nguyên linh hồn của những món ăn đó —
+        chỉ thêm không gian đẹp hơn cho thực khách thưởng thức.</p>
+
+      <a class="button button-line" href="thucdon.html">Khám phá thực đơn →</a>
+    </div>
+
+    <div class="story-image">
+      <img src="https://images.unsplash.com/photo-1641440615059-42c8ed3af8c8?w=700&h=860&fit=crop&auto=format"
+        alt="Các món ăn đặc sắc của nhà hàng Nhóm 3" />
+
+      <div class="quote">
+        <p>"Ăn là để nhớ, không phải chỉ để no."</p>
+        <span>— Bà Nguyễn Thị Hoa, người sáng lập</span>
       </div>
-    </section>
+    </div>
 
-    <!-- ===================== ĐẶT BÀN ===================== -->
-    <section class="cta">
-      <img class="cta__bg"
-        src="https://images.unsplash.com/photo-1650490632010-e18cbb694dd1?w=1600&h=500&fit=crop&auto=format"
-        alt="Không gian nhà hàng" />
-      <div class="cta__veil"></div>
+  </div>
 
-      <div class="cta__inner">
-        <p class="eyebrow eyebrow--sm cta__eyebrow">Đặt chỗ trước để có trải nghiệm tốt nhất</p>
-        <h2 class="cta__title">
-          Dành Một Buổi Tối<br /><em class="accent">Thật Đặc Biệt</em>
-        </h2>
-        <div class="cta__actions">
-          <a class="btn btn--gold" href="datban.html">Đặt Bàn Ngay</a>
-          <a class="btn btn--ghost" href="tel:02838245678">Gọi 028 3824 5678</a>
-        </div>
-        <p class="cta__note">Hoặc gọi trực tiếp: <span>028 3824 5678</span></p>
-      </div>
-    </section>
+  <!-- ===================== MÓN NỔI BẬT ===================== -->
+  <div class="featured">
+    <div class="featured-inner">
 
-    <!-- ===================== FOOTER ===================== -->
-    <footer class="footer">
-      <div class="footer__inner">
+      <div class="featured-head">
         <div>
-          <p class="footer__brand">Hương Vị Việt</p>
-          <p class="footer__tagline">Từ bếp lửa gia đình đến bàn tiệc của bạn</p>
+          <p class="eyebrow">Được yêu thích nhất</p>
+          <h2>Món Nổi Bật</h2>
         </div>
-        <div class="footer__info">
-          <p>123 Đường Lê Lợi, Quận 1, TP.HCM</p>
-          <p>Mở cửa: 10:00 – 22:00 hàng ngày</p>
-        </div>
-        <p class="footer__legal">© 2026 Hương Vị Việt</p>
+        <a class="button button-line" href="thucdon.html">Xem tất cả →</a>
       </div>
-    </footer>
 
-  </main>
+      <div class="dish-grid">
+
+        <a class="dish" href="thucdon.html">
+          <img src="https://images.unsplash.com/photo-1701480253822-1842236c9a97?w=600&h=400&fit=crop&auto=format"
+            alt="Phở Bò Đặc Biệt" />
+          <div class="dish-body">
+            <h3>Phở Bò Đặc Biệt</h3>
+            <p class="price">85.000₫</p>
+            <p class="dish-note">Nước dùng hầm xương 12 tiếng, thịt bò tái, gân, gầu, kèm rau thơm.</p>
+          </div>
+        </a>
+
+        <a class="dish" href="thucdon.html">
+          <img src="https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&h=400&fit=crop&auto=format"
+            alt="Bún Bò Huế" />
+          <div class="dish-body">
+            <h3>Bún Bò Huế</h3>
+            <p class="price">75.000₫</p>
+            <p class="dish-note">Nước dùng sả cay đặc trưng, bò &amp; chả, bún sợi to, huyết luộc.</p>
+          </div>
+        </a>
+
+        <a class="dish" href="thucdon.html">
+          <img src="https://images.unsplash.com/photo-1533787761082-492a5b83e614?w=600&h=400&fit=crop&auto=format"
+            alt="Cháo Gà Ta" />
+          <div class="dish-body">
+            <h3>Cháo Gà Ta</h3>
+            <p class="price">65.000₫</p>
+            <p class="dish-note">Cháo gạo lứt nấu từ gà ta thả vườn, hành lá, gừng tươi.</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== KÊU GỌI ĐẶT BÀN ===================== -->
+  <div class="cta">
+    <p class="eyebrow">Đặt chỗ trước để có trải nghiệm tốt nhất</p>
+
+    <h2>Dành Một Buổi Tối<br /><span class="accent">Thật Đặc Biệt</span></h2>
+
+    <div class="cta-buttons">
+      <a class="button button-gold" href="datban.html">Đặt Bàn Ngay</a>
+      <a class="button button-outline" href="tel:02838245678">Gọi 028 3824 5678</a>
+    </div>
+
+    <p>Hoặc gọi trực tiếp: <span>028 3824 5678</span></p>
+  </div>
+
+  <!-- ===================== CHÂN TRANG ===================== -->
+  <div class="footer">
+    <div class="footer-inner">
+
+      <div>
+        <h3>Nhóm 3</h3>
+        <p>Từ bếp lửa gia đình đến bàn tiệc của bạn</p>
+      </div>
+
+      <div>
+        <p>123 Đường Lê Lợi, Quận 1, TP.HCM</p>
+        <p>Mở cửa: 10:00 – 22:00 hàng ngày</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="trangchu.html">Trang Chủ</a>
+        <a href="thucdon.html">Thực Đơn</a>
+        <a href="khuyenmai.html">Khuyến Mãi</a>
+        <a href="datban.html">Đặt Bàn</a>
+        <a href="dangnhap.html">Đăng Nhập</a>
+        <a href="dangky.html">Đăng Ký</a>
+        <a href="canhan.html">Trang Cá Nhân</a>
+        <a href="doimatkhau.html">Đổi Mật Khẩu</a>
+      </div>
+
+      <p>© 2026 Nhóm 3</p>
+
+    </div>
+  </div>
+
 </body>
 
 </html>

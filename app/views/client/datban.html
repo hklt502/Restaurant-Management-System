@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đặt Bàn — Nhóm 3</title>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f0b08'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='19' font-weight='700' fill='%23c9a84c' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="../../../public/asset/css/client/style.css" />
+</head>
+
+<body>
+
+  <!-- ===================== THANH MENU ===================== -->
+  <div id="header">
+    <input type="checkbox" id="nav-toggle" />
+
+    <div class="header-inner">
+      <a class="logo" href="trangchu.html">Nhóm 3</a>
+
+      <div id="menu">
+        <a href="trangchu.html">Trang Chủ</a>
+        <a href="thucdon.html">Thực Đơn</a>
+        <a href="khuyenmai.html">Khuyến Mãi</a>
+        <a class="active menu-button" href="datban.html">Đặt Bàn</a>
+      </div>
+
+      <a class="header-user" href="canhan.html">👤 Nguyễn Văn A</a>
+
+      <label class="burger" for="nav-toggle">
+        <span></span><span></span><span></span>
+      </label>
+    </div>
+
+    <div class="mobile-menu">
+      <a href="trangchu.html">Trang Chủ</a>
+      <a href="thucdon.html">Thực Đơn</a>
+      <a href="khuyenmai.html">Khuyến Mãi</a>
+      <a class="active" href="datban.html">Đặt Bàn</a>
+      <a href="dangnhap.html">Đăng Nhập</a>
+      <a href="dangky.html">Đăng Ký</a>
+      <a href="canhan.html">Trang Cá Nhân</a>
+      <a href="doimatkhau.html">Đổi Mật Khẩu</a>
+    </div>
+  </div>
+
+  <!-- ===================== PHẦN MỞ ĐẦU ===================== -->
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <p class="eyebrow">Đặt bàn trực tuyến</p>
+      <h1>Giữ Một Chỗ<br /><span class="accent">Cho Buổi Tối Nay</span></h1>
+    </div>
+  </div>
+
+  <!-- ===================== NỘI DUNG ===================== -->
+  <div class="booking">
+
+    <!-- ---------- Cột trái: form đặt bàn ---------- -->
+    <div class="form-card">
+      <h2>Thông tin đặt bàn</h2>
+      <p class="form-note">Chúng tôi sẽ gọi lại xác nhận trong vòng 15 phút.</p>
+
+      <form>
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="name">Họ và tên *</label>
+            <input type="text" id="name" name="name" placeholder="Nguyễn Văn A" required />
+          </div>
+
+          <div class="field">
+            <label for="phone">Số điện thoại *</label>
+            <input type="tel" id="phone" name="phone" placeholder="0901 234 567" required />
+          </div>
+
+          <div class="field">
+            <label for="date">Ngày *</label>
+            <input type="date" id="date" name="date" required />
+          </div>
+
+          <div class="field">
+            <label for="time">Giờ *</label>
+            <input type="time" id="time" name="time" value="19:00" required />
+          </div>
+
+          <div class="field">
+            <label for="guests">Số khách *</label>
+            <select id="guests" name="guests" required>
+              <option value="1">1 khách</option>
+              <option value="2" selected>2 khách</option>
+              <option value="3">3 khách</option>
+              <option value="4">4 khách</option>
+              <option value="5">5 khách</option>
+              <option value="6">6 khách</option>
+              <option value="8">7 – 8 khách</option>
+              <option value="10">9 – 10 khách</option>
+              <option value="20">Trên 10 khách (tiệc)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="branch">Chi nhánh</label>
+            <select id="branch" name="branch">
+              <option value="le-loi" selected>Lê Lợi — Quận 1</option>
+              <option value="ben-thanh">Bến Thành — Quận 1</option>
+              <option value="thao-dien">Thảo Điền — TP. Thủ Đức</option>
+            </select>
+          </div>
+
+          <div class="field field-full">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="ban@example.com" />
+            <span class="field-note">Không bắt buộc — dùng để gửi xác nhận đặt bàn.</span>
+          </div>
+
+          <div class="field field-full">
+            <label for="note">Ghi chú</label>
+            <textarea id="note" name="note"
+              placeholder="Dị ứng thực phẩm, bàn gần cửa sổ, sinh nhật, xe lăn…"></textarea>
+          </div>
+
+          <div class="form-foot">
+            <p>Cần hỗ trợ gấp? Gọi <span>028 3824 5678</span></p>
+            <button type="submit" class="button button-gold">Xác Nhận Đặt Bàn</button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- ---------- Cột phải: thông tin ---------- -->
+    <div>
+
+      <div class="info-card">
+        <h2>Thông tin liên hệ</h2>
+
+        <div class="info-row">
+          <span class="info-key">Địa chỉ</span>
+          <span class="info-value">123 Đường Lê Lợi, Quận 1, TP.HCM</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-key">Giờ mở cửa</span>
+          <span class="info-value">10:00 – 22:00<br />Tất cả các ngày trong tuần</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-key">Điện thoại</span>
+          <span class="info-value"><a href="tel:02838245678">028 3824 5678</a></span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-key">Email</span>
+          <span class="info-value"><a href="mailto:hello@Nhóm 3.vn">hello@Nhóm 3.vn</a></span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h2>Lưu ý khi đặt bàn</h2>
+        <ul>
+          <li>Bàn được giữ tối đa 15 phút kể từ giờ đã hẹn.</li>
+          <li>Nhóm trên 10 khách vui lòng đặt trước 24 giờ để nhà hàng sắp xếp không gian riêng.</li>
+          <li>Khung 18:00 – 20:00 cuối tuần thường kín; nên đặt trước 2 – 3 ngày.</li>
+          <li>Có khu vực phòng riêng cho tiệc, vui lòng ghi rõ trong phần ghi chú.</li>
+          <li>Nhà hàng phục vụ được yêu cầu ăn chay và các món ít cay.</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===================== CHÂN TRANG ===================== -->
+  <div class="footer">
+    <div class="footer-inner">
+
+      <div>
+        <h3>Nhóm 3</h3>
+        <p>Từ bếp lửa gia đình đến bàn tiệc của bạn</p>
+      </div>
+
+      <div>
+        <p>123 Đường Lê Lợi, Quận 1, TP.HCM</p>
+        <p>Mở cửa: 10:00 – 22:00 hàng ngày</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="trangchu.html">Trang Chủ</a>
+        <a href="thucdon.html">Thực Đơn</a>
+        <a href="khuyenmai.html">Khuyến Mãi</a>
+        <a href="datban.html">Đặt Bàn</a>
+        <a href="dangnhap.html">Đăng Nhập</a>
+        <a href="dangky.html">Đăng Ký</a>
+        <a href="canhan.html">Trang Cá Nhân</a>
+        <a href="doimatkhau.html">Đổi Mật Khẩu</a>
+      </div>
+
+      <p>© 2026 Nhóm 3</p>
+
+    </div>
+  </div>
+
+</body>
+
+</html>
