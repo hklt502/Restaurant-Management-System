@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đơn hàng - Restaurant Management System</title>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../../../public/asset/css/admin/orders.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- SIDEBAR (Đồng bộ với Overview) -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <i class="bx bx-restaurant"></i>
+            <span>Nhóm 3</span>
+        </div>
+
+        <nav class="sidebar__nav">
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">CHUNG</p>
+                <a href="overview.html" class="sidebar__link">
+                    <i class="bx bxs-dashboard"></i><span>Tổng quan</span>
+                </a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">VẬN HÀNH</p>
+                <a href="menu.html" class="sidebar__link">
+                    <i class="bx bx-book-open"></i><span>Quản lý Menu</span>
+                </a>
+                <a href="tables.html" class="sidebar__link">
+                    <i class="bx bx-table"></i><span>Quản lý bàn</span>
+                </a>
+                <a href="orders.html" class="sidebar__link active">
+                    <i class="bx bx-receipt"></i><span>Quản lý đơn hàng</span>
+                </a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">MARKETING & KHO</p>
+                <a href="vouchers.html" class="sidebar__link">
+                    <i class="bx bx-purchase-tag"></i><span>Voucher & Khuyến mãi</span>
+                </a>
+                <a href="warehouse.html" class="sidebar__link">
+                    <i class="bx bx-box"></i><span>Quản lý Kho</span>
+                </a>
+            </div>
+            <div class="sidebar__group">
+                <p class="sidebar__group-title">HỆ THỐNG</p>
+                <a href="users.html" class="sidebar__link">
+                    <i class="bx bx-user"></i><span>Người dùng</span>
+                </a>
+                <a href="statistics.html" class="sidebar__link">
+                    <i class="bx bx-line-chart"></i><span>Thống kê</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar__profile">
+            <div class="sidebar__profile-avatar">LT</div>
+            <div class="sidebar__profile-info">
+                <p class="sidebar__profile-name">Hồ Kim Lưu Thống</p>
+                <p class="sidebar__profile-role">Quản trị viên</p>
+            </div>
+            <button class="sidebar__profile-logout" type="button" title="Đăng xuất">
+                <i class="bx bx-log-out"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header__search">
+                <i class="bx bx-search"></i>
+                <input type="text" id="headerGlobalSearch" placeholder="Tìm kiếm đơn hàng, khách hàng, bàn..." />
+            </div>
+            <div class="header__right">
+                <!-- Đồng hồ thời gian thực -->
+                <div class="header__clock" id="liveClock">
+                    <i class="bx bx-time-five"></i>
+                    <span id="clockTime">00:00:00</span>
+                </div>
+                <!-- Chuông thông báo -->
+                <button class="header__notification" type="button" title="Thông báo đơn mới">
+                    <i class="bx bx-bell"></i>
+                    <span class="header__notification-dot"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN BODY -->
+        <main class="main">
+            <!-- PAGE TITLE BAR -->
+            <div class="page-title">
+                <div>
+                    <h1 class="page-title__heading">
+                        <i class="bx bx-receipt"></i> Quản lý đơn hàng
+                    </h1>
+                    <p class="page-title__desc">
+                        Theo dõi danh sách hóa đơn, gọi món tại bàn, mang về và trạng thái thanh toán thời gian thực.
+                    </p>
+                </div>
+                <div class="page-title__actions">
+                    <button class="btn btn--secondary" type="button" id="btnExportData">
+                        <i class="bx bx-export"></i> Xuất dữ liệu
+                    </button>
+                    <button class="btn btn--primary" type="button" id="btnOpenCreateOrder">
+                        <i class="bx bx-plus-circle"></i> Tạo đơn hàng mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- STAT CARDS (Theo phong cách overview) -->
+            <div class="stat-cards">
+                <!-- Doanh thu -->
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--primary">
+                            <i class="bx bx-wallet-alt"></i>
+                        </div>
+                        <span class="stat-card__badge stat-card__badge--up">+14.8%</span>
+                    </div>
+                    <p class="stat-card__label">Doanh thu hôm nay</p>
+                    <p class="stat-card__value" id="statTodayRevenue">18.450.000đ</p>
+                </div>
+
+                <!-- Tổng đơn hôm nay -->
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--blue">
+                            <i class="bx bx-receipt"></i>
+                        </div>
+                        <span class="stat-card__badge stat-card__badge--up">+6 đơn</span>
+                    </div>
+                    <p class="stat-card__label">Tổng đơn trong ngày</p>
+                    <p class="stat-card__value" id="statTotalOrders">48</p>
+                </div>
+
+                <!-- Đang phục vụ -->
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--orange">
+                            <i class="bx bx-dish"></i>
+                        </div>
+                        <span class="stat-card__badge stat-card__badge--neutral">Bàn bận</span>
+                    </div>
+                    <p class="stat-card__label">Đang phục vụ / Bếp</p>
+                    <p class="stat-card__value" id="statServingOrders">12</p>
+                </div>
+
+                <!-- Chờ thanh toán -->
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--orange">
+                            <i class="bx bx-time"></i>
+                        </div>
+                        <span class="stat-card__badge stat-card__badge--down">Cần thu</span>
+                    </div>
+                    <p class="stat-card__label">Chờ thanh toán</p>
+                    <p class="stat-card__value" id="statPendingPayOrders">4</p>
+                </div>
+
+                <!-- Đã hoàn thành -->
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <div class="stat-card__icon stat-card__icon--green">
+                            <i class="bx bx-check-circle"></i>
+                        </div>
+                        <span class="stat-card__badge stat-card__badge--up">Thành công</span>
+                    </div>
+                    <p class="stat-card__label">Đã thanh toán xong</p>
+                    <p class="stat-card__value" id="statCompletedOrders">30</p>
+                </div>
+            </div>
+
+            <!-- ORDERS DATA CARD -->
+            <div class="orders-card">
+                <!-- TABS LỌC TRẠNG THÁI -->
+                <div class="orders-tabs" id="orderStatusTabs">
+                    <div class="orders-tab active" data-status="all">
+                        <i class="bx bx-list-ul"></i> Tất cả đơn
+                        <span class="orders-tab__count" id="countAll">48</span>
+                    </div>
+                    <div class="orders-tab" data-status="cooking">
+                        <i class="bx bx-bowl-hot"></i> Đang chế biến
+                        <span class="orders-tab__count" id="countCooking">5</span>
+                    </div>
+                    <div class="orders-tab" data-status="serving">
+                        <i class="bx bx-restaurant"></i> Đang phục vụ
+                        <span class="orders-tab__count" id="countServing">7</span>
+                    </div>
+                    <div class="orders-tab" data-status="pending_pay">
+                        <i class="bx bx-time-five"></i> Chờ thanh toán
+                        <span class="orders-tab__count" id="countPendingPay">4</span>
+                    </div>
+                    <div class="orders-tab" data-status="paid">
+                        <i class="bx bx-check-double"></i> Đã thanh toán
+                        <span class="orders-tab__count" id="countPaid">30</span>
+                    </div>
+                    <div class="orders-tab" data-status="cancelled">
+                        <i class="bx bx-x-circle"></i> Đã hủy
+                        <span class="orders-tab__count" id="countCancelled">2</span>
+                    </div>
+                </div>
+
+                <!-- TOOLBAR TÌM KIẾM & BỘ LỌC -->
+                <div class="orders-toolbar">
+                    <div class="orders-toolbar__left">
+                        <!-- Ô tìm kiếm đơn -->
+                        <div class="toolbar-search">
+                            <i class="bx bx-search"></i>
+                            <input type="text" id="orderSearchInput" placeholder="Tìm mã đơn, tên khách, số bàn..." />
+                        </div>
+
+                        <!-- Lọc loại đơn -->
+                        <select class="toolbar-select" id="filterOrderType">
+                            <option value="all">Tất cả hình thức</option>
+                            <option value="dinein">Ăn tại bàn</option>
+                            <option value="takeaway">Mang về</option>
+                            <option value="delivery">Giao hàng tận nơi</option>
+                        </select>
+
+                        <!-- Lọc phương thức thanh toán -->
+                        <select class="toolbar-select" id="filterPayment">
+                            <option value="all">Tất cả thanh toán</option>
+                            <option value="cash">Tiền mặt</option>
+                            <option value="transfer">Chuyển khoản QR</option>
+                            <option value="card">Quẹt thẻ (POS)</option>
+                        </select>
+
+                        <!-- Lọc thời gian -->
+                        <select class="toolbar-select" id="filterDate">
+                            <option value="today">Hôm nay</option>
+                            <option value="yesterday">Hôm qua</option>
+                            <option value="week">7 ngày qua</option>
+                            <option value="month">Tháng này</option>
+                        </select>
+                    </div>
+
+                    <div class="orders-toolbar__right">
+                        <button class="btn btn--secondary btn--sm" id="btnRefreshList" type="button" title="Làm mới danh sách">
+                            <i class="bx bx-refresh"></i> Làm mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ORDERS TABLE -->
+                <div class="table-responsive">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; text-align: center;">
+                                    <input type="checkbox" id="checkAllOrders" />
+                                </th>
+                                <th>MÃ ĐƠN</th>
+                                <th>BÀN / HÌNH THỨC</th>
+                                <th>KHÁCH HÀNG</th>
+                                <th>MÓN ĂN GỌI</th>
+                                <th>TỔNG TIỀN</th>
+                                <th>THANH TOÁN</th>
+                                <th>TRẠNG THÁI</th>
+                                <th style="text-align: right;">THAO TÁC</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Dữ liệu render động từ JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TABLE FOOTER & PHÂN TRANG -->
+                <div class="table-footer">
+                    <div class="table-footer__info" id="tablePaginationInfo">
+                        Hiển thị 1 - 8 trong tổng số 48 đơn hàng
+                    </div>
+                    <div class="pagination">
+                        <button class="pagination__btn" id="prevPageBtn" disabled><i class="bx bx-chevron-left"></i></button>
+                        <button class="pagination__btn active">1</button>
+                        <button class="pagination__btn">2</button>
+                        <button class="pagination__btn">3</button>
+                        <button class="pagination__btn" id="nextPageBtn"><i class="bx bx-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 1: CHI TIẾT ĐƠN HÀNG & IN BILL
+         ========================================================================== -->
+    <div class="modal" id="orderDetailModal">
+        <div class="modal__box modal__box--lg">
+            <div class="modal__header">
+                <div class="modal__title">
+                    <i class="bx bx-receipt"></i>
+                    <span>Chi tiết đơn hàng <strong id="modalOrderCode">#DH-1025</strong></span>
+                </div>
+                <button class="modal__close" id="btnCloseDetailModal" type="button">
+                    <i class="bx bx-x"></i>
+                </button>
+            </div>
+
+            <div class="modal__body">
+                <!-- Thông tin tóm tắt -->
+                <div class="order-summary-grid">
+                    <div>
+                        <p class="summary-item__label">Bàn / Địa điểm</p>
+                        <p class="summary-item__value" id="detailModalTable">Bàn 04 (Tầng 1)</p>
+                    </div>
+                    <div>
+                        <p class="summary-item__label">Khách hàng</p>
+                        <p class="summary-item__value" id="detailModalCustomer">Nguyễn Hữu An (4 người)</p>
+                    </div>
+                    <div>
+                        <p class="summary-item__label">Thời gian vào</p>
+                        <p class="summary-item__value" id="detailModalTime">11:30 - 28/09/2026</p>
+                    </div>
+                    <div>
+                        <p class="summary-item__label">Trạng thái đơn</p>
+                        <div id="detailModalStatusBadge">
+                            <span class="badge badge--serving">Đang phục vụ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quy trình phục vụ (Timeline) -->
+                <div class="order-timeline" id="detailModalTimeline">
+                    <div class="timeline-step completed">
+                        <div class="timeline-step__icon"><i class="bx bx-check"></i></div>
+                        <span class="timeline-step__text">Tạo đơn</span>
+                        <span class="timeline-step__time">11:30</span>
+                    </div>
+                    <div class="timeline-step completed">
+                        <div class="timeline-step__icon"><i class="bx bx-check"></i></div>
+                        <span class="timeline-step__text">Bếp chế biến</span>
+                        <span class="timeline-step__time">11:35</span>
+                    </div>
+                    <div class="timeline-step active">
+                        <div class="timeline-step__icon"><i class="bx bx-restaurant"></i></div>
+                        <span class="timeline-step__text">Đang phục vụ</span>
+                        <span class="timeline-step__time">11:50</span>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-step__icon"><i class="bx bx-credit-card"></i></div>
+                        <span class="timeline-step__text">Thanh toán</span>
+                        <span class="timeline-step__time">Chờ</span>
+                    </div>
+                </div>
+
+                <!-- Danh sách món ăn trong đơn -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <h3 style="font-size: 0.95rem; font-weight: 700;">Danh sách món đã gọi</h3>
+                    <button class="btn btn--secondary btn--sm" id="btnQuickAddDish" type="button">
+                        <i class="bx bx-plus"></i> Gọi thêm món
+                    </button>
+                </div>
+
+                <table class="detail-dishes-table">
+                    <thead>
+                        <tr>
+                            <th>MÓN ĂN</th>
+                            <th style="text-align: center;">SL</th>
+                            <th style="text-align: right;">ĐƠN GIÁ</th>
+                            <th style="text-align: right;">THÀNH TIỀN</th>
+                            <th style="text-align: center;">BẾP / PHỤC VỤ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailModalDishesBody">
+                        <!-- Render các món ăn -->
+                    </tbody>
+                </table>
+
+                <!-- Tính toán hóa đơn -->
+                <div class="bill-calculation">
+                    <div class="bill-row">
+                        <span>Tạm tính tiền món:</span>
+                        <span id="detailSubtotal">1,250,000đ</span>
+                    </div>
+                    <div class="bill-row">
+                        <span>Voucher giảm giá (<span id="detailVoucherCode">KM10</span>):</span>
+                        <span style="color: var(--green);" id="detailDiscount">-125,000đ</span>
+                    </div>
+                    <div class="bill-row">
+                        <span>Thuế VAT (8%):</span>
+                        <span id="detailVat">90,000đ</span>
+                    </div>
+                    <div class="bill-row bill-row--total">
+                        <span>TỔNG CỘNG THANH TOÁN:</span>
+                        <span id="detailTotal">1,215,000đ</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal__footer">
+                <button class="btn btn--ghost" id="btnCloseDetailModal2" type="button">Đóng</button>
+                <button class="btn btn--secondary" id="btnPrintReceiptBtn" type="button">
+                    <i class="bx bx-printer"></i> In hóa đơn
+                </button>
+                <button class="btn btn--primary" id="btnPayOrderAction" type="button">
+                    <i class="bx bx-credit-card"></i> Thanh toán đơn này
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 2: TẠO ĐƠN HÀNG MỚI (MINI POS NHÀ HÀNG)
+         ========================================================================== -->
+    <div class="modal" id="newOrderModal">
+        <div class="modal__box modal__box--lg">
+            <div class="modal__header">
+                <div class="modal__title">
+                    <i class="bx bx-plus-circle"></i>
+                    <span>Tạo đơn hàng mới (POS Order)</span>
+                </div>
+                <button class="modal__close" id="btnCloseNewOrderModal" type="button">
+                    <i class="bx bx-x"></i>
+                </button>
+            </div>
+
+            <div class="modal__body">
+                <div class="pos-layout">
+                    <!-- Bên trái: Chọn món ăn -->
+                    <div class="pos-menu">
+                        <div class="form-group">
+                            <label>Tìm kiếm món ăn:</label>
+                            <input type="text" class="form-control" id="searchMenuInput" placeholder="Nhập tên món, mã món..." />
+                        </div>
+
+                        <!-- Danh mục món -->
+                        <div class="pos-categories" id="posCategoryTabs">
+                            <button type="button" class="pos-cat-btn active" data-cat="all">Tất cả</button>
+                            <button type="button" class="pos-cat-btn" data-cat="beef">Thịt bò & Lẩu</button>
+                            <button type="button" class="pos-cat-btn" data-cat="seafood">Hải sản</button>
+                            <button type="button" class="pos-cat-btn" data-cat="appetizer">Khai vị</button>
+                            <button type="button" class="pos-cat-btn" data-cat="drink">Đồ uống</button>
+                        </div>
+
+                        <!-- Lưới món ăn -->
+                        <div class="pos-dish-grid" id="posDishGrid">
+                            <!-- Render danh sách món -->
+                        </div>
+                    </div>
+
+                    <!-- Bên phải: Thông tin đơn & Món đã chọn -->
+                    <div class="pos-order-panel">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="form-group">
+                                <label>Hình thức gọi món <span>*</span></label>
+                                <select class="form-control" id="posOrderType">
+                                    <option value="dinein">Ăn tại bàn</option>
+                                    <option value="takeaway">Mang về</option>
+                                    <option value="delivery">Giao hàng</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="posTableSelectGroup">
+                                <label>Chọn bàn <span>*</span></label>
+                                <select class="form-control" id="posTableSelect">
+                                    <option value="Bàn 01">Bàn 01 (Tầng 1)</option>
+                                    <option value="Bàn 02">Bàn 02 (Tầng 1)</option>
+                                    <option value="Bàn 03">Bàn 03 (Tầng 1)</option>
+                                    <option value="Bàn 06">Bàn 06 (Tầng 2)</option>
+                                    <option value="Bàn 07">Bàn 07 (Tầng 2)</option>
+                                    <option value="VIP 01">Bàn VIP 01</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px;">
+                            <div class="form-group">
+                                <label>Tên khách hàng</label>
+                                <input type="text" class="form-control" id="posCustomerName" placeholder="Khách vãng lai..." value="Khách lẻ" />
+                            </div>
+                            <div class="form-group">
+                                <label>Số lượng khách</label>
+                                <input type="number" class="form-control" id="posCustomerGuests" value="2" min="1" />
+                            </div>
+                        </div>
+
+                        <!-- Danh sách món đã chọn -->
+                        <div class="form-group">
+                            <label>Món đã chọn (<span id="posSelectedCount">0</span>):</label>
+                            <div class="pos-selected-dishes" id="posSelectedDishes">
+                                <p style="font-size: 0.8rem; color: var(--text3); text-align: center; margin: auto;">
+                                    Chưa có món nào được chọn. Nhấp vào món bên trái để thêm!
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Voucher & Khuyến mãi -->
+                        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px;">
+                            <div class="form-group">
+                                <label>Voucher khuyến mãi</label>
+                                <select class="form-control" id="posVoucherSelect">
+                                    <option value="0">Không áp dụng</option>
+                                    <option value="10">GIAM10% - Giảm 10%</option>
+                                    <option value="20">VIP20% - Tri ân VIP 20%</option>
+                                    <option value="50000">TIENMAT50K - Giảm 50.000đ</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Phương thức TT</label>
+                                <select class="form-control" id="posPaymentMethod">
+                                    <option value="cash">Tiền mặt</option>
+                                    <option value="transfer">Chuyển khoản QR</option>
+                                    <option value="card">Thẻ ngân hàng</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Tóm tắt thanh toán -->
+                        <div class="bill-calculation" style="padding: 10px 14px; margin-top: 5px;">
+                            <div class="bill-row">
+                                <span>Tạm tính:</span>
+                                <span id="posSubtotal">0đ</span>
+                            </div>
+                            <div class="bill-row">
+                                <span>Giảm giá:</span>
+                                <span id="posDiscount" style="color: var(--green);">0đ</span>
+                            </div>
+                            <div class="bill-row bill-row--total" style="font-size: 1rem; margin-top: 0; padding-top: 6px;">
+                                <span>Tổng tiền:</span>
+                                <span id="posFinalTotal">0đ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal__footer">
+                <button class="btn btn--ghost" id="btnCancelNewOrder" type="button">Hủy bỏ</button>
+                <button class="btn btn--primary" id="btnSubmitNewOrder" type="button">
+                    <i class="bx bx-check"></i> Xác nhận & Gửi xuống bếp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 3: IN HÓA ĐƠN BÁN HÀNG (BILL PRINT PREVIEW)
+         ========================================================================== -->
+    <div class="modal" id="printModal">
+        <div class="modal__box modal__box--sm">
+            <div class="modal__header">
+                <div class="modal__title">
+                    <i class="bx bx-printer"></i>
+                    <span>Xem trước hóa đơn thanh toán</span>
+                </div>
+                <button class="modal__close" id="btnClosePrintModal" type="button">
+                    <i class="bx bx-x"></i>
+                </button>
+            </div>
+            <div class="modal__body" style="background: #e5e5e5; padding: 20px;">
+                <!-- Hóa đơn 80mm POS chuẩn -->
+                <div class="invoice-print" id="printInvoiceArea">
+                    <div class="invoice-print__header">
+                        <h2>NHÀ HÀNG NHÓM 3</h2>
+                        <p>Số 123 Đường Lẩu Nướng, Q. Ninh Kiều, TP. Cần Thơ</p>
+                        <p>Hotline đặt bàn: 0987.654.321</p>
+                        <p style="margin-top: 6px; font-weight: bold; font-size: 14px;">PHIẾU THANH TOÁN</p>
+                    </div>
+
+                    <div class="invoice-print__meta">
+                        <div>Mã hóa đơn: <strong id="printInvoiceCode">#DH-1025</strong></div>
+                        <div>Bàn: <strong id="printInvoiceTable">Bàn 04</strong> - Khách: <span id="printInvoiceCust">Nguyễn Hữu An</span></div>
+                        <div>Giờ vào: <span id="printInvoiceTimeIn">11:30 28/09/2026</span></div>
+                        <div>Thu ngân: <span>Hồ Kim Lưu Thống</span></div>
+                    </div>
+
+                    <table class="invoice-print__items">
+                        <thead>
+                            <tr>
+                                <th>Tên món</th>
+                                <th style="text-align: center;">SL</th>
+                                <th style="text-align: right;">Đ.Giá</th>
+                                <th style="text-align: right;">T.Tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="printInvoiceItemsBody">
+                            <!-- Items -->
+                        </tbody>
+                    </table>
+
+                    <div style="line-height: 1.6; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Tạm tính:</span>
+                            <span id="printInvoiceSubtotal">1,250,000đ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Giảm giá (Voucher):</span>
+                            <span id="printInvoiceDiscount">-125,000đ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>VAT (8%):</span>
+                            <span id="printInvoiceVat">90,000đ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; border-top: 1px dashed #000; padding-top: 4px; margin-top: 4px;">
+                            <span>TỔNG CỘNG:</span>
+                            <span id="printInvoiceTotal">1,215,000đ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Hình thức TT:</span>
+                            <span id="printInvoicePaymentMethod">Chuyển khoản QR</span>
+                        </div>
+                    </div>
+
+                    <div class="invoice-print__footer">
+                        <p style="font-weight: bold; margin-bottom: 4px;">CẢM ƠN QUÝ KHÁCH & HẸN GẶP LẠI!</p>
+                        <p>Wifi: NhaHangNhom3 - Pass: 88888888</p>
+                        <p style="font-size: 9px; margin-top: 4px;">In lúc: 28/09/2026 12:45</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--ghost" id="btnClosePrintModal2" type="button">Đóng</button>
+                <button class="btn btn--primary" id="btnExecutePrint" type="button">
+                    <i class="bx bx-printer"></i> Xác nhận In Bill
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 4: HỦY ĐƠN HÀNG (CANCEL CONFIRMATION)
+         ========================================================================== -->
+    <div class="modal" id="cancelOrderModal">
+        <div class="modal__box modal__box--sm">
+            <div class="modal__header">
+                <div class="modal__title" style="color: var(--red);">
+                    <i class="bx bx-error-circle"></i>
+                    <span>Xác nhận hủy đơn hàng</span>
+                </div>
+                <button class="modal__close" id="btnCloseCancelModal" type="button">
+                    <i class="bx bx-x"></i>
+                </button>
+            </div>
+            <div class="modal__body">
+                <p style="margin-bottom: 12px; font-size: 0.9rem;">
+                    Bạn có chắc chắn muốn hủy đơn hàng <strong id="cancelModalOrderCode">#DH-1025</strong> không?
+                </p>
+                <div class="form-group">
+                    <label>Lý do hủy đơn <span>*</span></label>
+                    <select class="form-control" id="cancelOrderReason">
+                        <option value="Khách đổi ý không dùng nữa">Khách đổi ý không dùng nữa</option>
+                        <option value="Hết nguyên liệu / Món ăn">Hết nguyên liệu / Món ăn</option>
+                        <option value="Khách đặt nhầm / Nhân viên nhập sai">Khách đặt nhầm / Nhân viên nhập sai</option>
+                        <option value="Sự cố bàn hoặc kỹ thuật">Sự cố bàn hoặc kỹ thuật</option>
+                        <option value="Lý do khác">Lý do khác</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--ghost" id="btnAbortCancel" type="button">Quay lại</button>
+                <button class="btn btn--danger" id="btnConfirmCancelOrder" type="button">
+                    <i class="bx bx-trash"></i> Xác nhận Hủy đơn
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ==========================================================================
+         JAVASCRIPT XỬ LÝ TOÀN BỘ CHỨC NĂNG QUẢN LÝ ĐƠN HÀNG
+         ========================================================================== -->
+    <script>
+        // ---------------------------------------------------------
+        // 1. DỮ LIỆU ĐƠN HÀNG MẪU ĐẦY ĐỦ (Mock Database)
+        // ---------------------------------------------------------
+        let ordersData = [
+            {
+                id: "DH-1028",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 04 (Tầng 1)",
+                tableShort: "Bàn 04",
+                customer: "Nguyễn Hữu An",
+                phone: "0901 234 567",
+                guests: 4,
+                time: "11:30 28/09/2026",
+                dishes: [
+                    { name: "Thịt bò Wagyu thượng hạng", qty: 2, price: 350000, note: "Cắt lát vừa ăn", status: "done" },
+                    { name: "Lẩu Tomyum Thái Lan", qty: 1, price: 290000, note: "Ít cay", status: "done" },
+                    { name: "Sủi cảo hải sản", qty: 1, price: 95000, note: "Hấp", status: "cooking" },
+                    { name: "Trà đào cam sả", qty: 4, price: 40000, note: "Ít ngọt, ít đá", status: "done" }
+                ],
+                subtotal: 1245000,
+                voucherCode: "GIAM10%",
+                discount: 124500,
+                vat: 89640,
+                total: 1210140,
+                payment: "transfer",
+                paymentName: "Chuyển khoản VietQR",
+                status: "serving",
+                statusName: "Đang phục vụ",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1027",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 05 (Tầng 1)",
+                tableShort: "Bàn 05",
+                customer: "Lê Thị Hương Giang",
+                phone: "0912 888 999",
+                guests: 2,
+                time: "11:45 28/09/2026",
+                dishes: [
+                    { name: "Bò Mỹ cuộn nấm kim châm", qty: 2, price: 160000, note: "", status: "cooking" },
+                    { name: "Lẩu nấm dưỡng sinh", qty: 1, price: 250000, note: "Thanh đạm", status: "cooking" },
+                    { name: "Nước khoáng đóng chai", qty: 2, price: 20000, note: "Không lạnh", status: "done" }
+                ],
+                subtotal: 610000,
+                voucherCode: "",
+                discount: 0,
+                vat: 48800,
+                total: 658800,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "cooking",
+                statusName: "Đang chế biến",
+                server: "Trần Hoàng Nam"
+            },
+            {
+                id: "DH-1026",
+                type: "takeaway",
+                typeName: "Mang về",
+                table: "Quầy Takeaway",
+                tableShort: "Mang về",
+                customer: "Trần Đình Trọng",
+                phone: "0987 111 222",
+                guests: 1,
+                time: "12:00 28/09/2026",
+                dishes: [
+                    { name: "Cơm chiên hải sản Hoàng Kim", qty: 1, price: 120000, note: "Đóng hộp giữ nhiệt", status: "done" },
+                    { name: "Gà rán sốt cay Hàn Quốc", qty: 1, price: 140000, note: "Để sốt riêng", status: "done" },
+                    { name: "Trà tắc mật ong", qty: 1, price: 35000, note: "", status: "done" }
+                ],
+                subtotal: 295000,
+                voucherCode: "",
+                discount: 0,
+                vat: 23600,
+                total: 318600,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "pending_pay",
+                statusName: "Chờ thanh toán",
+                server: "Nguyễn Mạnh Tiến"
+            },
+            {
+                id: "DH-1025",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn VIP 01",
+                tableShort: "VIP 01",
+                customer: "Phạm Minh Tuấn",
+                phone: "0933 654 321",
+                guests: 6,
+                time: "10:15 28/09/2026",
+                dishes: [
+                    { name: "Thịt bò Wagyu thượng hạng", qty: 3, price: 350000, note: "", status: "done" },
+                    { name: "Combo Hải sản King Crab & Tôm hùm", qty: 1, price: 1850000, note: "Nướng bơ tỏi", status: "done" },
+                    { name: "Rượu vang đỏ Chile", qty: 1, price: 850000, note: "", status: "done" }
+                ],
+                subtotal: 3750000,
+                voucherCode: "VIP20%",
+                discount: 750000,
+                vat: 240000,
+                total: 3240000,
+                payment: "card",
+                paymentName: "Thẻ VISA / Mastercard",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1024",
+                type: "delivery",
+                typeName: "Giao hàng",
+                table: "GrabFood / ShopeeFood",
+                tableShort: "Giao hàng",
+                customer: "Hoàng Thảo My",
+                phone: "0944 555 666",
+                guests: 1,
+                time: "10:45 28/09/2026",
+                dishes: [
+                    { name: "Mì xào hải sản Singapore", qty: 2, price: 110000, note: "Cay vừa", status: "done" },
+                    { name: "Salad cá hồi sốt mè rang", qty: 1, price: 135000, note: "", status: "done" }
+                ],
+                subtotal: 355000,
+                voucherCode: "TIENMAT50K",
+                discount: 50000,
+                vat: 24400,
+                total: 329400,
+                payment: "transfer",
+                paymentName: "Chuyển khoản QR",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1023",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 02 (Tầng 1)",
+                tableShort: "Bàn 02",
+                customer: "Đỗ Gia Huy",
+                phone: "0977 444 333",
+                guests: 3,
+                time: "11:10 28/09/2026",
+                dishes: [
+                    { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "Cay cấp 3", status: "done" },
+                    { name: "Ba chỉ bò cuộn nấm", qty: 2, price: 140000, note: "", status: "done" },
+                    { name: "Bia tươi Sài Gòn Special", qty: 6, price: 25000, note: "Uớp lạnh", status: "done" }
+                ],
+                subtotal: 750000,
+                voucherCode: "",
+                discount: 0,
+                vat: 60000,
+                total: 810000,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "serving",
+                statusName: "Đang phục vụ",
+                server: "Trần Hoàng Nam"
+            },
+            {
+                id: "DH-1022",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 08 (Tầng 2)",
+                tableShort: "Bàn 08",
+                customer: "Khách lẻ đặt bàn",
+                phone: "0909 123 456",
+                guests: 2,
+                time: "09:30 28/09/2026",
+                dishes: [
+                    { name: "Bò Wagyu thượng hạng", qty: 1, price: 350000, note: "", status: "cancelled" }
+                ],
+                subtotal: 350000,
+                voucherCode: "",
+                discount: 0,
+                vat: 0,
+                total: 350000,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "cancelled",
+                statusName: "Đã hủy",
+                server: "Nguyễn Mạnh Tiến"
+            },
+            {
+                id: "DH-1021",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 03 (Tầng 1)",
+                tableShort: "Bàn 03",
+                customer: "Vũ Bảo Ngọc",
+                phone: "0938 777 888",
+                guests: 4,
+                time: "09:00 28/09/2026",
+                dishes: [
+                    { name: "Lẩu Kim Chi Hải Sản", qty: 1, price: 310000, note: "", status: "done" },
+                    { name: "Bò Mỹ cao cấp", qty: 2, price: 180000, note: "", status: "done" },
+                    { name: "Rau nấm tổng hợp", qty: 1, price: 75000, note: "", status: "done" }
+                ],
+                subtotal: 745000,
+                voucherCode: "",
+                discount: 0,
+                vat: 59600,
+                total: 804600,
+                payment: "transfer",
+                paymentName: "Chuyển khoản QR",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            }
+        ];
+
+        // ---------------------------------------------------------
+        // 2. MENU MẪU DÀNH CHO MODAL TẠO ĐƠN HÀNG (Mini POS)
+        // ---------------------------------------------------------
+        const menuDishes = [
+            { id: 1, name: "Thịt bò Wagyu thượng hạng", cat: "beef", price: 350000, unit: "Dĩa" },
+            { id: 2, name: "Ba chỉ bò Mỹ cuộn nấm", cat: "beef", price: 160000, unit: "Dĩa" },
+            { id: 3, name: "Lẩu Tomyum Thái Lan", cat: "beef", price: 290000, unit: "Nồi" },
+            { id: 4, name: "Lẩu Tứ Xuyên siêu cay", cat: "beef", price: 320000, unit: "Nồi" },
+            { id: 5, name: "Lẩu nấm dưỡng sinh", cat: "beef", price: 250000, unit: "Nồi" },
+            { id: 6, name: "Combo Hải sản King Crab & Tôm hùm", cat: "seafood", price: 1850000, unit: "Set" },
+            { id: 7, name: "Sủi cảo tôm thịt hoàng gia", cat: "seafood", price: 95000, unit: "Phần" },
+            { id: 8, name: "Mực một nắng nướng sa tế", cat: "seafood", price: 180000, unit: "Dĩa" },
+            { id: 9, name: "Salad cá hồi sốt mè rang", cat: "appetizer", price: 135000, unit: "Phần" },
+            { id: 10, name: "Cơm chiên hải sản Hoàng Kim", cat: "appetizer", price: 120000, unit: "Dĩa" },
+            { id: 11, name: "Trà đào cam sả thanh mát", cat: "drink", price: 40000, unit: "Ly" },
+            { id: 12, name: "Bia tươi Sài Gòn Special", cat: "drink", price: 25000, unit: "Lon" },
+            { id: 13, name: "Rượu vang đỏ Chile", cat: "drink", price: 850000, unit: "Chai" },
+            { id: 14, name: "Nước khoáng đóng chai", cat: "drink", price: 20000, unit: "Chai" }
+        ];
+
+        let selectedPosCart = [];
+        let currentViewingOrderId = null;
+
+        // ---------------------------------------------------------
+        // 3. TIỆN ÍCH FORMAT TIỀN & THÔNG BÁO
+        // ---------------------------------------------------------
+        function formatVND(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', 'đ');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast--${type}`;
+            let icon = 'bx-check-circle';
+            if (type === 'danger') icon = 'bx-x-circle';
+            if (type === 'info') icon = 'bx-info-circle';
+
+            toast.innerHTML = `<i class="bx ${icon}" style="font-size: 1.3rem;"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 50);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Đồng hồ thời gian thực
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const clockEl = document.getElementById('clockTime');
+            if (clockEl) clockEl.textContent = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ---------------------------------------------------------
+        // 4. CẬP NHẬT CÁC THẺ THỐNG KÊ (STAT CARDS)
+        // ---------------------------------------------------------
+        function updateStatCards() {
+            let totalRevenue = 0;
+            let totalOrders = ordersData.length;
+            let countServing = 0;
+            let countCooking = 0;
+            let countPendingPay = 0;
+            let countPaid = 0;
+            let countCancelled = 0;
+
+            ordersData.forEach(order => {
+                if (order.status === 'paid') {
+                    totalRevenue += order.total;
+                    countPaid++;
+                } else if (order.status === 'serving') {
+                    countServing++;
+                } else if (order.status === 'cooking') {
+                    countCooking++;
+                } else if (order.status === 'pending_pay') {
+                    countPendingPay++;
+                } else if (order.status === 'cancelled') {
+                    countCancelled++;
+                }
+            });
+
+            document.getElementById('statTodayRevenue').textContent = formatVND(totalRevenue);
+            document.getElementById('statTotalOrders').textContent = totalOrders;
+            document.getElementById('statServingOrders').textContent = countServing + countCooking;
+            document.getElementById('statPendingPayOrders').textContent = countPendingPay;
+            document.getElementById('statCompletedOrders').textContent = countPaid;
+
+            // Cập nhật số đếm trên các Tabs
+            document.getElementById('countAll').textContent = totalOrders;
+            document.getElementById('countCooking').textContent = countCooking;
+            document.getElementById('countServing').textContent = countServing;
+            document.getElementById('countPendingPay').textContent = countPendingPay;
+            document.getElementById('countPaid').textContent = countPaid;
+            document.getElementById('countCancelled').textContent = countCancelled;
+        }
+
+        // ---------------------------------------------------------
+        // 5. RENDER BẢNG ĐƠN HÀNG (Orders Table)
+        // ---------------------------------------------------------
+        let currentStatusFilter = 'all';
+
+        function renderOrdersTable() {
+            const tbody = document.getElementById('ordersTableBody');
+            const searchKeyword = document.getElementById('orderSearchInput').value.toLowerCase().trim();
+            const typeFilter = document.getElementById('filterOrderType').value;
+            const paymentFilter = document.getElementById('filterPayment').value;
+
+            tbody.innerHTML = '';
+
+            const filteredOrders = ordersData.filter(order => {
+                // Tab trạng thái
+                if (currentStatusFilter !== 'all' && order.status !== currentStatusFilter) {
+                    return false;
+                }
+                // Loại đơn
+                if (typeFilter !== 'all' && order.type !== typeFilter) {
+                    return false;
+                }
+                // Phương thức thanh toán
+                if (paymentFilter !== 'all' && order.payment !== paymentFilter) {
+                    return false;
+                }
+                // Từ khóa tìm kiếm
+                if (searchKeyword) {
+                    const matchId = order.id.toLowerCase().includes(searchKeyword);
+                    const matchCust = order.customer.toLowerCase().includes(searchKeyword);
+                    const matchPhone = order.phone.includes(searchKeyword);
+                    const matchTable = order.table.toLowerCase().includes(searchKeyword);
+                    if (!matchId && !matchCust && !matchPhone && !matchTable) return false;
+                }
+                return true;
+            });
+
+            if (filteredOrders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px; color: var(--text3);">
+                            <i class="bx bx-receipt" style="font-size: 3rem; display: block; margin-bottom: 10px; color: var(--border);"></i>
+                            Không tìm thấy đơn hàng nào phù hợp với điều kiện lọc!
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('tablePaginationInfo').textContent = 'Hiển thị 0 đơn hàng';
+                return;
+            }
+
+            document.getElementById('tablePaginationInfo').textContent = `Hiển thị 1 - ${filteredOrders.length} trong tổng số ${ordersData.length} đơn hàng`;
+
+            filteredOrders.forEach(order => {
+                const tr = document.createElement('tr');
+
+                // Badge hình thức
+                let typeBadgeClass = 'target-badge--dinein';
+                let typeIcon = 'bx-restaurant';
+                if (order.type === 'takeaway') {
+                    typeBadgeClass = 'target-badge--takeaway';
+                    typeIcon = 'bx-package';
+                } else if (order.type === 'delivery') {
+                    typeBadgeClass = 'target-badge--delivery';
+                    typeIcon = 'bx-cycling';
+                }
+
+                // Badge trạng thái
+                let statusBadgeClass = 'badge--serving';
+                if (order.status === 'cooking') statusBadgeClass = 'badge--cooking';
+                if (order.status === 'pending_pay') statusBadgeClass = 'badge--pending-pay';
+                if (order.status === 'paid') statusBadgeClass = 'badge--paid';
+                if (order.status === 'cancelled') statusBadgeClass = 'badge--cancelled';
+
+                // Tóm tắt món ăn
+                let dishSummary = order.dishes.map(d => `${d.name} (x${d.qty})`).join(', ');
+                if (dishSummary.length > 35) dishSummary = dishSummary.substring(0, 35) + '...';
+
+                tr.innerHTML = `
+                    <td style="text-align: center;" onclick="event.stopPropagation();">
+                        <input type="checkbox" class="order-item-cb" value="${order.id}">
+                    </td>
+                    <td>
+                        <div class="order-code">
+                            <span class="order-code__id">${order.id}</span>
+                            <span class="order-code__time"><i class="bx bx-time"></i> ${order.time.split(' ')[0]}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="order-target">
+                            <span class="target-badge ${typeBadgeClass}">
+                                <i class="bx ${typeIcon}"></i> ${order.tableShort}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="customer-info">
+                            <span class="customer-info__name">${order.customer}</span>
+                            <span class="customer-info__sub"><i class="bx bx-phone"></i> ${order.phone}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="order-items-summary" title="${order.dishes.map(d => `${d.name} x${d.qty}`).join('\n')}">
+                            <div class="order-items-summary__title">${dishSummary}</div>
+                            <div class="order-items-summary__count">${order.dishes.length} món đã gọi</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="order-amount">
+                            <span class="order-amount__total">${formatVND(order.total)}</span>
+                            <span class="order-amount__payment">
+                                <i class="bx bx-credit-card-front"></i> ${order.paymentName}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge ${statusBadgeClass}">${order.statusName}</span>
+                    </td>
+                    <td style="text-align: right;" onclick="event.stopPropagation();">
+                        <div class="action-btns" style="justify-content: flex-end;">
+                            <button class="action-btn" title="Xem chi tiết đơn" onclick="openOrderDetail('${order.id}')">
+                                <i class="bx bx-show"></i>
+                            </button>
+                            <button class="action-btn action-btn--print" title="In hóa đơn" onclick="openPrintInvoice('${order.id}')">
+                                <i class="bx bx-printer"></i>
+                            </button>
+                            ${order.status !== 'paid' && order.status !== 'cancelled' ? `
+                                <button class="action-btn action-btn--pay" title="Thanh toán ngay" onclick="quickPayOrder('${order.id}')">
+                                    <i class="bx bx-check"></i>
+                                </button>
+                            ` : ''}
+                            ${order.status !== 'cancelled' && order.status !== 'paid' ? `
+                                <button class="action-btn action-btn--cancel" title="Hủy đơn" onclick="openCancelModal('${order.id}')">
+                                    <i class="bx bx-x"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+
+                // Bấm vào dòng để xem chi tiết
+                tr.addEventListener('click', () => openOrderDetail(order.id));
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ---------------------------------------------------------
+        // 6. XỬ LÝ MODAL CHI TIẾT ĐƠN HÀNG (Order Detail)
+        // ---------------------------------------------------------
+        function openOrderDetail(orderId) {
+            const order = ordersData.find(o => o.id === orderId);
+            if (!order) return;
+            currentViewingOrderId = orderId;
+
+            document.getElementById('modalOrderCode').textContent = order.id;
+            document.getElementById('detailModalTable').textContent = `${order.table} (${order.typeName})`;
+            document.getElementById('detailModalCustomer').textContent = `${order.customer} (${order.guests} khách)`;
+            document.getElementById('detailModalTime').textContent = order.time;
+
+            // Badge trạng thái
+            let statusBadgeClass = 'badge--serving';
+            if (order.status === 'cooking') statusBadgeClass = 'badge--cooking';
+            if (order.status === 'pending_pay') statusBadgeClass = 'badge--pending-pay';
+            if (order.status === 'paid') statusBadgeClass = 'badge--paid';
+            if (order.status === 'cancelled') statusBadgeClass = 'badge--cancelled';
+
+            document.getElementById('detailModalStatusBadge').innerHTML = `
+                <span class="badge ${statusBadgeClass}">${order.statusName}</span>
+            `;
+
+            // Render Timeline
+            const timelineEl = document.getElementById('detailModalTimeline');
+            if (order.status === 'paid') {
+                timelineEl.innerHTML = `
+                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Tạo đơn</span><span class="timeline-step__time">Xong</span></div>
+                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Chế biến</span><span class="timeline-step__time">Xong</span></div>
+                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Phục vụ</span><span class="timeline-step__time">Xong</span></div>
+                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check-double"></i></div><span class="timeline-step__text">Đã thanh toán</span><span class="timeline-step__time">Hoàn tất</span></div>
+                `;
+            } else if (order.status === 'cancelled') {
+                timelineEl.innerHTML = `
+                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Tạo đơn</span></div>
+                    <div class="timeline-step" style="color: var(--red);"><div class="timeline-step__icon" style="background: var(--red-bg); border-color: var(--red); color: var(--red);"><i class="bx bx-x"></i></div><span class="timeline-step__text" style="color: var(--red);">Đã hủy đơn</span></div>
+                `;
+            } else {
+                timelineEl.innerHTML = `
+                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Tạo đơn</span><span class="timeline-step__time">11:30</span></div>
+                    <div class="timeline-step ${order.status === 'cooking' ? 'active' : 'completed'}"><div class="timeline-step__icon"><i class="bx bx-bowl-hot"></i></div><span class="timeline-step__text">Bếp chế biến</span></div>
+                    <div class="timeline-step ${order.status === 'serving' ? 'active' : ''}"><div class="timeline-step__icon"><i class="bx bx-restaurant"></i></div><span class="timeline-step__text">Đang phục vụ</span></div>
+                    <div class="timeline-step ${order.status === 'pending_pay' ? 'active' : ''}"><div class="timeline-step__icon"><i class="bx bx-credit-card"></i></div><span class="timeline-step__text">Thanh toán</span></div>
+                `;
+            }
+
+            // Render danh sách món
+            const dishesTbody = document.getElementById('detailModalDishesBody');
+            dishesTbody.innerHTML = '';
+            order.dishes.forEach((dish, idx) => {
+                const tr = document.createElement('tr');
+                let statusText = '<span style="color: var(--green); font-size: 0.8rem; font-weight: 600;"><i class="bx bx-check"></i> Đã lên món</span>';
+                if (dish.status === 'cooking') {
+                    statusText = '<span style="color: var(--orange); font-size: 0.8rem; font-weight: 600;"><i class="bx bx-loader-alt bx-spin"></i> Đang nấu</span>';
+                }
+                tr.innerHTML = `
+                    <td>
+                        <div class="dish-cell">
+                            <div class="dish-cell__img"><i class="bx bx-dish"></i></div>
+                            <div>
+                                <p class="dish-cell__name">${dish.name}</p>
+                                ${dish.note ? `<p class="dish-cell__note"><i class="bx bx-note"></i> ${dish.note}</p>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align: center; font-weight: 700;">x${dish.qty}</td>
+                    <td style="text-align: right;">${formatVND(dish.price)}</td>
+                    <td style="text-align: right; font-weight: 700; color: var(--primary-500);">${formatVND(dish.price * dish.qty)}</td>
+                    <td style="text-align: center;">${statusText}</td>
+                `;
+                dishesTbody.appendChild(tr);
+            });
+
+            // Tiền nong
+            document.getElementById('detailSubtotal').textContent = formatVND(order.subtotal);
+            document.getElementById('detailVoucherCode').textContent = order.voucherCode || 'Không có';
+            document.getElementById('detailDiscount').textContent = order.discount > 0 ? `-${formatVND(order.discount)}` : '0đ';
+            document.getElementById('detailVat').textContent = formatVND(order.vat);
+            document.getElementById('detailTotal').textContent = formatVND(order.total);
+
+            // Nút thanh toán trong modal
+            const payBtn = document.getElementById('btnPayOrderAction');
+            if (order.status === 'paid' || order.status === 'cancelled') {
+                payBtn.style.display = 'none';
+            } else {
+                payBtn.style.display = 'inline-flex';
+            }
+
+            document.getElementById('orderDetailModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('orderDetailModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('btnCloseDetailModal').addEventListener('click', closeDetailModal);
+        document.getElementById('btnCloseDetailModal2').addEventListener('click', closeDetailModal);
+        document.getElementById('orderDetailModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('orderDetailModal')) closeDetailModal();
+        });
+
+        // ---------------------------------------------------------
+        // 7. XỬ LÝ MODAL TẠO ĐƠN HÀNG MỚI (Mini POS)
+        // ---------------------------------------------------------
+        const newOrderModal = document.getElementById('newOrderModal');
+        const btnOpenCreateOrder = document.getElementById('btnOpenCreateOrder');
+        const btnCloseNewOrderModal = document.getElementById('btnCloseNewOrderModal');
+        const btnCancelNewOrder = document.getElementById('btnCancelNewOrder');
+
+        function openNewOrderModal() {
+            selectedPosCart = [];
+            renderPosDishes('all');
+            renderPosCart();
+            newOrderModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNewOrderModal() {
+            newOrderModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        btnOpenCreateOrder.addEventListener('click', openNewOrderModal);
+        btnCloseNewOrderModal.addEventListener('click', closeNewOrderModal);
+        btnCancelNewOrder.addEventListener('click', closeNewOrderModal);
+        newOrderModal.addEventListener('click', (e) => {
+            if (e.target === newOrderModal) closeNewOrderModal();
+        });
+
+        // Render món trong POS
+        function renderPosDishes(category = 'all', searchKeyword = '') {
+            const grid = document.getElementById('posDishGrid');
+            grid.innerHTML = '';
+
+            const list = menuDishes.filter(item => {
+                if (category !== 'all' && item.cat !== category) return false;
+                if (searchKeyword && !item.name.toLowerCase().includes(searchKeyword.toLowerCase())) return false;
+                return true;
+            });
+
+            list.forEach(dish => {
+                const card = document.createElement('div');
+                card.className = 'pos-dish-card';
+                card.innerHTML = `
+                    <div>
+                        <p class="pos-dish-card__title">${dish.name}</p>
+                        <span style="font-size: 0.73rem; color: var(--text3);">${dish.unit}</span>
+                    </div>
+                    <div class="pos-dish-card__bottom">
+                        <span class="pos-dish-card__price">${formatVND(dish.price)}</span>
+                        <div class="pos-dish-card__add"><i class="bx bx-plus"></i></div>
+                    </div>
+                `;
+                card.addEventListener('click', () => addDishToPosCart(dish));
+                grid.appendChild(card);
+            });
+        }
+
+        // Lọc theo tabs category
+        const catButtons = document.querySelectorAll('#posCategoryTabs .pos-cat-btn');
+        catButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                catButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderPosDishes(this.dataset.cat, document.getElementById('searchMenuInput').value);
+            });
+        });
+
+        // Tìm kiếm món trong POS
+        document.getElementById('searchMenuInput').addEventListener('input', function () {
+            const activeCat = document.querySelector('#posCategoryTabs .pos-cat-btn.active').dataset.cat;
+            renderPosDishes(activeCat, this.value);
+        });
+
+        // Thêm món vào giỏ POS
+        function addDishToPosCart(dish) {
+            const found = selectedPosCart.find(item => item.id === dish.id);
+            if (found) {
+                found.qty += 1;
+            } else {
+                selectedPosCart.push({
+                    id: dish.id,
+                    name: dish.name,
+                    price: dish.price,
+                    qty: 1,
+                    note: ""
+                });
+            }
+            renderPosCart();
+        }
+
+        // Tăng giảm số lượng giỏ POS
+        function updatePosCartQty(dishId, delta) {
+            const found = selectedPosCart.find(item => item.id === dishId);
+            if (!found) return;
+            found.qty += delta;
+            if (found.qty <= 0) {
+                selectedPosCart = selectedPosCart.filter(item => item.id !== dishId);
+            }
+            renderPosCart();
+        }
+
+        // Render giỏ POS & Tính tiền tự động
+        function renderPosCart() {
+            const container = document.getElementById('posSelectedDishes');
+            document.getElementById('posSelectedCount').textContent = selectedPosCart.reduce((sum, i) => sum + i.qty, 0);
+
+            if (selectedPosCart.length === 0) {
+                container.innerHTML = `
+                    <p style="font-size: 0.8rem; color: var(--text3); text-align: center; margin: auto;">
+                        Chưa có món nào được chọn. Nhấp vào món bên trái để thêm!
+                    </p>
+                `;
+                document.getElementById('posSubtotal').textContent = '0đ';
+                document.getElementById('posDiscount').textContent = '0đ';
+                document.getElementById('posFinalTotal').textContent = '0đ';
+                return;
+            }
+
+            container.innerHTML = '';
+            let subtotal = 0;
+
+            selectedPosCart.forEach(item => {
+                subtotal += item.price * item.qty;
+                const row = document.createElement('div');
+                row.className = 'pos-selected-item';
+                row.innerHTML = `
+                    <div>
+                        <p style="font-weight: 600;">${item.name}</p>
+                        <span style="color: var(--primary-400);">${formatVND(item.price)}</span>
+                    </div>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn" onclick="updatePosCartQty(${item.id}, -1)">-</button>
+                        <span style="font-weight: 700; min-width: 16px; text-align: center;">${item.qty}</span>
+                        <button type="button" class="qty-btn" onclick="updatePosCartQty(${item.id}, 1)">+</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            // Tính voucher
+            const voucherVal = document.getElementById('posVoucherSelect').value;
+            let discount = 0;
+            if (voucherVal === '10') discount = subtotal * 0.1;
+            else if (voucherVal === '20') discount = subtotal * 0.2;
+            else if (voucherVal === '50000') discount = 50000;
+
+            if (discount > subtotal) discount = subtotal;
+
+            const finalTotal = subtotal - discount;
+
+            document.getElementById('posSubtotal').textContent = formatVND(subtotal);
+            document.getElementById('posDiscount').textContent = discount > 0 ? `-${formatVND(discount)}` : '0đ';
+            document.getElementById('posFinalTotal').textContent = formatVND(finalTotal);
+        }
+
+        document.getElementById('posVoucherSelect').addEventListener('change', renderPosCart);
+
+        // Đổi loại đơn (Tại bàn / Mang về / Giao hàng) trong POS
+        document.getElementById('posOrderType').addEventListener('change', function () {
+            const tableGroup = document.getElementById('posTableSelectGroup');
+            if (this.value === 'takeaway') {
+                tableGroup.style.display = 'none';
+            } else if (this.value === 'delivery') {
+                tableGroup.style.display = 'none';
+            } else {
+                tableGroup.style.display = 'flex';
+            }
+        });
+
+        // Bấm Tạo đơn hàng mới
+        document.getElementById('btnSubmitNewOrder').addEventListener('click', function () {
+            if (selectedPosCart.length === 0) {
+                showToast('Vui lòng chọn ít nhất 1 món ăn cho đơn hàng!', 'danger');
+                return;
+            }
+
+            const orderType = document.getElementById('posOrderType').value;
+            let tableVal = document.getElementById('posTableSelect').value;
+            let tableShortVal = tableVal;
+            let typeName = "Ăn tại bàn";
+
+            if (orderType === 'takeaway') {
+                tableVal = "Quầy Takeaway";
+                tableShortVal = "Mang về";
+                typeName = "Mang về";
+            } else if (orderType === 'delivery') {
+                tableVal = "Đơn Online Delivery";
+                tableShortVal = "Giao hàng";
+                typeName = "Giao hàng";
+            }
+
+            const custName = document.getElementById('posCustomerName').value.trim() || 'Khách lẻ';
+            const guests = parseInt(document.getElementById('posCustomerGuests').value) || 2;
+            const paymentMethod = document.getElementById('posPaymentMethod').value;
+            let paymentName = "Tiền mặt";
+            if (paymentMethod === 'transfer') paymentName = "Chuyển khoản VietQR";
+            if (paymentMethod === 'card') paymentName = "Thẻ ngân hàng";
+
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} 28/09/2026`;
+
+            let subtotal = selectedPosCart.reduce((s, i) => s + (i.price * i.qty), 0);
+            const voucherVal = document.getElementById('posVoucherSelect').value;
+            let discount = 0;
+            let voucherCode = "";
+            if (voucherVal === '10') { discount = subtotal * 0.1; voucherCode = "GIAM10%"; }
+            else if (voucherVal === '20') { discount = subtotal * 0.2; voucherCode = "VIP20%"; }
+            else if (voucherVal === '50000') { discount = 50000; voucherCode = "TIENMAT50K"; }
+
+            if (discount > subtotal) discount = subtotal;
+            const vat = Math.round((subtotal - discount) * 0.08);
+            const total = subtotal - discount + vat;
+
+            const newId = "DH-" + (1028 + ordersData.length + 1);
+
+            const newOrderObj = {
+                id: newId,
+                type: orderType,
+                typeName: typeName,
+                table: tableVal,
+                tableShort: tableShortVal,
+                customer: custName,
+                phone: "09" + Math.floor(10000000 + Math.random() * 90000000),
+                guests: guests,
+                time: timeStr,
+                dishes: selectedPosCart.map(i => ({
+                    name: i.name,
+                    qty: i.qty,
+                    price: i.price,
+                    note: i.note || "",
+                    status: "cooking"
+                })),
+                subtotal: subtotal,
+                voucherCode: voucherCode,
+                discount: discount,
+                vat: vat,
+                total: total,
+                payment: paymentMethod,
+                paymentName: paymentName,
+                status: "cooking",
+                statusName: "Đang chế biến",
+                server: "Hồ Kim Lưu Thống"
+            };
+
+            ordersData.unshift(newOrderObj);
+            updateStatCards();
+            renderOrdersTable();
+            closeNewOrderModal();
+            showToast(`Đã tạo thành công đơn hàng ${newId} và gửi thông báo xuống bếp!`, 'success');
+        });
+
+        // ---------------------------------------------------------
+        // 8. XỬ LÝ THANH TOÁN ĐƠN HÀNG (Payment Execution)
+        // ---------------------------------------------------------
+        function quickPayOrder(orderId) {
+            const order = ordersData.find(o => o.id === orderId);
+            if (!order) return;
+            order.status = 'paid';
+            order.statusName = 'Đã thanh toán';
+            updateStatCards();
+            renderOrdersTable();
+            showToast(`Đơn hàng ${order.id} đã thanh toán thành công số tiền ${formatVND(order.total)}!`, 'success');
+        }
+
+        document.getElementById('btnPayOrderAction').addEventListener('click', function () {
+            if (currentViewingOrderId) {
+                quickPayOrder(currentViewingOrderId);
+                closeDetailModal();
+            }
+        });
+
+        // ---------------------------------------------------------
+        // 9. XỬ LÝ MODAL IN HÓA ĐƠN (Print Invoice)
+        // ---------------------------------------------------------
+        const printModal = document.getElementById('printModal');
+
+        function openPrintInvoice(orderId) {
+            const order = ordersData.find(o => o.id === orderId);
+            if (!order) return;
+
+            document.getElementById('printInvoiceCode').textContent = order.id;
+            document.getElementById('printInvoiceTable').textContent = order.tableShort;
+            document.getElementById('printInvoiceCust').textContent = order.customer;
+            document.getElementById('printInvoiceTimeIn').textContent = order.time;
+            document.getElementById('printInvoiceSubtotal').textContent = formatVND(order.subtotal);
+            document.getElementById('printInvoiceDiscount').textContent = order.discount > 0 ? `-${formatVND(order.discount)}` : '0đ';
+            document.getElementById('printInvoiceVat').textContent = formatVND(order.vat);
+            document.getElementById('printInvoiceTotal').textContent = formatVND(order.total);
+            document.getElementById('printInvoicePaymentMethod').textContent = order.paymentName;
+
+            const tbody = document.getElementById('printInvoiceItemsBody');
+            tbody.innerHTML = '';
+            order.dishes.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${d.name}</td>
+                    <td style="text-align: center;">${d.qty}</td>
+                    <td style="text-align: right;">${formatVND(d.price)}</td>
+                    <td style="text-align: right;">${formatVND(d.price * d.qty)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            printModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePrintModal() {
+            printModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('btnClosePrintModal').addEventListener('click', closePrintModal);
+        document.getElementById('btnClosePrintModal2').addEventListener('click', closePrintModal);
+        printModal.addEventListener('click', (e) => {
+            if (e.target === printModal) closePrintModal();
+        });
+
+        document.getElementById('btnPrintReceiptBtn').addEventListener('click', function () {
+            if (currentViewingOrderId) {
+                closeDetailModal();
+                openPrintInvoice(currentViewingOrderId);
+            }
+        });
+
+        document.getElementById('btnExecutePrint').addEventListener('click', function () {
+            window.print();
+            showToast('Lệnh in hóa đơn đã được gửi tới máy in nhiệt!', 'info');
+            closePrintModal();
+        });
+
+        // ---------------------------------------------------------
+        // 10. XỬ LÝ HỦY ĐƠN HÀNG (Cancel Order)
+        // ---------------------------------------------------------
+        let cancelOrderIdTarget = null;
+        const cancelModal = document.getElementById('cancelOrderModal');
+
+        function openCancelModal(orderId) {
+            cancelOrderIdTarget = orderId;
+            document.getElementById('cancelModalOrderCode').textContent = orderId;
+            cancelModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCancelModal() {
+            cancelModal.classList.remove('active');
+            document.body.style.overflow = '';
+            cancelOrderIdTarget = null;
+        }
+
+        document.getElementById('btnCloseCancelModal').addEventListener('click', closeCancelModal);
+        document.getElementById('btnAbortCancel').addEventListener('click', closeCancelModal);
+        cancelModal.addEventListener('click', (e) => {
+            if (e.target === cancelModal) closeCancelModal();
+        });
+
+        document.getElementById('btnConfirmCancelOrder').addEventListener('click', function () {
+            if (!cancelOrderIdTarget) return;
+            const order = ordersData.find(o => o.id === cancelOrderIdTarget);
+            if (order) {
+                order.status = 'cancelled';
+                order.statusName = 'Đã hủy';
+                const reason = document.getElementById('cancelOrderReason').value;
+                updateStatCards();
+                renderOrdersTable();
+                showToast(`Đã hủy đơn ${order.id} (Lý do: ${reason})`, 'danger');
+            }
+            closeCancelModal();
+        });
+
+        // ---------------------------------------------------------
+        // 11. XỬ LÝ GỌI THÊM MÓN TRONG MODAL CHI TIẾT
+        // ---------------------------------------------------------
+        document.getElementById('btnQuickAddDish').addEventListener('click', function () {
+            if (!currentViewingOrderId) return;
+            const order = ordersData.find(o => o.id === currentViewingOrderId);
+            if (!order) return;
+
+            const randomDish = menuDishes[Math.floor(Math.random() * menuDishes.length)];
+            order.dishes.push({
+                name: randomDish.name,
+                qty: 1,
+                price: randomDish.price,
+                note: "Gọi thêm lúc khách đang dùng",
+                status: "cooking"
+            });
+
+            // Tái tính toán
+            order.subtotal = order.dishes.reduce((s, i) => s + (i.price * i.qty), 0);
+            if (order.voucherCode === 'GIAM10%') order.discount = order.subtotal * 0.1;
+            order.vat = Math.round((order.subtotal - order.discount) * 0.08);
+            order.total = order.subtotal - order.discount + order.vat;
+
+            openOrderDetail(order.id);
+            updateStatCards();
+            renderOrdersTable();
+            showToast(`Đã thêm món "${randomDish.name}" vào đơn ${order.id}!`, 'info');
+        });
+
+        // ---------------------------------------------------------
+        // 12. SỰ KIỆN TÌM KIẾM, TAB TRẠNG THÁI & BỘ LỌC
+        // ---------------------------------------------------------
+        const tabItems = document.querySelectorAll('#orderStatusTabs .orders-tab');
+        tabItems.forEach(tab => {
+            tab.addEventListener('click', function () {
+                tabItems.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentStatusFilter = this.dataset.status;
+                renderOrdersTable();
+            });
+        });
+
+        document.getElementById('orderSearchInput').addEventListener('input', renderOrdersTable);
+        document.getElementById('headerGlobalSearch').addEventListener('input', function () {
+            document.getElementById('orderSearchInput').value = this.value;
+            renderOrdersTable();
+        });
+        document.getElementById('filterOrderType').addEventListener('change', renderOrdersTable);
+        document.getElementById('filterPayment').addEventListener('change', renderOrdersTable);
+        document.getElementById('btnRefreshList').addEventListener('click', function () {
+            document.getElementById('orderSearchInput').value = '';
+            document.getElementById('headerGlobalSearch').value = '';
+            document.getElementById('filterOrderType').value = 'all';
+            document.getElementById('filterPayment').value = 'all';
+            currentStatusFilter = 'all';
+            tabItems.forEach(t => t.classList.remove('active'));
+            tabItems[0].classList.add('active');
+            renderOrdersTable();
+            showToast('Đã làm mới danh sách đơn hàng!', 'info');
+        });
+
+        // Check All
+        document.getElementById('checkAllOrders').addEventListener('change', function () {
+            const cbs = document.querySelectorAll('.order-item-cb');
+            cbs.forEach(cb => cb.checked = this.checked);
+        });
+
+        // Xuất dữ liệu Excel / CSV
+        document.getElementById('btnExportData').addEventListener('click', function () {
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "Mã đơn,Bàn/Hình thức,Khách hàng,Số điện thoại,Tổng tiền,Thanh toán,Trạng thái,Thời gian\n";
+
+            ordersData.forEach(o => {
+                csvContent += `"${o.id}","${o.tableShort}","${o.customer}","${o.phone}","${o.total}","${o.paymentName}","${o.statusName}","${o.time}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Danh_sach_don_hang_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showToast('Đã xuất file dữ liệu đơn hàng thành công!', 'success');
+        });
+
+        // Khởi động render ban đầu
+        updateStatCards();
+        renderOrdersTable();
+    </script>
+</body>
+
+</html>
