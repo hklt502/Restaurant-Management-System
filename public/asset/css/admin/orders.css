@@ -149,9 +149,8 @@ table {
 }
 
 .sidebar__link.active {
-    background: var(--primary-50);
-    color: var(--primary-400);
-    font-weight: 600;
+    background: var(--primary-400);
+    color: var(--white);
 }
 
 .sidebar__profile {
