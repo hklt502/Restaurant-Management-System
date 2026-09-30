@@ -1,8 +1,3 @@
-/* ==========================================================================
-   ORDERS MANAGEMENT CSS - RESTAURANT MANAGEMENT SYSTEM
-   Dựa trên phong cách giao diện overview.css
-   ========================================================================== */
-
 :root {
     --primary-50: #fff7f3;
     --primary-100: #ffe5df;
@@ -10,35 +5,22 @@
     --primary-300: #fe7465;
     --primary-400: #bb463c;
     --primary-500: #a21a16;
-    --white: #ffffff;
+    --white: #fff;
     --bg: #f5f5f5;
     --border: #e8e8e8;
-    --border-light: #f0f0f0;
     --text: #1a1a2e;
     --text2: #6b7280;
     --text3: #9ca3af;
     --green: #22c55e;
     --green-bg: #f0fdf4;
-    --green-dark: #15803d;
     --red: #ef4444;
     --red-bg: #fef2f2;
-    --red-dark: #b91c1c;
     --orange: #f59e0b;
     --orange-bg: #fffbeb;
-    --orange-dark: #b45309;
-    --blue: #3b82f6;
-    --blue-bg: #eff6ff;
-    --blue-dark: #1d4ed8;
-    --purple: #8b5cf6;
-    --purple-bg: #f5f3ff;
     --sidebar-w: 240px;
     --header-h: 64px;
     --r-sm: 8px;
     --r-md: 12px;
-    --r-lg: 16px;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 *,
@@ -145,6 +127,10 @@ table {
 .sidebar__link.active {
     background: var(--primary-400);
     color: var(--white);
+}
+
+.sidebar__link i {
+    font-size: 1.3rem;
 }
 
 .sidebar__profile {
