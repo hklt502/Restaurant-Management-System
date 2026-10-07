@@ -519,9 +519,18 @@ table {
 .bestseller-item__img {
     width: 48px;
     height: 48px;
+    min-width: 48px;
     border-radius: var(--r-sm);
     background: var(--primary-100);
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+.bestseller-item__img img {
+    display: block;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
 }
 
 .bestseller-item__info {

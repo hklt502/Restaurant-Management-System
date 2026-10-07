@@ -516,10 +516,12 @@ table {
     background-color: var(--primary-400);
 }
 
+.CRUD #title p {
+    margin-top: 15px;
+}
+
 .CRUD p {
     margin-left: 20px;
-    margin-top: 15px;
-    margin-bottom: 10px;
     font-family: inherit;
 }
 
@@ -535,7 +537,8 @@ table {
 /* Input và Select */
 .CRUD input[type="text"],
 .CRUD input[type="number"],
-.CRUD select {
+.CRUD select,
+.CRUD input[type="file"] {
     width: 90%;
     padding: 9px 14px;
     border: 1px solid var(--border);
