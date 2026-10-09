@@ -73,6 +73,11 @@
                     <p class="page-header__subtitle">Quản lý danh sách các món ăn, trạng thái món và giá cả thực đơn.
                     </p>
                 </div>
+                <div class="page-header__action">
+                    <button class="btn" id="btnAddCategory" type="button">
+                        <i class="bx bx-plus-circle"></i> Tạo danh mục mới
+                    </button>
+                </div>
             </div>
 
             <!-- Quick Filter Bar -->
@@ -109,11 +114,11 @@
                             <td>
                                 <div class="dish-info">
                                     <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
-                                    <p class="dish-info__code">001</p>
+                                    <p class="dish-info__code">Mã: 001</p>
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge--category">Thịt bò</span>
+                                <span class="badge badge--category">Thịt</span>
                             </td>
                             <td>
                                 <span class="active-text">Đang bán</span>
@@ -135,11 +140,11 @@
                             <td>
                                 <div class="dish-info">
                                     <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
-                                    <p class="dish-info__code">Mã: 001</p>
+                                    <p class="dish-info__code">Mã: 002</p>
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge--category">Thịt bò</span>
+                                <span class="badge badge--category">Thịt</span>
                             </td>
                             <td>
                                 <span class="active-text">Đang bán</span>
@@ -161,11 +166,11 @@
                             <td>
                                 <div class="dish-info">
                                     <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
-                                    <p class="dish-info__code">Mã: 001</p>
+                                    <p class="dish-info__code">Mã: 003</p>
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge--category">Thịt bò</span>
+                                <span class="badge badge--category">Thịt</span>
                             </td>
                             <td>
                                 <span class="inactive-text">Ngưng bán</span>
@@ -187,11 +192,11 @@
                             <td>
                                 <div class="dish-info">
                                     <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
-                                    <p class="dish-info__code">Mã: 001</p>
+                                    <p class="dish-info__code">Mã: 004</p>
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge--category">Thịt bò</span>
+                                <span class="badge badge--category">Thịt</span>
                             </td>
                             <td>
                                 <span class="active-text">Đang bán</span>
@@ -214,11 +219,11 @@
                             <td>
                                 <div class="dish-info">
                                     <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
-                                    <p class="dish-info__code">Mã: 001</p>
+                                    <p class="dish-info__code">Mã: 005</p>
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge--category">Thịt bò</span>
+                                <span class="badge badge--category">Thịt</span>
                             </td>
                             <td>
                                 <span class="active-text">Đang bán</span>
@@ -240,11 +245,11 @@
                             <td>
                                 <div class="dish-info">
                                     <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
-                                    <p class="dish-info__code">Mã: 001</p>
+                                    <p class="dish-info__code">Mã: 006</p>
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge--category">Thịt bò</span>
+                                <span class="badge badge--category">Thịt</span>
                             </td>
                             <td>
                                 <span class="inactive-text">Ngưng bán</span>
@@ -266,11 +271,11 @@
                             <td>
                                 <div class="dish-info">
                                     <p class="dish-info__name">Thịt bò Wagyu thượng hạng</p>
-                                    <p class="dish-info__code">Mã: 001</p>
+                                    <p class="dish-info__code">Mã: 007</p>
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge--category">Thịt bò</span>
+                                <span class="badge badge--category">Thịt</span>
                             </td>
                             <td>
                                 <span class="active-text">Đang bán</span>
@@ -324,6 +329,77 @@
             </div>
         </main>
     </div>
+
+    <!-- MODAL: TẠO DANH MỤC MỚI -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <div class="modal__header">
+                <h2 class="modal__title">Tạo danh mục mới</h2>
+                <button class="modal__close" id="btnCloseCategoryModal" type="button"><i class="bx bx-x"></i></button>
+            </div>
+            <div class="modal__body">
+                <form class="modal-form" id="categoryForm">
+                    <div class="modal-form__group">
+                        <label class="modal-form__label">Mã danh mục <span>*</span></label>
+                        <div class="modal-form__input-wrapper">
+                            <i class="bx bx-barcode"></i>
+                            <input type="text" class="modal-form__input" placeholder="VD: CAT_01" required>
+                        </div>
+                    </div>
+                    <div class="modal-form__group">
+                        <label class="modal-form__label">Tên danh mục <span>*</span></label>
+                        <div class="modal-form__input-wrapper">
+                            <i class="bx bx-text"></i>
+                            <input type="text" class="modal-form__input" placeholder="VD: Khai vị, Đồ uống..." required>
+                        </div>
+                    </div>
+                    <div class="modal-form__group">
+                        <label class="modal-form__label">Mô tả</label>
+                        <div class="modal-form__input-wrapper">
+                            <i class="bx bx-detail"></i>
+                            <input type="text" class="modal-form__input" placeholder="Mô tả ngắn về danh mục">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--ghost" id="btnCancelCategory" type="button">Hủy bỏ</button>
+                <button class="btn" type="button" style="background: var(--red-bg); color: var(--red);">
+                    <i class="bx bx-trash"></i> Xoá
+                </button>
+                <button class="btn" type="button" style="background: var(--orange-bg); color: var(--orange);">
+                    <i class="bx bx-edit"></i> Cập nhật
+                </button>
+                <button class="btn btn--primary" type="button" style="background: linear-gradient(135deg, var(--primary-400), var(--primary-500)); color: var(--white);">
+                    <i class="bx bx-save"></i> Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal Logic
+        const categoryModal = document.getElementById('categoryModal');
+        const btnAddCategory = document.getElementById('btnAddCategory');
+        const btnCloseCategoryModal = document.getElementById('btnCloseCategoryModal');
+        const btnCancelCategory = document.getElementById('btnCancelCategory');
+
+        function openCategoryModal() { 
+            categoryModal.classList.add('active'); 
+            document.body.style.overflow = 'hidden'; 
+        }
+        function closeCategoryModal() { 
+            categoryModal.classList.remove('active'); 
+            document.body.style.overflow = ''; 
+        }
+
+        btnAddCategory.addEventListener('click', openCategoryModal);
+        btnCloseCategoryModal.addEventListener('click', closeCategoryModal);
+        btnCancelCategory.addEventListener('click', closeCategoryModal);
+        categoryModal.addEventListener('click', (e) => { 
+            if (e.target === categoryModal) closeCategoryModal(); 
+        });
+    </script>
 </body>
 
 </html>
