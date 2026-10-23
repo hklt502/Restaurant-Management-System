@@ -1,70 +1,11 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Voucher & Khuyến mãi</title>
-    <link rel="stylesheet" href="../../../public/asset/css/admin/vouchers.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-</head>
-
-<body>
-
-    <aside class="sidebar">
-        <div class="sidebar__logo">
-            <i class="bx bx-restaurant"></i>
-            <span>Nhóm 3</span>
-        </div>
-
-        <nav class="sidebar__nav">
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">CHUNG</p>
-                <a href="overview.html" class="sidebar__link"><i class="bx bxs-dashboard"></i><span>Tổng quan</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">VẬN HÀNH</p>
-                <a href="menu.html" class="sidebar__link"><i class="bx bx-book-open"></i><span>Quản lý Menu</span></a>
-                <a href="tables.html" class="sidebar__link"><i class="bx bx-table"></i><span>Quản lý bàn</span></a>
-                <a href="orders.html" class="sidebar__link"><i class="bx bx-receipt"></i><span>Quản lý đơn
-                        hàng</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">MARKETING & KHO</p>
-                <a href="vouchers.html" class="sidebar__link active"><i class="bx bx-purchase-tag"></i><span>Voucher &
-                        Khuyến mãi</span></a>
-                <a href="warehouse.html" class="sidebar__link"><i class="bx bx-box"></i><span>Quản lý Kho</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">HỆ THỐNG</p>
-                <a href="users.html" class="sidebar__link"><i class="bx bx-user"></i><span>Người dùng</span></a>
-                <a href="statistics.html" class="sidebar__link"><i class="bx bx-line-chart"></i><span>Thống
-                        kê</span></a>
-            </div>
-        </nav>
-
-        <div class="sidebar__profile">
-            <div class="sidebar__profile-avatar"></div>
-            <div class="sidebar__profile-info">
-                <p class="sidebar__profile-name">Trần Hoàng Nam</p>
-                <p class="sidebar__profile-role">Quản trị viên</p>
-            </div>
-            <button class="sidebar__profile-logout" type="button"><i class="bx bx-log-out"></i></button>
-        </div>
-    </aside>
-
-    <div class="main-wrapper">
-
-        <header class="header">
-            <div class="header__search">
-                <i class="bx bx-search"></i>
-                <input type="text" placeholder="Tìm kiếm đơn hàng, khách hàng, bàn...">
-            </div>
-            <button class="header__notification" type="button"><i class="bx bx-bell"></i></button>
-        </header>
-
-        <main class="main">
+<?php
+$pageTitle = 'Quản lý Voucher & Khuyến mãi - Restaurant Management System';
+$pageCss = '../../../public/asset/css/admin/vouchers.css';
+$activePage = 'vouchers';
+include_once __DIR__ . '/../layouts/admin_head.php';
+include_once __DIR__ . '/../layouts/admin_sidebar.php';
+include_once __DIR__ . '/../layouts/admin_header.php';
+?>
 
             <!-- PAGE TITLE -->
             <div class="page-title">
@@ -352,177 +293,165 @@
                 </div>
             </div>
 
-        </main>
-    </div>
+            <!-- MODAL: THÊM / SỬA VOUCHER -->
+            <div class="modal-overlay" id="voucherModal">
+                <div class="modal">
+                    <div class="modal__header">
+                        <h2 class="modal__title">Tạo Voucher Mới</h2>
+                        <button class="modal__close" id="btnCloseModal" type="button"><i class="bx bx-x"></i></button>
+                    </div>
+                    <div class="modal__body">
+                        <form class="modal-form" id="voucherForm">
+                            <!-- General Info -->
+                            <h3 class="modal-form__section-title">Thông tin cơ bản</h3>
+                            <div class="modal-form__row">
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label">Mã Voucher (Code) <span>*</span></label>
+                                    <div class="modal-form__input-wrapper">
+                                        <i class="bx bx-barcode-reader"></i>
+                                        <input type="text" class="modal-form__input" placeholder="VD: TET2026, SUMMER..."
+                                            style="text-transform: uppercase" required>
+                                    </div>
+                                </div>
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label">Tên chương trình</label>
+                                    <div class="modal-form__input-wrapper">
+                                        <i class="bx bx-text"></i>
+                                        <input type="text" class="modal-form__input" placeholder="VD: Khuyến mãi Tết">
+                                    </div>
+                                </div>
+                            </div>
 
-    <!-- MODAL: THÊM / SỬA VOUCHER -->
-    <div class="modal-overlay" id="voucherModal">
-        <div class="modal">
-            <div class="modal__header">
-                <h2 class="modal__title">Tạo Voucher Mới</h2>
-                <button class="modal__close" id="btnCloseModal" type="button"><i class="bx bx-x"></i></button>
+                            <!-- Discount Type -->
+                            <h3 class="modal-form__section-title">Thiết lập giảm giá</h3>
+                            <div class="modal-form__row">
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label">Loại giảm giá <span>*</span></label>
+                                    <div class="modal-form__input-wrapper">
+                                        <i class="bx bx-purchase-tag-alt"></i>
+                                        <select class="modal-form__input" id="discountType" required>
+                                            <option value="percent">Giảm theo %</option>
+                                            <option value="fixed">Giảm tiền mặt</option>
+                                            <option value="gift">Tặng món</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-form__group" id="discountValueGroup">
+                                    <label class="modal-form__label" id="discountLabel">Mức giảm (%) <span>*</span></label>
+                                    <div class="modal-form__input-wrapper">
+                                        <i class="bx bx-dollar-circle"></i>
+                                        <input type="number" class="modal-form__input" placeholder="VD: 20" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-form__row">
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label">Đơn tối thiểu (VNĐ)</label>
+                                    <div class="modal-form__input-wrapper">
+                                        <i class="bx bx-up-arrow-circle"></i>
+                                        <input type="number" class="modal-form__input" placeholder="0 = Không yêu cầu">
+                                    </div>
+                                </div>
+                                <div class="modal-form__group" id="maxDiscountGroup">
+                                    <label class="modal-form__label">Giảm tối đa (VNĐ)</label>
+                                    <div class="modal-form__input-wrapper">
+                                        <i class="bx bx-down-arrow-circle"></i>
+                                        <input type="number" class="modal-form__input" placeholder="0 = Không giới hạn">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Condition -->
+                            <h3 class="modal-form__section-title">Thời gian & Giới hạn</h3>
+                            <div class="modal-form__row">
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label">Từ ngày</label>
+                                    <div class="modal-form__input-wrapper">
+                                        <i class="bx bx-calendar"></i>
+                                        <input type="date" class="modal-form__input">
+                                    </div>
+                                </div>
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label">Đến ngày</label>
+                                    <div class="modal-form__input-wrapper">
+                                        <i class="bx bx-calendar-event"></i>
+                                        <input type="date" class="modal-form__input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-form__group">
+                                <label class="modal-form__label">Số lượng giới hạn</label>
+                                <div class="modal-form__input-wrapper">
+                                    <i class="bx bx-group"></i>
+                                    <input type="number" class="modal-form__input" placeholder="Để trống nếu không giới hạn">
+                                </div>
+                            </div>
+
+                            <div class="modal-form__group">
+                                <label class="modal-form__label">Trạng thái</label>
+                                <div class="toggle-group">
+                                    <label class="toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle__slider"></span>
+                                    </label>
+                                    <span class="toggle-group__text">Kích hoạt Voucher ngay</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal__footer">
+                        <button class="btn btn--ghost" id="btnCancel" type="button">Hủy bỏ</button>
+                        <button class="btn btn--primary" type="submit" form="voucherForm">
+                            <i class="bx bx-save"></i> Lưu Voucher
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="modal__body">
-                <form class="modal-form" id="voucherForm">
-                    <!-- General Info -->
-                    <h3 class="modal-form__section-title">Thông tin cơ bản</h3>
-                    <div class="modal-form__row">
-                        <div class="modal-form__group">
-                            <label class="modal-form__label">Mã Voucher (Code) <span>*</span></label>
-                            <div class="modal-form__input-wrapper">
-                                <i class="bx bx-barcode-reader"></i>
-                                <input type="text" class="modal-form__input" placeholder="VD: TET2026, SUMMER..."
-                                    style="text-transform: uppercase" required>
-                            </div>
-                        </div>
-                        <div class="modal-form__group">
-                            <label class="modal-form__label">Tên chương trình</label>
-                            <div class="modal-form__input-wrapper">
-                                <i class="bx bx-text"></i>
-                                <input type="text" class="modal-form__input" placeholder="VD: Khuyến mãi Tết">
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Discount Type -->
-                    <h3 class="modal-form__section-title">Thiết lập giảm giá</h3>
-                    <div class="modal-form__row">
-                        <div class="modal-form__group">
-                            <label class="modal-form__label">Loại giảm giá <span>*</span></label>
-                            <div class="modal-form__input-wrapper">
-                                <i class="bx bx-purchase-tag-alt"></i>
-                                <select class="modal-form__input" id="discountType" required>
-                                    <option value="percent">Giảm theo %</option>
-                                    <option value="fixed">Giảm tiền mặt</option>
-                                    <option value="gift">Tặng món</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-form__group" id="discountValueGroup">
-                            <label class="modal-form__label" id="discountLabel">Mức giảm (%) <span>*</span></label>
-                            <div class="modal-form__input-wrapper">
-                                <i class="bx bx-dollar-circle"></i>
-                                <input type="number" class="modal-form__input" placeholder="VD: 20" required>
-                            </div>
-                        </div>
-                    </div>
+            <script>
+                // Modal Logic
+                const modal = document.getElementById('voucherModal');
+                const btnAdd = document.getElementById('btnAddVoucher');
+                const btnClose = document.getElementById('btnCloseModal');
+                const btnCancel = document.getElementById('btnCancel');
 
-                    <div class="modal-form__row">
-                        <div class="modal-form__group">
-                            <label class="modal-form__label">Đơn tối thiểu (VNĐ)</label>
-                            <div class="modal-form__input-wrapper">
-                                <i class="bx bx-up-arrow-circle"></i>
-                                <input type="number" class="modal-form__input" placeholder="0 = Không yêu cầu">
-                            </div>
-                        </div>
-                        <div class="modal-form__group" id="maxDiscountGroup">
-                            <label class="modal-form__label">Giảm tối đa (VNĐ)</label>
-                            <div class="modal-form__input-wrapper">
-                                <i class="bx bx-down-arrow-circle"></i>
-                                <input type="number" class="modal-form__input" placeholder="0 = Không giới hạn">
-                            </div>
-                        </div>
-                    </div>
+                function openModal() { modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+                function closeModal() { modal.classList.remove('active'); document.body.style.overflow = ''; }
 
-                    <!-- Condition -->
-                    <h3 class="modal-form__section-title">Thời gian & Giới hạn</h3>
-                    <div class="modal-form__row">
-                        <div class="modal-form__group">
-                            <label class="modal-form__label">Từ ngày</label>
-                            <div class="modal-form__input-wrapper">
-                                <i class="bx bx-calendar"></i>
-                                <input type="date" class="modal-form__input">
-                            </div>
-                        </div>
-                        <div class="modal-form__group">
-                            <label class="modal-form__label">Đến ngày</label>
-                            <div class="modal-form__input-wrapper">
-                                <i class="bx bx-calendar-event"></i>
-                                <input type="date" class="modal-form__input">
-                            </div>
-                        </div>
-                    </div>
+                btnAdd.addEventListener('click', openModal);
+                btnClose.addEventListener('click', closeModal);
+                btnCancel.addEventListener('click', closeModal);
+                modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-                    <div class="modal-form__group">
-                        <label class="modal-form__label">Số lượng giới hạn</label>
-                        <div class="modal-form__input-wrapper">
-                            <i class="bx bx-group"></i>
-                            <input type="number" class="modal-form__input" placeholder="Để trống nếu không giới hạn">
-                        </div>
-                    </div>
+                // Check all
+                const checkAll = document.getElementById('checkAll');
+                const rowChecks = document.querySelectorAll('.vouchers-table tbody input[type="checkbox"]');
+                checkAll.addEventListener('change', () => {
+                    rowChecks.forEach(cb => cb.checked = checkAll.checked);
+                });
 
-                    <div class="modal-form__group">
-                        <label class="modal-form__label">Trạng thái</label>
-                        <div class="toggle-group">
-                            <label class="toggle">
-                                <input type="checkbox" checked>
-                                <span class="toggle__slider"></span>
-                            </label>
-                            <span class="toggle-group__text">Kích hoạt Voucher ngay</span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal__footer">
-                <button class="btn btn--ghost" id="btnCancel" type="button">Hủy bỏ</button>
-                <button class="btn btn--primary" type="submit" form="voucherForm">
-                    <i class="bx bx-save"></i> Lưu Voucher
-                </button>
-            </div>
-        </div>
-    </div>
+                // Dynamic Form Fields based on Discount Type
+                const discountType = document.getElementById('discountType');
+                const discountLabel = document.getElementById('discountLabel');
+                const maxDiscountGroup = document.getElementById('maxDiscountGroup');
 
-    <script>
-        // Clock
-        function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clockTime').textContent = `${h}:${m}:${s}`;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+                discountType.addEventListener('change', function () {
+                    if (this.value === 'percent') {
+                        discountLabel.innerHTML = 'Mức giảm (%) <span>*</span>';
+                        maxDiscountGroup.style.display = 'block';
+                    } else if (this.value === 'fixed') {
+                        discountLabel.innerHTML = 'Số tiền giảm (VNĐ) <span>*</span>';
+                        maxDiscountGroup.style.display = 'none';
+                    } else {
+                        discountLabel.innerHTML = 'Tên món tặng <span>*</span>';
+                        maxDiscountGroup.style.display = 'none';
+                    }
+                });
+            </script>
 
-        // Modal Logic
-        const modal = document.getElementById('voucherModal');
-        const btnAdd = document.getElementById('btnAddVoucher');
-        const btnClose = document.getElementById('btnCloseModal');
-        const btnCancel = document.getElementById('btnCancel');
+<?php
+include_once __DIR__ . '/../layouts/admin_footer.php';
+?>
 
-        function openModal() { modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
-        function closeModal() { modal.classList.remove('active'); document.body.style.overflow = ''; }
-
-        btnAdd.addEventListener('click', openModal);
-        btnClose.addEventListener('click', closeModal);
-        btnCancel.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-        // Check all
-        const checkAll = document.getElementById('checkAll');
-        const rowChecks = document.querySelectorAll('.vouchers-table tbody input[type="checkbox"]');
-        checkAll.addEventListener('change', () => {
-            rowChecks.forEach(cb => cb.checked = checkAll.checked);
-        });
-
-        // Dynamic Form Fields based on Discount Type
-        const discountType = document.getElementById('discountType');
-        const discountLabel = document.getElementById('discountLabel');
-        const maxDiscountGroup = document.getElementById('maxDiscountGroup');
-
-        discountType.addEventListener('change', function () {
-            if (this.value === 'percent') {
-                discountLabel.innerHTML = 'Mức giảm (%) <span>*</span>';
-                maxDiscountGroup.style.display = 'block';
-            } else if (this.value === 'fixed') {
-                discountLabel.innerHTML = 'Số tiền giảm (VNĐ) <span>*</span>';
-                maxDiscountGroup.style.display = 'none';
-            } else {
-                discountLabel.innerHTML = 'Tên món tặng <span>*</span>';
-                maxDiscountGroup.style.display = 'none';
-            }
-        });
-    </script>
-</body>
-
-</html>

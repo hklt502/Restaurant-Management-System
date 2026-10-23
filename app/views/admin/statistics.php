@@ -1,74 +1,13 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thống kê & Báo cáo</title>
-    <link rel="stylesheet" href="../../../public/asset/css/admin/statistics.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <!-- Thêm thư viện Chart.js để vẽ biểu đồ -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
-<body>
-
-    <aside class="sidebar">
-        <div class="sidebar__logo">
-            <i class="bx bx-restaurant"></i>
-            <span>Nhóm 3</span>
-        </div>
-
-        <nav class="sidebar__nav">
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">CHUNG</p>
-                <a href="overview.html" class="sidebar__link"><i class="bx bxs-dashboard"></i><span>Tổng quan</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">VẬN HÀNH</p>
-                <a href="menu.html" class="sidebar__link"><i class="bx bx-book-open"></i><span>Quản lý Menu</span></a>
-                <a href="tables.html" class="sidebar__link"><i class="bx bx-table"></i><span>Quản lý bàn</span></a>
-                <a href="orders.html" class="sidebar__link"><i class="bx bx-receipt"></i><span>Quản lý đơn
-                        hàng</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">MARKETING & KHO</p>
-                <a href="vouchers.html" class="sidebar__link"><i class="bx bx-purchase-tag"></i><span>Voucher & Khuyến
-                        mãi</span></a>
-                <a href="warehouse.html" class="sidebar__link"><i class="bx bx-box"></i><span>Quản lý Kho</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">HỆ THỐNG</p>
-                <a href="users.html" class="sidebar__link"><i class="bx bx-user"></i><span>Người dùng</span></a>
-                <a href="statistics.html" class="sidebar__link active"><i class="bx bx-line-chart"></i><span>Thống
-                        kê</span></a>
-            </div>
-        </nav>
-
-        <div class="sidebar__profile">
-            <div class="sidebar__profile-avatar"></div>
-            <div class="sidebar__profile-info">
-                <p class="sidebar__profile-name">Nguyễn Mạnh Tiến</p>
-                <p class="sidebar__profile-role">Quản trị viên</p>
-            </div>
-            <button class="sidebar__profile-logout" type="button"><i class="bx bx-log-out"></i></button>
-        </div>
-    </aside>
-
-    <div class="main-wrapper">
-
-        <header class="header">
-            <div class="header__search">
-                <i class="bx bx-search"></i>
-                <input type="text" placeholder="Tìm kiếm đơn hàng, khách hàng, bàn...">
-            </div>
-            <button class="header__notification" type="button"><i class="bx bx-bell"></i></button>
-        </header>
-
-        <main class="main">
-
-            <!-- PAGE TITLE & DATE FILTER -->
+<?php
+$pageTitle = "Thống kê & Báo cáo - Nhóm 3";
+$pageCss = "../../../public/asset/css/admin/statistics.css";
+$activePage = "statistics";
+$extraHead = '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
+include_once __DIR__ . '/../layouts/admin_head.php';
+include_once __DIR__ . '/../layouts/admin_sidebar.php';
+include_once __DIR__ . '/../layouts/admin_header.php';
+?>
+<!-- PAGE TITLE & DATE FILTER -->
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Thống kê & Báo cáo</h1>
@@ -179,7 +118,7 @@
                 <div class="chart-container chart-container--half">
                     <div class="chart-header">
                         <h3 class="chart-title">Món ăn bán chạy nhất</h3>
-                        <a href="menu.html" class="chart-link">Xem tất cả</a>
+                        <a href="menu.php" class="chart-link">Xem tất cả</a>
                     </div>
                     <div class="top-products">
                         <div class="top-product-item">
@@ -245,10 +184,7 @@
                 </div>
             </div>
 
-        </main>
-    </div>
-
-    <!-- Khởi tạo Chart.js -->
+<!-- Khởi tạo Chart.js -->
     <script>
         // Update Clock
         function updateClock() {
@@ -397,6 +333,7 @@
             }
         });
     </script>
-</body>
 
-</html>
+<?php
+include_once __DIR__ . '/../layouts/admin_footer.php';
+?>

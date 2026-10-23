@@ -1,71 +1,12 @@
-<!DOCTYPE html>
-<html lang="vi">
+<?php
+$pageTitle = 'Quản lý Menu - Restaurant Management System';
+$pageCss = '../../../public/asset/css/admin/menu.css';
+$activePage = 'menu';
+include_once __DIR__ . '/../layouts/admin_head.php';
+include_once __DIR__ . '/../layouts/admin_sidebar.php';
+include_once __DIR__ . '/../layouts/admin_header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../../public/asset/css/admin/menu.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <title>Menu</title>
-</head>
-
-<body>
-    <aside class="sidebar">
-        <div class="sidebar__logo">
-            <i class="bx bx-restaurant"></i>
-            <span>Nhóm 3</span>
-        </div>
-
-        <nav class="sidebar__nav">
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">CHUNG</p>
-                <a href="../admin/overview.html" class="sidebar__link "><i class="bx bxs-dashboard"></i><span>Tổng
-                        quan</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">VẬN HÀNH</p>
-                <a href="menu.html" class="sidebar__link active"><i class="bx bx-book-open"></i><span>Quản lý
-                        Menu</span></a>
-                <a href="tables.html" class="sidebar__link"><i class="bx bx-table"></i><span>Quản lý bàn</span></a>
-                <a href="orders.html" class="sidebar__link"><i class="bx bx-receipt"></i><span>Quản lý đơn
-                        hàng</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">MARKETING & KHO</p>
-                <a href="vouchers.html" class="sidebar__link"><i class="bx bx-purchase-tag"></i><span>Voucher & Khuyến
-                        mãi</span></a>
-                <a href="warehouse.html" class="sidebar__link"><i class="bx bx-box"></i><span>Quản lý
-                        Kho</span></a>
-            </div>
-            <div class="sidebar__group">
-                <p class="sidebar__group-title">HỆ THỐNG</p>
-                <a href="users.html" class="sidebar__link"><i class="bx bx-user"></i><span>Người dùng</span></a>
-                <a href="statistics.html" class="sidebar__link"><i class="bx bx-line-chart"></i><span>Thống
-                        kê</span></a>
-            </div>
-        </nav>
-
-        <div class="sidebar__profile">
-            <div class="sidebar__profile-avatar"></div>
-            <div class="sidebar__profile-info">
-                <p class="sidebar__profile-name">Hồ Kim Lưu Thống</p>
-                <p class="sidebar__profile-role">Quản trị viên</p>
-            </div>
-            <button class="sidebar__profile-logout" type="button"><i class="bx bx-log-out"></i></button>
-        </div>
-    </aside>
-
-    <div class="main-wrapper">
-        <header class="header">
-            <div class="header__search">
-                <i class="bx bx-search"></i>
-                <input type="text" placeholder="Tìm kiếm đơn hàng, khách hàng, bàn...">
-            </div>
-            <button class="header__notification" type="button"><i class="bx bx-bell"></i></button>
-        </header>
-
-        <main class="main">
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-header__left">
@@ -327,79 +268,79 @@
                     </div>
                 </form>
             </div>
-        </main>
-    </div>
 
-    <!-- MODAL: TẠO DANH MỤC MỚI -->
-    <div class="modal-overlay" id="categoryModal">
-        <div class="modal">
-            <div class="modal__header">
-                <h2 class="modal__title">Tạo danh mục mới</h2>
-                <button class="modal__close" id="btnCloseCategoryModal" type="button"><i class="bx bx-x"></i></button>
-            </div>
-            <div class="modal__body">
-                <form class="modal-form" id="categoryForm">
-                    <div class="modal-form__group">
-                        <label class="modal-form__label">Mã danh mục <span>*</span></label>
-                        <div class="modal-form__input-wrapper">
-                            <i class="bx bx-barcode"></i>
-                            <input type="text" class="modal-form__input" placeholder="VD: CAT_01" required>
-                        </div>
+            <!-- MODAL: TẠO DANH MỤC MỚI -->
+            <div class="modal-overlay" id="categoryModal">
+                <div class="modal">
+                    <div class="modal__header">
+                        <h2 class="modal__title">Tạo danh mục mới</h2>
+                        <button class="modal__close" id="btnCloseCategoryModal" type="button"><i class="bx bx-x"></i></button>
                     </div>
-                    <div class="modal-form__group">
-                        <label class="modal-form__label">Tên danh mục <span>*</span></label>
-                        <div class="modal-form__input-wrapper">
-                            <i class="bx bx-text"></i>
-                            <input type="text" class="modal-form__input" placeholder="VD: Khai vị, Đồ uống..." required>
-                        </div>
+                    <div class="modal__body">
+                        <form class="modal-form" id="categoryForm">
+                            <div class="modal-form__group">
+                                <label class="modal-form__label">Mã danh mục <span>*</span></label>
+                                <div class="modal-form__input-wrapper">
+                                    <i class="bx bx-barcode"></i>
+                                    <input type="text" class="modal-form__input" placeholder="VD: CAT_01" required>
+                                </div>
+                            </div>
+                            <div class="modal-form__group">
+                                <label class="modal-form__label">Tên danh mục <span>*</span></label>
+                                <div class="modal-form__input-wrapper">
+                                    <i class="bx bx-text"></i>
+                                    <input type="text" class="modal-form__input" placeholder="VD: Khai vị, Đồ uống..." required>
+                                </div>
+                            </div>
+                            <div class="modal-form__group">
+                                <label class="modal-form__label">Mô tả</label>
+                                <div class="modal-form__input-wrapper">
+                                    <i class="bx bx-detail"></i>
+                                    <input type="text" class="modal-form__input" placeholder="Mô tả ngắn về danh mục">
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-form__group">
-                        <label class="modal-form__label">Mô tả</label>
-                        <div class="modal-form__input-wrapper">
-                            <i class="bx bx-detail"></i>
-                            <input type="text" class="modal-form__input" placeholder="Mô tả ngắn về danh mục">
-                        </div>
+                    <div class="modal__footer">
+                        <button class="btn btn--ghost" id="btnCancelCategory" type="button">Hủy bỏ</button>
+                        <button class="btn" type="button" style="background: var(--red-bg); color: var(--red);">
+                            <i class="bx bx-trash"></i> Xoá
+                        </button>
+                        <button class="btn" type="button" style="background: var(--orange-bg); color: var(--orange);">
+                            <i class="bx bx-edit"></i> Cập nhật
+                        </button>
+                        <button class="btn btn--primary" type="button" style="background: linear-gradient(135deg, var(--primary-400), var(--primary-500)); color: var(--white);">
+                            <i class="bx bx-save"></i> Lưu
+                        </button>
                     </div>
-                </form>
+                </div>
             </div>
-            <div class="modal__footer">
-                <button class="btn btn--ghost" id="btnCancelCategory" type="button">Hủy bỏ</button>
-                <button class="btn" type="button" style="background: var(--red-bg); color: var(--red);">
-                    <i class="bx bx-trash"></i> Xoá
-                </button>
-                <button class="btn" type="button" style="background: var(--orange-bg); color: var(--orange);">
-                    <i class="bx bx-edit"></i> Cập nhật
-                </button>
-                <button class="btn btn--primary" type="button" style="background: linear-gradient(135deg, var(--primary-400), var(--primary-500)); color: var(--white);">
-                    <i class="bx bx-save"></i> Lưu
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        // Modal Logic
-        const categoryModal = document.getElementById('categoryModal');
-        const btnAddCategory = document.getElementById('btnAddCategory');
-        const btnCloseCategoryModal = document.getElementById('btnCloseCategoryModal');
-        const btnCancelCategory = document.getElementById('btnCancelCategory');
+            <script>
+                // Modal Logic
+                const categoryModal = document.getElementById('categoryModal');
+                const btnAddCategory = document.getElementById('btnAddCategory');
+                const btnCloseCategoryModal = document.getElementById('btnCloseCategoryModal');
+                const btnCancelCategory = document.getElementById('btnCancelCategory');
 
-        function openCategoryModal() { 
-            categoryModal.classList.add('active'); 
-            document.body.style.overflow = 'hidden'; 
-        }
-        function closeCategoryModal() { 
-            categoryModal.classList.remove('active'); 
-            document.body.style.overflow = ''; 
-        }
+                function openCategoryModal() { 
+                    categoryModal.classList.add('active'); 
+                    document.body.style.overflow = 'hidden'; 
+                }
+                function closeCategoryModal() { 
+                    categoryModal.classList.remove('active'); 
+                    document.body.style.overflow = ''; 
+                }
 
-        btnAddCategory.addEventListener('click', openCategoryModal);
-        btnCloseCategoryModal.addEventListener('click', closeCategoryModal);
-        btnCancelCategory.addEventListener('click', closeCategoryModal);
-        categoryModal.addEventListener('click', (e) => { 
-            if (e.target === categoryModal) closeCategoryModal(); 
-        });
-    </script>
-</body>
+                btnAddCategory.addEventListener('click', openCategoryModal);
+                btnCloseCategoryModal.addEventListener('click', closeCategoryModal);
+                btnCancelCategory.addEventListener('click', closeCategoryModal);
+                categoryModal.addEventListener('click', (e) => { 
+                    if (e.target === categoryModal) closeCategoryModal(); 
+                });
+            </script>
 
-</html>
+<?php
+include_once __DIR__ . '/../layouts/admin_footer.php';
+?>
+

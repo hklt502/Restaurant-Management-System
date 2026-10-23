@@ -1,51 +1,9 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đặt Bàn — Nhóm 3</title>
-  <link rel="icon"
-    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f0b08'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='19' font-weight='700' fill='%23c9a84c' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500;600&display=swap" />
-  <link rel="stylesheet" href="../../../public/asset/css/client/style.css" />
-</head>
-
-<body>
-
-  <!-- ===================== THANH MENU ===================== -->
-  <div id="header">
-    <input type="checkbox" id="nav-toggle" />
-
-    <div class="header-inner">
-      <a class="logo" href="trangchu.html">Nhóm 3</a>
-
-      <div id="menu">
-        <a href="trangchu.html">Trang Chủ</a>
-        <a href="thucdon.html">Thực Đơn</a>
-        <a href="khuyenmai.html">Khuyến Mãi</a>
-        <a class="active menu-button" href="datban.html">Đặt Bàn</a>
-      </div>
-
-      <a class="header-user" href="canhan.html">👤 Nguyễn Văn A</a>
-
-      <label class="burger" for="nav-toggle">
-        <span></span><span></span><span></span>
-      </label>
-    </div>
-
-    <div class="mobile-menu">
-      <a href="trangchu.html">Trang Chủ</a>
-      <a href="thucdon.html">Thực Đơn</a>
-      <a href="khuyenmai.html">Khuyến Mãi</a>
-      <a class="active" href="datban.html">Đặt Bàn</a>
-      <a href="dangnhap.html">Đăng Nhập</a>
-      <a href="dangky.html">Đăng Ký</a>
-      <a href="canhan.html">Trang Cá Nhân</a>
-      <a href="doimatkhau.html">Đổi Mật Khẩu</a>
-    </div>
-  </div>
+<?php
+$pageTitle = 'Đặt Bàn — Nhóm 3';
+$activePage = 'datban';
+include_once __DIR__ . '/../layouts/client_head.php';
+include_once __DIR__ . '/../layouts/client_header.php';
+?>
 
   <!-- ===================== PHẦN MỞ ĐẦU ===================== -->
   <div class="page-hero">
@@ -173,36 +131,7 @@
 
   </div>
 
-  <!-- ===================== CHÂN TRANG ===================== -->
-  <div class="footer">
-    <div class="footer-inner">
+<?php
+include_once __DIR__ . '/../layouts/client_footer.php';
+?>
 
-      <div>
-        <h3>Nhóm 3</h3>
-        <p>Từ bếp lửa gia đình đến bàn tiệc của bạn</p>
-      </div>
-
-      <div>
-        <p>123 Đường Lê Lợi, Quận 1, TP.HCM</p>
-        <p>Mở cửa: 10:00 – 22:00 hàng ngày</p>
-      </div>
-
-      <div class="footer-links">
-        <a href="trangchu.html">Trang Chủ</a>
-        <a href="thucdon.html">Thực Đơn</a>
-        <a href="khuyenmai.html">Khuyến Mãi</a>
-        <a href="datban.html">Đặt Bàn</a>
-        <a href="dangnhap.html">Đăng Nhập</a>
-        <a href="dangky.html">Đăng Ký</a>
-        <a href="canhan.html">Trang Cá Nhân</a>
-        <a href="doimatkhau.html">Đổi Mật Khẩu</a>
-      </div>
-
-      <p>© 2026 Nhóm 3</p>
-
-    </div>
-  </div>
-
-</body>
-
-</html>

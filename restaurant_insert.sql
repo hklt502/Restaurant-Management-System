@@ -87,13 +87,13 @@ INSERT INTO `promotion` (`promotionId`, `title`, `badgeText`, `description`, `ex
 -- ==========================================================================
 -- 7. VOUCHER (6 records) — isDeleted: 0 (active) | 1 (deleted)
 -- ==========================================================================
-INSERT INTO `voucher` (`voucherId`, `voucherCode`, `discountType`, `discountValue`, `minOrderValue`, `expiryDate`, `usageLimit`, `usedCount`, `isActive`, `isDeleted`) VALUES
-(1, 'WELCOME10',  'PERCENT', 10.00,  200000, '2026-12-31', 100, 5,  1, 0),
-(2, 'SALE50K',    'FIXED',   50000,  300000, '2026-11-30', 50,  12, 1, 0),
-(3, 'VIP20',      'PERCENT', 20.00,  500000, '2026-12-31', 30,  3,  1, 0),
-(4, 'BIRTHDAY15', 'PERCENT', 15.00,  150000, '2026-12-31', 200, 8,  1, 0),
-(5, 'SUMMER30K',  'FIXED',   30000,  200000, '2026-10-31', 80,  20, 1, 0),
-(6, 'EXPIRED5',   'PERCENT', 5.00,   100000, '2025-01-01', 10,  10, 0, 1);
+INSERT INTO `voucher` (`voucherId`, `promotionId`, `voucherCode`, `discountType`, `discountValue`, `minOrderValue`, `expiryDate`, `usageLimit`, `usedCount`, `isActive`, `isDeleted`) VALUES
+(1, 2, 'WELCOME10',  'PERCENT', 10.00,  200000, '2026-12-31', 100, 5,  1, 0),
+(2, 1, 'SALE50K',    'FIXED',   50000,  300000, '2026-11-30', 50,  12, 1, 0),
+(3, 3, 'VIP20',      'PERCENT', 20.00,  500000, '2026-12-31', 30,  3,  1, 0),
+(4, 4, 'BIRTHDAY15', 'PERCENT', 15.00,  150000, '2026-12-31', 200, 8,  1, 0),
+(5, 5, 'SUMMER30K',  'FIXED',   30000,  200000, '2026-10-31', 80,  20, 1, 0),
+(6, NULL, 'EXPIRED5',   'PERCENT', 5.00,   100000, '2025-01-01', 10,  10, 0, 1);
 
 -- ==========================================================================
 -- 8. RESERVATION (6 records) — status: PENDING | CONFIRMED | CANCELLED

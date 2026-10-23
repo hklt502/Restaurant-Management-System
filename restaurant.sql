@@ -79,6 +79,7 @@ CREATE TABLE `promotion` (
 
 CREATE TABLE `voucher` (
   `voucherId` int(11) PRIMARY KEY AUTO_INCREMENT,
+  `promotionId` int(11),
   `voucherCode` varchar(50) NOT NULL UNIQUE,
   `discountType` varchar(10) NOT NULL DEFAULT 'PERCENT',
   `discountValue` decimal(12,2) NOT NULL,
@@ -159,5 +160,7 @@ ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_customer` FOREIGN KEY (`customerI
 ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_reservation` FOREIGN KEY (`reservationId`) REFERENCES `reservation` (`reservationId`);
 ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_table` FOREIGN KEY (`tableId`) REFERENCES `service_table` (`tableId`);
 ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucherId`) REFERENCES `voucher` (`voucherId`);
+ALTER TABLE `voucher` ADD CONSTRAINT `fk_voucher_promotion` FOREIGN KEY (`promotionId`) REFERENCES `promotion` (`promotionId`) ON DELETE SET NULL;
 ALTER TABLE `order_items` ADD CONSTRAINT `fk_oi_food` FOREIGN KEY (`foodId`) REFERENCES `food` (`foodId`);
 ALTER TABLE `order_items` ADD CONSTRAINT `fk_oi_order` FOREIGN KEY (`orderId`) REFERENCES `orders` (`orderId`) ON DELETE CASCADE;
+
