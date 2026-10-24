@@ -2,8 +2,6 @@
 $pageTitle = 'Quản lý Voucher & Khuyến mãi - Restaurant Management System';
 $pageCss = '../../../public/asset/css/admin/vouchers.css';
 $activePage = 'vouchers';
-include_once __DIR__ . '/../layouts/admin_head.php';
-include_once __DIR__ . '/../layouts/admin_sidebar.php';
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
 

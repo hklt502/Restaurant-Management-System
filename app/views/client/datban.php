@@ -21,7 +21,17 @@ include_once __DIR__ . '/../layouts/client_header.php';
       <h2>Thông tin đặt bàn</h2>
       <p class="form-note">Chúng tôi sẽ gọi lại xác nhận trong vòng 15 phút.</p>
 
-      <form>
+      <?php if (!empty($success)): ?>
+        <div style="background: #e6f4ea; color: #137333; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: 500;">
+          🎉 Đặt bàn thành công! Nhà hàng sẽ liên hệ qua điện thoại để xác nhận sớm nhất.
+        </div>
+      <?php elseif (!empty($error)): ?>
+        <div style="background: #fce8e6; color: #c5221f; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: 500;">
+          ⚠️ <?= htmlspecialchars($error) ?>
+        </div>
+      <?php endif; ?>
+
+      <form action="index.php?page=datban" method="POST">
         <div class="form-grid">
 
           <div class="field">

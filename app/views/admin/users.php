@@ -2,8 +2,6 @@
 $pageTitle = "Quản lý người dùng - Nhóm 3";
 $pageCss = "../../../public/asset/css/admin/users.css";
 $activePage = "users";
-include_once __DIR__ . '/../layouts/admin_head.php';
-include_once __DIR__ . '/../layouts/admin_sidebar.php';
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
 <!-- PAGE TITLE -->

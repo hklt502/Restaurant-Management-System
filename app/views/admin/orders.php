@@ -2,8 +2,6 @@
 $pageTitle = "Quản lý đơn hàng - Restaurant Management System";
 $pageCss = "../../../public/asset/css/admin/orders.css";
 $activePage = "orders";
-include_once __DIR__ . '/../layouts/admin_head.php';
-include_once __DIR__ . '/../layouts/admin_sidebar.php';
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
 <!-- PAGE TITLE BAR -->

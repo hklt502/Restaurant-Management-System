@@ -201,7 +201,7 @@ h3 {
 }
 
 /* Khi checkbox được tích thì hiện menu */
-#nav-toggle:checked ~ .mobile-menu {
+#nav-toggle:checked~.mobile-menu {
   display: flex;
 }
 
@@ -285,7 +285,7 @@ h3 {
    ============================================================ */
 .hero {
   background-image: linear-gradient(rgba(15, 11, 8, 0.72), rgba(15, 11, 8, 0.72)),
-                    url("https://images.unsplash.com/photo-1709548145082-04d0cde481d4?w=1600&h=900&fit=crop&auto=format");
+    url("https://images.unsplash.com/photo-1709548145082-04d0cde481d4?w=1600&h=900&fit=crop&auto=format");
   background-size: cover;
   background-position: center;
   min-height: 640px;
@@ -323,7 +323,7 @@ h3 {
    ============================================================ */
 .page-hero {
   background-image: linear-gradient(rgba(15, 11, 8, 0.8), rgba(15, 11, 8, 0.8)),
-                    url("https://images.unsplash.com/photo-1641440615059-42c8ed3af8c8?w=1600&h=600&fit=crop&auto=format");
+    url("https://images.unsplash.com/photo-1641440615059-42c8ed3af8c8?w=1600&h=600&fit=crop&auto=format");
   background-size: cover;
   background-position: center;
   padding: 130px 24px 60px;
@@ -370,7 +370,7 @@ h3 {
 }
 
 /* Vạch ngăn giữa các ô số liệu */
-.stat + .stat {
+.stat+.stat {
   border-left: 1px solid #2e2318;
 }
 
@@ -535,7 +535,7 @@ h3 {
    ============================================================ */
 .cta {
   background-image: linear-gradient(rgba(15, 11, 8, 0.85), rgba(15, 11, 8, 0.85)),
-                    url("https://images.unsplash.com/photo-1650490632010-e18cbb694dd1?w=1600&h=500&fit=crop&auto=format");
+    url("https://images.unsplash.com/photo-1650490632010-e18cbb694dd1?w=1600&h=500&fit=crop&auto=format");
   background-size: cover;
   background-position: center;
   text-align: center;
@@ -801,6 +801,181 @@ h3 {
   font-size: 14px;
   color: #c8bda8;
   margin-bottom: 10px;
+}
+
+/* ============================================================
+   CỬA SỔ CHI TIẾT VOUCHER (PROMOTION MODAL)
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 7, 5, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background-color: #16110c;
+  border: 1px solid #2e2318;
+  border-top: 3px solid #c9a84c;
+  width: 100%;
+  max-width: 600px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 36px 32px;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  animation: promoModalIn 0.25s ease-out;
+}
+
+@keyframes promoModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-box__close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  font-size: 26px;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: #c8bda8;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modal-box__close:hover {
+  color: #c9a84c;
+}
+
+.modal-box__eyebrow {
+  font-family: "DM Sans", Arial, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #c9a84c;
+  margin-bottom: 6px;
+}
+
+.modal-box__title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 24px;
+  color: #f2ead8;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.modal-box__desc {
+  font-size: 14px;
+  font-style: italic;
+  color: #c8bda8;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #2e2318;
+}
+
+.modal-voucher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-voucher-item {
+  background-color: #0f0b08;
+  border: 1px solid #2e2318;
+  border-left: 3px solid #c9a84c;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-voucher-item--claimed {
+  border-left-color: #2e2318;
+  opacity: 0.6;
+}
+
+.modal-voucher-code {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 19px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #f2ead8;
+  margin-bottom: 4px;
+}
+
+.modal-voucher-discount {
+  font-family: "DM Sans", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #c9a84c;
+  margin-bottom: 3px;
+}
+
+.modal-voucher-meta {
+  font-size: 12px;
+  color: #8c8273;
+}
+
+.modal-voucher-action .button {
+  padding: 10px 18px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.modal-voucher-action .button-claimed {
+  background-color: transparent;
+  color: #8c8273;
+  border: 1px solid #2e2318;
+  cursor: default;
+}
+
+/* Thông báo alert ở đầu trang */
+.client-alert {
+  max-width: 1200px;
+  margin: 24px auto 0;
+  padding: 14px 20px;
+  border-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.client-alert--success {
+  background-color: #162414;
+  border: 1px solid #2f562b;
+  color: #8fb573;
+}
+
+.client-alert--error {
+  background-color: #2a1410;
+  border: 1px solid #6b2d22;
+  color: #d98b6a;
+}
+
+.client-alert a {
+  color: #c9a84c;
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 
@@ -1296,6 +1471,145 @@ input[type="radio"] {
   margin-bottom: 18px;
 }
 
+/* Ví voucher của khách hàng */
+.voucher-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.voucher-card {
+  background-color: #0f0b08;
+  border: 1px solid #2e2318;
+  border-left: 3px solid #c9a84c;
+  padding: 20px 22px;
+}
+
+/* Voucher đã dùng: mờ đi, viền trái đổi sang màu tối */
+.voucher-card--used {
+  border-left-color: #2e2318;
+  opacity: 0.55;
+}
+
+.voucher-card__status {
+  display: inline-block;
+  background-color: #c9a84c;
+  color: #0f0b08;
+  font-family: "DM Sans", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  margin-bottom: 12px;
+}
+
+.voucher-card--used .voucher-card__status {
+  background-color: transparent;
+  color: #c8bda8;
+  border: 1px solid #2e2318;
+}
+
+.voucher-card__code {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #f2ead8;
+  margin-bottom: 8px;
+}
+
+.voucher-card__discount {
+  font-family: "DM Sans", Arial, sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  color: #c9a84c;
+  margin-bottom: 4px;
+}
+
+.voucher-card__condition {
+  font-size: 13px;
+  color: #c8bda8;
+}
+
+.voucher-card__expiry {
+  font-family: "DM Sans", Arial, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #c8bda8;
+  border-top: 1px solid #2e2318;
+  margin-top: 14px;
+  padding-top: 12px;
+}
+
+/* Lịch sử đặt bàn */
+.reservation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reservation-card {
+  background-color: #0f0b08;
+  border: 1px solid #2e2318;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.reservation-card__title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #f2ead8;
+  margin-bottom: 6px;
+}
+
+.reservation-card__meta {
+  font-size: 13px;
+  color: #c8bda8;
+}
+
+.reservation-card .button {
+  padding: 10px 20px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Nhãn trạng thái đặt bàn */
+.reservation-status {
+  display: inline-block;
+  font-family: "DM Sans", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 3px 8px;
+  margin-left: 6px;
+  border: 1px solid currentColor;
+}
+
+.reservation-status--confirmed {
+  color: #8fb573;
+}
+
+.reservation-status--pending {
+  color: #c9a84c;
+}
+
+.reservation-status--cancelled {
+  color: #d98b6a;
+}
+
+/* Dòng thông báo khi danh sách trống */
+.account-empty {
+  font-size: 15px;
+  font-style: italic;
+  color: #c8bda8;
+}
+
 
 /* ============================================================
    18. CHÂN TRANG
@@ -1400,7 +1714,7 @@ input[type="radio"] {
     grid-template-columns: 1fr;
   }
 
-  .stat + .stat {
+  .stat+.stat {
     border-left: none;
     border-top: 1px solid #2e2318;
   }
@@ -1438,8 +1752,27 @@ input[type="radio"] {
 
   .form-grid,
   .profile-grid,
-  .mini-stats {
+  .mini-stats,
+  .voucher-list {
     grid-template-columns: 1fr;
+  }
+
+  .reservation-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .modal-voucher-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .modal-voucher-action {
+    width: 100%;
+  }
+
+  .modal-voucher-action .button {
+    width: 100%;
   }
 
   .form-card,

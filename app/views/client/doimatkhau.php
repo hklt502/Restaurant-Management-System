@@ -13,15 +13,15 @@ include_once __DIR__ . '/../layouts/client_header.php';
       <div class="user-card">
         <span class="avatar">👤</span>
         <div>
-          <span class="user-name">Nguyễn Văn A</span>
-          <span class="user-role">Thành viên</span>
+          <span class="user-name"><?= htmlspecialchars($_SESSION['customer']['customerName'] ?? 'Thành viên') ?></span>
+          <span class="user-role">Hội viên Nhóm 3</span>
         </div>
       </div>
 
       <div class="account-menu">
-        <a href="canhan.php">Thông Tin Cá Nhân</a>
-        <a class="active" href="doimatkhau.php">Đổi Mật Khẩu</a>
-        <a href="dangnhap.php">Đăng Xuất</a>
+        <a href="index.php?page=canhan">Thông Tin Cá Nhân</a>
+        <a class="active" href="index.php?page=doimatkhau">Đổi Mật Khẩu</a>
+        <a href="index.php?page=dangxuat">Đăng Xuất</a>
       </div>
     </div>
 
@@ -32,7 +32,17 @@ include_once __DIR__ . '/../layouts/client_header.php';
       <h2>Đổi Mật Khẩu</h2>
       <p class="account-note">Nên dùng mật khẩu từ 8 ký tự và không dùng lại mật khẩu cũ.</p>
 
-      <form class="form-vertical">
+      <?php if (!empty($success)): ?>
+        <div style="background: #e6f4ea; color: #137333; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: 500;">
+          🎉 Đổi mật khẩu thành công!
+        </div>
+      <?php elseif (!empty($error)): ?>
+        <div style="background: #fce8e6; color: #c5221f; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: 500;">
+          ⚠️ <?= htmlspecialchars($error) ?>
+        </div>
+      <?php endif; ?>
+
+      <form class="form-vertical" action="index.php?page=doimatkhau" method="POST">
         <div class="field">
           <label for="old-pass">Mật khẩu cũ *</label>
           <input type="password" id="old-pass" name="old-pass" placeholder="••••••••" required />
@@ -50,7 +60,7 @@ include_once __DIR__ . '/../layouts/client_header.php';
 
         <div class="button-group">
           <button type="submit" class="button button-gold">Đổi Mật Khẩu</button>
-          <a class="button button-outline" href="canhan.php">Hủy</a>
+          <a class="button button-outline" href="index.php?page=canhan">Hủy</a>
         </div>
       </form>
     </div>
@@ -60,4 +70,3 @@ include_once __DIR__ . '/../layouts/client_header.php';
 <?php
 include_once __DIR__ . '/../layouts/client_footer.php';
 ?>
-

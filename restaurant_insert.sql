@@ -13,12 +13,12 @@ INSERT INTO `admin` (`adminId`, `username`, `passwordHash`, `adminName`, `adminP
 -- ==========================================================================
 -- 2. CUSTOMER (5 records)
 -- ==========================================================================
-INSERT INTO `customer` (`customerId`, `customerName`, `customerPhone`, `customerEmail`, `passwordHash`, `birthDate`, `gender`, `address`, `visitCount`, `voucherCount`) VALUES
-(1, 'Nguyễn Hữu An',      '0931111111', 'an.nguyen@gmail.com',   MD5('pass123'), '1995-05-15', 'MALE',   '123 Lê Lợi, Q1, TP.HCM',        5, 2),
-(2, 'Lê Thị Hương Giang', '0932222222', 'giang.le@gmail.com',    MD5('pass123'), '1998-10-20', 'FEMALE', '456 Hai Bà Trưng, Q3, TP.HCM',  2, 0),
-(3, 'Trần Quốc Bảo',      '0933333333', 'bao.tran@gmail.com',    MD5('pass123'), '1990-12-01', 'MALE',   '789 Nguyễn Văn Cừ, Q5, TP.HCM', 10, 5),
-(4, 'Phạm Thị Ngọc Linh', '0934444444', 'linh.pham@gmail.com',   MD5('pass123'), '2000-02-14', 'FEMALE', '101 Võ Văn Tần, Q3, TP.HCM',    1, 1),
-(5, 'Hoàng Minh Tuấn',    '0935555555', 'tuan.hoang@gmail.com',  MD5('pass123'), '1988-08-08', 'MALE',   '202 Trần Hưng Đạo, Q1, TP.HCM', 3, 0);
+INSERT INTO `customer` (`customerId`, `customerName`, `customerPhone`, `customerEmail`, `passwordHash`, `birthDate`, `gender`, `address`, `visitCount`) VALUES
+(1, 'Nguyễn Hữu An',      '0931111111', 'an.nguyen@gmail.com',   MD5('pass123'), '1995-05-15', 'MALE',   '123 Lê Lợi, Q1, TP.HCM',        5),
+(2, 'Lê Thị Hương Giang', '0932222222', 'giang.le@gmail.com',    MD5('pass123'), '1998-10-20', 'FEMALE', '456 Hai Bà Trưng, Q3, TP.HCM',  2),
+(3, 'Trần Quốc Bảo',      '0933333333', 'bao.tran@gmail.com',    MD5('pass123'), '1990-12-01', 'MALE',   '789 Nguyễn Văn Cừ, Q5, TP.HCM', 10),
+(4, 'Phạm Thị Ngọc Linh', '0934444444', 'linh.pham@gmail.com',   MD5('pass123'), '2000-02-14', 'FEMALE', '101 Võ Văn Tần, Q3, TP.HCM',    1),
+(5, 'Hoàng Minh Tuấn',    '0935555555', 'tuan.hoang@gmail.com',  MD5('pass123'), '1988-08-08', 'MALE',   '202 Trần Hưng Đạo, Q1, TP.HCM', 3);
 
 -- ==========================================================================
 -- 3. CATEGORY (6 records)
@@ -93,7 +93,9 @@ INSERT INTO `voucher` (`voucherId`, `promotionId`, `voucherCode`, `discountType`
 (3, 3, 'VIP20',      'PERCENT', 20.00,  500000, '2026-12-31', 30,  3,  1, 0),
 (4, 4, 'BIRTHDAY15', 'PERCENT', 15.00,  150000, '2026-12-31', 200, 8,  1, 0),
 (5, 5, 'SUMMER30K',  'FIXED',   30000,  200000, '2026-10-31', 80,  20, 1, 0),
-(6, NULL, 'EXPIRED5',   'PERCENT', 5.00,   100000, '2025-01-01', 10,  10, 0, 1);
+(6, NULL, 'EXPIRED5',   'PERCENT', 5.00,   100000, '2025-01-01', 10,  10, 0, 1),
+(7, 1, 'GROUP100K',  'FIXED',   100000, 600000, '2026-12-31', 50,  0,  1, 0),
+(8, 2, 'NEWBIE15',   'PERCENT', 15.00,  250000, '2026-12-31', 100, 0,  1, 0);
 
 -- ==========================================================================
 -- 8. RESERVATION (6 records) — status: PENDING | CONFIRMED | CANCELLED
@@ -179,3 +181,16 @@ INSERT INTO `inventory_log` (`logId`, `ingredientId`, `adminId`, `logType`, `qua
 (8,  5, 2, 'EXPORT',   5.000, 'Xuất bếp phục vụ đơn hàng bàn T08'),
 (9,  4, 1, 'IMPORT', 500.000, 'Nhập xúc xích Đức'),
 (10, 6, 3, 'IMPORT',  15.000, 'Nhập mực ống tươi');
+
+-- ==========================================================================
+-- 13. CUSTOMER_VOUCHER (Ví voucher của từng khách hàng)
+-- ==========================================================================
+INSERT INTO `customer_voucher` (`id`, `customerId`, `voucherId`, `status`, `assignedAt`, `usedAt`) VALUES
+(1, 1, 1, 'USED',   '2026-09-20 10:00:00', '2026-10-01 13:00:00'),
+(2, 1, 4, 'UNUSED', '2026-10-01 10:00:00', NULL),
+(3, 3, 2, 'USED',   '2026-09-15 08:30:00', '2026-10-01 13:00:00'),
+(4, 3, 1, 'UNUSED', '2026-10-01 09:00:00', NULL),
+(5, 3, 3, 'UNUSED', '2026-10-01 09:00:00', NULL),
+(6, 3, 4, 'UNUSED', '2026-10-01 09:00:00', NULL),
+(7, 3, 5, 'UNUSED', '2026-10-01 09:00:00', NULL),
+(8, 4, 4, 'UNUSED', '2026-10-01 10:00:00', NULL);

@@ -13,14 +13,14 @@
       </div>
 
       <div class="footer-links">
-        <a href="trangchu.php">Trang Chủ</a>
-        <a href="thucdon.php">Thực Đơn</a>
-        <a href="khuyenmai.php">Khuyến Mãi</a>
-        <a href="datban.php">Đặt Bàn</a>
-        <a href="dangnhap.php">Đăng Nhập</a>
-        <a href="dangky.php">Đăng Ký</a>
-        <a href="canhan.php">Trang Cá Nhân</a>
-        <a href="doimatkhau.php">Đổi Mật Khẩu</a>
+        <a href="index.php?page=trangchu">Trang Chủ</a>
+        <a href="index.php?page=thucdon">Thực Đơn</a>
+        <a href="index.php?page=khuyenmai">Khuyến Mãi</a>
+        <a href="index.php?page=datban">Đặt Bàn</a>
+        <a href="index.php?page=dangnhap">Đăng Nhập</a>
+        <a href="index.php?page=dangky">Đăng Ký</a>
+        <a href="index.php?page=canhan">Trang Cá Nhân</a>
+        <a href="index.php?page=doimatkhau">Đổi Mật Khẩu</a>
       </div>
 
       <p>© 2026 Nhóm 3</p>

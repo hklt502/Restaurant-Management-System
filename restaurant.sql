@@ -18,7 +18,6 @@ CREATE TABLE `customer` (
   `gender` ENUM('MALE', 'FEMALE', 'OTHER') DEFAULT 'MALE',
   `address` varchar(255),
   `visitCount` int(11) DEFAULT 0,
-  `voucherCount` int(11) DEFAULT 0,
   `isDeleted` tinyint(1) NOT NULL DEFAULT 0,
   `createdAt` datetime NOT NULL DEFAULT (current_timestamp())
 );
@@ -149,6 +148,15 @@ CREATE TABLE `order_items` (
   `createdAt` datetime NOT NULL DEFAULT (current_timestamp())
 );
 
+CREATE TABLE `customer_voucher` (
+  `id` int(11) PRIMARY KEY AUTO_INCREMENT,
+  `customerId` int(11) NOT NULL,
+  `voucherId` int(11) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'UNUSED',
+  `assignedAt` datetime NOT NULL DEFAULT (current_timestamp()),
+  `usedAt` datetime
+);
+
 -- Bổ sung Khóa ngoại
 ALTER TABLE `food` ADD CONSTRAINT `fk_food_category` FOREIGN KEY (`categoryId`) REFERENCES `category` (`categoryId`) ON DELETE RESTRICT;
 ALTER TABLE `inventory_log` ADD CONSTRAINT `fk_log_admin` FOREIGN KEY (`adminId`) REFERENCES `admin` (`adminId`);
@@ -163,4 +171,6 @@ ALTER TABLE `orders` ADD CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucherId`
 ALTER TABLE `voucher` ADD CONSTRAINT `fk_voucher_promotion` FOREIGN KEY (`promotionId`) REFERENCES `promotion` (`promotionId`) ON DELETE SET NULL;
 ALTER TABLE `order_items` ADD CONSTRAINT `fk_oi_food` FOREIGN KEY (`foodId`) REFERENCES `food` (`foodId`);
 ALTER TABLE `order_items` ADD CONSTRAINT `fk_oi_order` FOREIGN KEY (`orderId`) REFERENCES `orders` (`orderId`) ON DELETE CASCADE;
+ALTER TABLE `customer_voucher` ADD CONSTRAINT `fk_cv_customer` FOREIGN KEY (`customerId`) REFERENCES `customer` (`customerId`) ON DELETE CASCADE;
+ALTER TABLE `customer_voucher` ADD CONSTRAINT `fk_cv_voucher` FOREIGN KEY (`voucherId`) REFERENCES `voucher` (`voucherId`) ON DELETE CASCADE;
 

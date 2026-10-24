@@ -14,12 +14,18 @@ include_once __DIR__ . '/../layouts/client_header.php';
 
       <p class="auth-note">Trở thành một phần của cộng đồng Nhóm 3 và nhận các ưu đãi đặc quyền.</p>
 
-      <form>
+      <?php if (!empty($error)): ?>
+        <div style="background: #fce8e6; color: #c5221f; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: 500;">
+          ⚠️ <?= htmlspecialchars($error) ?>
+        </div>
+      <?php endif; ?>
+
+      <form action="index.php?page=dangky" method="POST">
         <div class="form-grid">
 
           <div class="field field-full">
-            <label for="fullname">Họ và tên *</label>
-            <input type="text" id="fullname" name="fullname" placeholder="Nguyễn Văn A" required />
+            <label for="name">Họ và tên *</label>
+            <input type="text" id="name" name="name" placeholder="Nguyễn Văn A" required />
           </div>
 
           <div class="field">
@@ -58,7 +64,7 @@ include_once __DIR__ . '/../layouts/client_header.php';
 
           <div class="field field-full">
             <label class="check-row" for="terms">
-              <input type="checkbox" id="terms" required />
+              <input type="checkbox" id="terms" required checked />
               Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a> của Nhóm 3.
             </label>
 
@@ -70,7 +76,7 @@ include_once __DIR__ . '/../layouts/client_header.php';
 
       <p class="auth-switch">
         Bạn đã có tài khoản?
-        <a href="dangnhap.php">Đăng nhập tại đây</a>
+        <a href="index.php?page=dangnhap">Đăng nhập tại đây</a>
       </p>
     </div>
   </div>
@@ -78,4 +84,3 @@ include_once __DIR__ . '/../layouts/client_header.php';
 <?php
 include_once __DIR__ . '/../layouts/client_footer.php';
 ?>
-

@@ -2,8 +2,6 @@
 $pageTitle = 'Quản lý Kho nguyên liệu - Restaurant Management System';
 $pageCss = '../../../public/asset/css/admin/warehouse.css';
 $activePage = 'warehouse';
-include_once __DIR__ . '/../layouts/admin_head.php';
-include_once __DIR__ . '/../layouts/admin_sidebar.php';
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
 

@@ -3,8 +3,6 @@ $pageTitle = "Thống kê & Báo cáo - Nhóm 3";
 $pageCss = "../../../public/asset/css/admin/statistics.css";
 $activePage = "statistics";
 $extraHead = '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
-include_once __DIR__ . '/../layouts/admin_head.php';
-include_once __DIR__ . '/../layouts/admin_sidebar.php';
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
 <!-- PAGE TITLE & DATE FILTER -->
