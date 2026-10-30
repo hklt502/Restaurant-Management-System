@@ -93,7 +93,7 @@ include_once __DIR__ . '/../layouts/client_header.php';
         <?php if (!empty($featuredFoods)): ?>
           <?php foreach ($featuredFoods as $food): ?>
             <a class="dish" href="index.php?page=thucdon">
-              <img src="<?= htmlspecialchars(!empty($food['imageURL']) ? $food['imageURL'] : 'https://images.unsplash.com/photo-1701480253822-1842236c9a97?w=600&h=400&fit=crop&auto=format') ?>"
+              <img src="<?= htmlspecialchars(!empty($food['imageURL']) ? ltrim($food['imageURL'], '/') : 'https://images.unsplash.com/photo-1701480253822-1842236c9a97?w=600&h=400&fit=crop&auto=format') ?>"
                 alt="<?= htmlspecialchars($food['foodName']) ?>" />
               <div class="dish-body">
                 <h3><?= htmlspecialchars($food['foodName']) ?></h3>

@@ -37,27 +37,27 @@ INSERT INTO `category` (`categoryId`, `categoryName`, `description`) VALUES
 INSERT INTO `food` (`foodId`, `categoryId`, `foodName`, `foodDescription`, `foodPrice`, `foodDiscount`, `foodStatus`, `isFeatured`, `imageURL`) VALUES
 -- Thịt
 (1,  1, 'Bò Mỹ Thượng Hạng',   'Thịt bò Wagyu nhập khẩu, thái lát mỏng',  350000, 0,  'AVAILABLE',   1, '/public/asset/img/thitbo.png'),
-(2,  1, 'Thịt Cừu Úc',         'Cừu tươi nhập khẩu từ Úc',                280000, 0,  'AVAILABLE',   1, NULL),
-(3,  1, 'Thịt Lợn Ba Chỉ',     'Ba chỉ lợn tươi thái lát',                120000, 0,  'AVAILABLE',   0, NULL),
-(4,  1, 'Xúc Xích Đức',        'Xúc xích Đức nhập khẩu',                  80000, 0,  'AVAILABLE',   0, NULL),
+(2,  1, 'Thịt Cừu Úc',         'Cừu tươi nhập khẩu từ Úc',                280000, 0,  'AVAILABLE',   1, '/public/asset/img/thitcuu.jpg'),
+(3,  1, 'Thịt Lợn Ba Chỉ',     'Ba chỉ lợn tươi thái lát',                120000, 0,  'AVAILABLE',   0, '/public/asset/img/bachi.jpg'),
+(4,  1, 'Xúc Xích Đức',        'Xúc xích Đức nhập khẩu',                  80000,  0,  'AVAILABLE',   0, '/public/asset/img/xucxich.jpg'),
 -- Hải sản
-(5,  2, 'Tôm Sú Tươi',         'Tôm sú tươi sống, size lớn',              180000, 0,  'AVAILABLE',   1, NULL),
-(6,  2, 'Mực Ống Tươi',        'Mực ống tươi, sạch',                      150000, 0,  'AVAILABLE',   0, NULL),
-(7,  2, 'Cua Biển',            'Cua biển tươi sống',                      250000, 0,  'AVAILABLE',   1, NULL),
+(5,  2, 'Tôm Sú Tươi',         'Tôm sú tươi sống, size lớn',              180000, 0,  'AVAILABLE',   1, '/public/asset/img/tomsu.jpg'),
+(6,  2, 'Mực Ống Tươi',        'Mực ống tươi, sạch',                      150000, 0,  'AVAILABLE',   0, '/public/asset/img/mucong.jpg'),
+(7,  2, 'Cua Biển',            'Cua biển tươi sống',                      250000, 0,  'AVAILABLE',   1, '/public/asset/img/cuabien.jpg'),
 -- Viên
-(8,  3, 'Sủi Cảo Tôm',         'Sủi cảo nhân tôm tươi',                   70000,  0,  'AVAILABLE',   0, NULL),
-(9,  3, 'Viên Bò Phô Mai',     'Viên bò nhân phô mai tan chảy',           75000,  0,  'AVAILABLE',   1, NULL),
-(10, 3, 'Chả Cá Thác Lác',     'Chả cá truyền thống',                     65000,  0,  'AVAILABLE',   0, NULL),
+(8,  3, 'Sủi Cảo Tôm',         'Sủi cảo nhân tôm tươi',                   70000,  0,  'AVAILABLE',   0, '/public/asset/img/suicao.jpg'),
+(9,  3, 'Viên Bò Phô Mai',     'Viên bò nhân phô mai tan chảy',           75000,  0,  'AVAILABLE',   1, '/public/asset/img/vienbo.jpg'),
+(10, 3, 'Chả Cá Thác Lác',     'Chả cá truyền thống',                     65000,  0,  'AVAILABLE',   0, '/public/asset/img/chaca.jpg'),
 -- Rau
-(11, 4, 'Rau Muống',           'Rau muống tươi, sạch',                    30000,  0,  'AVAILABLE',   0, NULL),
-(12, 4, 'Bắp Cải Xanh',        'Bắp cải tươi',                            25000,  0,  'AVAILABLE',   0, NULL),
-(13, 4, 'Nấm Kim Châm',        'Nấm kim châm tươi',                       40000,  0,  'AVAILABLE',   0, NULL),
+(11, 4, 'Rau Muống',           'Rau muống tươi, sạch',                    30000,  0,  'AVAILABLE',   0, '/public/asset/img/raumuong.jpg'),
+(12, 4, 'Bắp Cải Xanh',        'Bắp cải tươi',                            25000,  0,  'AVAILABLE',   0, '/public/asset/img/bapcai.jpg'),
+(13, 4, 'Nấm Kim Châm',        'Nấm kim châm tươi',                       40000,  0,  'AVAILABLE',   0, '/public/asset/img/namkimcham.jpg'),
 -- Nước
-(14, 5, 'Nước Suối',           'Nước suối 500ml',                         15000,  0,  'AVAILABLE',   0, NULL),
-(15, 5, 'Bia Heineken',        'Bia Heineken lon 330ml',                  35000,  0,  'AVAILABLE',   0, NULL),
+(14, 5, 'Nước Suối',           'Nước suối 500ml',                         15000,  0,  'AVAILABLE',   0, '/public/asset/img/nuocsuoi.jpg'),
+(15, 5, 'Bia Heineken',        'Bia Heineken lon 330ml',                  35000,  0,  'AVAILABLE',   0, '/public/asset/img/heineken.jpg'),
 -- Khác
-(16, 6, 'Lòng Lợn',            'Lòng lợn sạch, đã sơ chế',                90000,  0,  'AVAILABLE',   0, NULL),
-(17, 6, 'Tim Bò',              'Tim bò tươi thái lát',                    110000, 0,  'UNAVAILABLE', 0, NULL);
+(16, 6, 'Lòng Lợn',            'Lòng lợn sạch, đã sơ chế',                90000,  0,  'AVAILABLE',   0, '/public/asset/img/longlon.jpg'),
+(17, 6, 'Tim Bò',              'Tim bò tươi thái lát',                    110000, 0,  'UNAVAILABLE', 0, '/public/asset/img/timbo.jpg');
 
 -- ==========================================================================
 -- 5. SERVICE_TABLE (10 records) — status: AVAILABLE | OCCUPIED | RESERVED
