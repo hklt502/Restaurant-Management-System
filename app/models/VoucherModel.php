@@ -2,17 +2,20 @@
 // app/models/VoucherModel.php
 require_once __DIR__ . '/../core/Database.php';
 
-class VoucherModel {
+class VoucherModel
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Database::getConnection();
     }
 
     /**
      * Lấy toàn bộ voucher trong hệ thống (kèm tên chương trình khuyến mãi nếu có)
      */
-    public function getAll() {
+    public function getAll()
+    {
         $sql = "SELECT v.*, p.title AS promotionTitle 
                 FROM voucher v
                 LEFT JOIN promotion p ON v.promotionId = p.promotionId
@@ -25,7 +28,8 @@ class VoucherModel {
     /**
      * Lấy chi tiết 1 voucher theo ID
      */
-    public function getById($id) {
+    public function getById($id)
+    {
         $stmt = $this->db->prepare("SELECT * FROM voucher WHERE voucherId = ? AND isDeleted = 0");
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -35,7 +39,8 @@ class VoucherModel {
     /**
      * Tìm kiếm và kiểm tra mã voucher hợp lệ khi khách nhập mã
      */
-    public function findByCode($code) {
+    public function findByCode($code)
+    {
         $sql = "SELECT * FROM voucher 
                 WHERE voucherCode = ? 
                   AND isActive = 1 
@@ -52,7 +57,8 @@ class VoucherModel {
      * LẤY CHI TIẾT VÍ VOUCHER CỦA TỪNG KHÁCH HÀNG
      * Trả về danh sách voucher khách đang sở hữu, trạng thái (UNUSED / USED)
      */
-    public function getByCustomer($customerId) {
+    public function getByCustomer($customerId)
+    {
         $sql = "SELECT cv.id AS customerVoucherId, cv.status, cv.assignedAt, cv.usedAt,
                        v.voucherId, v.voucherCode, v.discountType, v.discountValue, v.minOrderValue, v.expiryDate,
                        p.title AS promotionTitle
@@ -70,7 +76,8 @@ class VoucherModel {
     /**
      * Đếm số lượng voucher còn dùng được (UNUSED) của một khách hàng
      */
-    public function countUnusedByCustomer($customerId) {
+    public function countUnusedByCustomer($customerId)
+    {
         $sql = "SELECT COUNT(*) AS total 
                 FROM customer_voucher 
                 WHERE customerId = ? AND status = 'UNUSED'";
@@ -84,7 +91,8 @@ class VoucherModel {
     /**
      * Lấy danh sách các voucher thuộc một chương trình khuyến mãi
      */
-    public function getByPromotion($promotionId) {
+    public function getByPromotion($promotionId)
+    {
         $sql = "SELECT * FROM voucher 
                 WHERE promotionId = ? 
                   AND isDeleted = 0 
@@ -100,7 +108,8 @@ class VoucherModel {
     /**
      * Kiểm tra xem khách hàng đã nhận mã voucher này trong ví chưa (và chưa dùng)
      */
-    public function hasCustomerVoucher($customerId, $voucherId) {
+    public function hasCustomerVoucher($customerId, $voucherId)
+    {
         $sql = "SELECT 1 FROM customer_voucher 
                 WHERE customerId = ? AND voucherId = ? AND status = 'UNUSED' 
                 LIMIT 1";
@@ -113,7 +122,8 @@ class VoucherModel {
     /**
      * Cấp phát / tặng 1 voucher vào ví của khách hàng
      */
-    public function assignToCustomer($customerId, $voucherId) {
+    public function assignToCustomer($customerId, $voucherId)
+    {
         $stmt = $this->db->prepare(
             "INSERT INTO customer_voucher (customerId, voucherId, status) VALUES (?, ?, 'UNUSED')"
         );
@@ -124,7 +134,8 @@ class VoucherModel {
     /**
      * Đánh dấu voucher trong ví khách hàng là ĐÃ SỬ DỤNG
      */
-    public function useVoucher($customerId, $voucherId) {
+    public function useVoucher($customerId, $voucherId)
+    {
         $sql = "UPDATE customer_voucher 
                 SET status = 'USED', usedAt = NOW() 
                 WHERE customerId = ? AND voucherId = ? AND status = 'UNUSED' 
@@ -137,7 +148,8 @@ class VoucherModel {
     /**
      * Thêm mới một voucher (dành cho Admin)
      */
-    public function create($code, $discountType, $discountValue, $minOrderValue = 0, $expiryDate = null, $usageLimit = 100, $promotionId = null) {
+    public function create($code, $discountType, $discountValue, $minOrderValue = 0, $expiryDate = null, $usageLimit = 100, $promotionId = null)
+    {
         $sql = "INSERT INTO voucher (voucherCode, discountType, discountValue, minOrderValue, expiryDate, usageLimit, promotionId)
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
@@ -148,7 +160,8 @@ class VoucherModel {
     /**
      * Cập nhật thông tin voucher
      */
-    public function update($id, $code, $discountType, $discountValue, $minOrderValue, $expiryDate, $usageLimit, $promotionId = null) {
+    public function update($id, $code, $discountType, $discountValue, $minOrderValue, $expiryDate, $usageLimit, $promotionId = null)
+    {
         $sql = "UPDATE voucher 
                 SET voucherCode = ?, discountType = ?, discountValue = ?, minOrderValue = ?, expiryDate = ?, usageLimit = ?, promotionId = ?
                 WHERE voucherId = ?";
@@ -160,10 +173,10 @@ class VoucherModel {
     /**
      * Xóa mềm voucher (isDeleted = 1)
      */
-    public function delete($id) {
+    public function delete($id)
+    {
         $stmt = $this->db->prepare("UPDATE voucher SET isDeleted = 1 WHERE voucherId = ?");
         $stmt->bind_param("i", $id);
         return $stmt->execute();
     }
 }
-

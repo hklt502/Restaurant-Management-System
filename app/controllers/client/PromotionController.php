@@ -4,10 +4,12 @@ require_once __DIR__ . '/../../core/BaseController.php';
 require_once __DIR__ . '/../../models/PromotionModel.php';
 require_once __DIR__ . '/../../models/VoucherModel.php';
 
-class PromotionController extends BaseController {
-    
+class PromotionController extends BaseController
+{
+
     // Hiển thị danh sách chương trình khuyến mãi và các voucher đính kèm
-    public function index() {
+    public function index()
+    {
         $promotionModel = new PromotionModel();
         $voucherModel   = new VoucherModel();
 
@@ -44,7 +46,8 @@ class PromotionController extends BaseController {
     }
 
     // Nhận voucher từ cửa sổ chi tiết của promotion và lưu vào ví customer
-    public function claimVoucher() {
+    public function claimVoucher()
+    {
         $customerId = $this->customerId();
         if (!$customerId) {
             // Chưa đăng nhập -> Chuyển hướng đến trang đăng nhập

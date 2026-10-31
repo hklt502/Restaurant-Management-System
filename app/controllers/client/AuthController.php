@@ -62,8 +62,10 @@ class AuthController extends BaseController
         $birth    = $_POST['birth'] ?? null;
         $password = $_POST['password'] ?? '';
         $confirm  = $_POST['confirm'] ?? '';
-        // Form gửi nam/nu/khac -> map sang ENUM của DB
-        $gender   = ['nam' => 'MALE', 'nu' => 'FEMALE'][$_POST['gender'] ?? ''] ?? 'OTHER';
+        //chuyển đổi 
+        $map = ['nam' => 'MALE', 'nu' => 'FEMALE'];
+        $key = $_POST['gender'] ?? '';
+        $gender = $map[$key] ?? 'OTHER';
 
         $error = null;
         if ($name === '' || $phone === '' || $email === '' || $password === '') {
