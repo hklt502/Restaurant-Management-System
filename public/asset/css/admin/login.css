@@ -13,39 +13,84 @@ body {
 /* LOGIN */
 
 .login-page {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f6f4 0%, #f1dcdd 100%);
 }
 
 .login-box {
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     background: white;
     padding: 40px;
     border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(168, 50, 61, 0.15);
+}
+
+.login-box .logo {
+    width: fit-content;
+    margin: 0 auto 15px;
+    padding: 6px 16px;
+    background: #a8323d;
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
 }
 
 .login-box h1 {
     color: #a8323d;
     text-align: center;
 }
-.login-box p {
-    width:250px;
+
+.login-box .login-text {
+    margin: 8px 0 25px;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+
+.login-box label {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .login-box input {
     width: 100%;
-    padding: 10px;
-    margin: 5px 0;
+    padding: 11px 12px;
+    margin: 6px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-box input:focus {
+    outline: none;
+    border-color: #a8323d;
+    box-shadow: 0 0 0 3px rgba(168, 50, 61, 0.15);
 }
 
 .login-box button {
     width: 100%;
-    padding: 10px;
+    margin-top: 20px;
+    padding: 12px;
     background: #a8323d;
     color: white;
     border: 0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-box button:hover {
+    background: #8c2832;
 }
 
 
