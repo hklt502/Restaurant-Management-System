@@ -7,6 +7,10 @@
 require_once __DIR__ . '/app/core/Router.php';
 
 $router = new Router();
+$router->get('admin-login', 'AdminController', 'login');
+$router->post('admin-login', 'AdminController', 'login');
+$router->get('admin-users', 'AdminController', 'users');
+$router->get('admin-tables', 'AdminController', 'tables');
 
 // ======================== ROUTES CLIENT ========================
 // 1. Trang chủ
@@ -39,4 +43,5 @@ $router->post('doimatkhau', 'AuthController', 'changePassword');
 
 // Kích hoạt điều hướng request
 $router->dispatch();
+
 
