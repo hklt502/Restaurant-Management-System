@@ -54,6 +54,11 @@ class CustomerModel {
         return null;
     }
 
+   public function getAll() {
+    $sql = "SELECT * FROM customer WHERE isDeleted = 0";
+    $result = $this->db->query($sql);
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
     public function updateProfile($id, $name, $email, $birthDate, $gender, $address) {
         $stmt = $this->db->prepare(
             "UPDATE customer SET customerName = ?, customerEmail = ?, birthDate = ?, gender = ?, address = ?
