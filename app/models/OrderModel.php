@@ -9,8 +9,8 @@ class OrderModel {
         $this->db = Database::getConnection();
     }
 
-    /**
-     * Tự động nạp bổ sung các đơn hàng mẫu từ restaurant_insert.sql nếu bảng orders mới chỉ có <= 7 bản ghi
+    /*
+     Tự động nạp bổ sung các đơn hàng mẫu từ restaurant_insert.sql nếu bảng orders mới chỉ có <= 7 bản ghi
      */
     private function syncInsertSqlIfNeeded() {
         $res = $this->db->query("SELECT COUNT(*) AS cnt FROM orders");

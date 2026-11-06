@@ -146,28 +146,70 @@ class VoucherModel
     }
 
     /**
+     * Lấy danh sách chương trình khuyến mãi để gắn với Voucher
+     */
+    public function getPromotions()
+    {
+        $result = $this->db->query("SELECT promotionId, title FROM promotion ORDER BY promotionId ASC");
+        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    }
+
+    /**
      * Thêm mới một voucher (dành cho Admin)
      */
-    public function create($code, $discountType, $discountValue, $minOrderValue = 0, $expiryDate = null, $usageLimit = 100, $promotionId = null)
+    public function create($code, $discountType, $discountValue, $minOrderValue = 0, $expiryDate = null, $usageLimit = 100, $promotionId = null, $isActive = 1)
     {
-        $sql = "INSERT INTO voucher (voucherCode, discountType, discountValue, minOrderValue, expiryDate, usageLimit, promotionId)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $code          = strtoupper(trim($code));
+        $discountType  = strtoupper(trim($discountType));
+        $discountValue = (float)$discountValue;
+        $minOrderValue = (float)$minOrderValue;
+        $usageLimit    = max(1, (int)$usageLimit);
+        $isActive      = (int)$isActive ? 1 : 0;
+        $expiryDate    = !empty($expiryDate) ? $expiryDate : null;
+        $promotionId   = !empty($promotionId) ? (int)$promotionId : null;
+
+        $sql = "INSERT INTO voucher (voucherCode, discountType, discountValue, minOrderValue, expiryDate, usageLimit, promotionId, isActive, isDeleted)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)";
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("ssddssi", $code, $discountType, $discountValue, $minOrderValue, $expiryDate, $usageLimit, $promotionId);
+        $stmt->bind_param("ssddsiii", $code, $discountType, $discountValue, $minOrderValue, $expiryDate, $usageLimit, $promotionId, $isActive);
         return $stmt->execute() ? $this->db->insert_id : false;
     }
 
     /**
      * Cập nhật thông tin voucher
      */
-    public function update($id, $code, $discountType, $discountValue, $minOrderValue, $expiryDate, $usageLimit, $promotionId = null)
+    public function update($id, $code, $discountType, $discountValue, $minOrderValue, $expiryDate, $usageLimit, $promotionId = null, $isActive = 1)
     {
+        $id            = (int)$id;
+        $code          = strtoupper(trim($code));
+        $discountType  = strtoupper(trim($discountType));
+        $discountValue = (float)$discountValue;
+        $minOrderValue = (float)$minOrderValue;
+        $usageLimit    = max(1, (int)$usageLimit);
+        $isActive      = (int)$isActive ? 1 : 0;
+        $expiryDate    = !empty($expiryDate) ? $expiryDate : null;
+        $promotionId   = !empty($promotionId) ? (int)$promotionId : null;
+
         $sql = "UPDATE voucher 
-                SET voucherCode = ?, discountType = ?, discountValue = ?, minOrderValue = ?, expiryDate = ?, usageLimit = ?, promotionId = ?
+                SET voucherCode = ?, discountType = ?, discountValue = ?, minOrderValue = ?, expiryDate = ?, usageLimit = ?, promotionId = ?, isActive = ?
                 WHERE voucherId = ?";
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("ssddssii", $code, $discountType, $discountValue, $minOrderValue, $expiryDate, $usageLimit, $promotionId, $id);
+        $stmt->bind_param("ssddsiiii", $code, $discountType, $discountValue, $minOrderValue, $expiryDate, $usageLimit, $promotionId, $isActive, $id);
         return $stmt->execute();
+    }
+
+    /**
+     * Tạm dừng / Kích hoạt lại voucher (Đổi trạng thái isActive 1 <-> 0)
+     */
+    public function toggleActive($id)
+    {
+        $id  = (int)$id;
+        $row = $this->getById($id);
+        if (!$row) return false;
+        $newActive = ((int)$row['isActive'] === 1) ? 0 : 1;
+        $stmt = $this->db->prepare("UPDATE voucher SET isActive = ? WHERE voucherId = ?");
+        $stmt->bind_param("ii", $newActive, $id);
+        return $stmt->execute() ? $newActive : false;
     }
 
     /**
