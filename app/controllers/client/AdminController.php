@@ -190,23 +190,38 @@ class AdminController extends BaseController
      */
     public function orders()
     {
-        // Xử lý AJAX cập nhật trạng thái đơn hàng xuống Database
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             header('Content-Type: application/json; charset=utf-8');
-            $rawId     = $_POST['orderId'] ?? '';
-            $newStatus = $_POST['status'] ?? '';
-            $numId     = (int) preg_replace('/\D/', '', $rawId);
-            $ok = false;
-            try {
-                $orderModel = new OrderModel();
-                if ($numId > 0) {
-                    $ok = $orderModel->updateStatus($numId, $newStatus);
-                }
-            } catch (Throwable $e) {
+
+            // 1. Xử lý AJAX cập nhật trạng thái đơn hàng xuống Database
+            if ($_POST['action'] === 'update_status') {
+                $rawId     = $_POST['orderId'] ?? '';
+                $newStatus = $_POST['status'] ?? '';
+                $numId     = (int) preg_replace('/\D/', '', $rawId);
                 $ok = false;
+                try {
+                    $orderModel = new OrderModel();
+                    if ($numId > 0) {
+                        $ok = $orderModel->updateStatus($numId, $newStatus);
+                    }
+                } catch (Throwable $e) {
+                    $ok = false;
+                }
+                echo json_encode(['success' => $ok, 'orderId' => $rawId, 'status' => $newStatus]);
+                exit;
             }
-            echo json_encode(['success' => $ok, 'orderId' => $rawId, 'status' => $newStatus]);
-            exit;
+
+            // 2. Xử lý AJAX tạo đơn hàng mới từ POS và INSERT vào Database
+            if ($_POST['action'] === 'create_order') {
+                try {
+                    $orderModel = new OrderModel();
+                    $newOrder   = $orderModel->createOrderFromPos($_POST);
+                    echo json_encode(['success' => true, 'order' => $newOrder], JSON_UNESCAPED_UNICODE);
+                } catch (Throwable $e) {
+                    echo json_encode(['success' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+                }
+                exit;
+            }
         }
 
         $dbOrders   = [];

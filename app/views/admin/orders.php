@@ -5,23 +5,39 @@ $assetPrefix  = $isDirectView ? '../../../' : '';
 // ============================================================================
 // 1. KẾT NỐI DATABASE VỚI ORDERMODEL VÀ FOODMODEL (Hỗ trợ cả MVC Controller & Direct View)
 // ============================================================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json; charset=utf-8');
-    $rawId     = $_POST['orderId'] ?? '';
-    $newStatus = $_POST['status'] ?? '';
-    $numId     = (int) preg_replace('/\D/', '', $rawId);
-    $ok = false;
-    try {
-        require_once __DIR__ . '/../../models/OrderModel.php';
-        $orderModel = new OrderModel();
-        if ($numId > 0) {
-            $ok = $orderModel->updateStatus($numId, $newStatus);
-        }
-    } catch (Throwable $e) {
+    require_once __DIR__ . '/../../models/OrderModel.php';
+
+    // 1.1. Cập nhật trạng thái đơn hàng xuống Database
+    if ($_POST['action'] === 'update_status') {
+        $rawId     = $_POST['orderId'] ?? '';
+        $newStatus = $_POST['status'] ?? '';
+        $numId     = (int) preg_replace('/\D/', '', $rawId);
         $ok = false;
+        try {
+            $orderModel = new OrderModel();
+            if ($numId > 0) {
+                $ok = $orderModel->updateStatus($numId, $newStatus);
+            }
+        } catch (Throwable $e) {
+            $ok = false;
+        }
+        echo json_encode(['success' => $ok, 'orderId' => $rawId, 'status' => $newStatus]);
+        exit;
     }
-    echo json_encode(['success' => $ok, 'orderId' => $rawId, 'status' => $newStatus]);
-    exit;
+
+    // 1.2. Tạo đơn hàng mới từ POS và INSERT trực tiếp vào Database (bảng orders & order_items)
+    if ($_POST['action'] === 'create_order') {
+        try {
+            $orderModel = new OrderModel();
+            $newOrder   = $orderModel->createOrderFromPos($_POST);
+            echo json_encode(['success' => true, 'order' => $newOrder], JSON_UNESCAPED_UNICODE);
+        } catch (Throwable $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+        }
+        exit;
+    }
 }
 
 if (!isset($dbOrders)) {
@@ -640,681 +656,14 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             cancelled:   { name: "Đã hủy",        badgeClass: "badge--cancelled",   selectClass: "status-select--cancelled" }
         };
 
-        const dbOrdersFromServer = <?= json_encode($dbOrders, JSON_UNESCAPED_UNICODE) ?>;
-        const dbFoodsFromServer  = <?= json_encode($dbFoodsPos, JSON_UNESCAPED_UNICODE) ?>;
-
-        const initialOrdersData = [
-            // ================= ĐƠN HÔM NAY (today - 8 đơn) =================
-            {
-                id: "DH-1028",
-                period: "today",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 04 (Tầng 1)",
-                tableShort: "Bàn 04",
-                customer: "Nguyễn Hữu An",
-                phone: "0901 234 567",
-                guests: 4,
-                time: "11:30 28/09/2026",
-                dishes: [
-                    { name: "Thịt bò Wagyu thượng hạng", qty: 2, price: 350000, note: "Cắt lát vừa ăn", status: "done" },
-                    { name: "Lẩu Tomyum Thái Lan", qty: 1, price: 290000, note: "Ít cay", status: "done" },
-                    { name: "Sủi cảo hải sản", qty: 1, price: 95000, note: "Hấp", status: "cooking" },
-                    { name: "Trà đào cam sả", qty: 4, price: 40000, note: "Ít ngọt, ít đá", status: "done" }
-                ],
-                subtotal: 1245000,
-                voucherCode: "GIAM10%",
-                discount: 124500,
-                vat: 89640,
-                total: 1210140,
-                payment: "transfer",
-                paymentName: "Chuyển khoản VietQR",
-                status: "serving",
-                statusName: "Đang phục vụ",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1027",
-                period: "today",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 05 (Tầng 1)",
-                tableShort: "Bàn 05",
-                customer: "Lê Thị Hương Giang",
-                phone: "0912 888 999",
-                guests: 2,
-                time: "11:45 28/09/2026",
-                dishes: [
-                    { name: "Bò Mỹ cuộn nấm kim châm", qty: 2, price: 160000, note: "", status: "cooking" },
-                    { name: "Lẩu nấm dưỡng sinh", qty: 1, price: 250000, note: "Thanh đạm", status: "cooking" },
-                    { name: "Nước khoáng đóng chai", qty: 2, price: 20000, note: "Không lạnh", status: "done" }
-                ],
-                subtotal: 610000,
-                voucherCode: "",
-                discount: 0,
-                vat: 48800,
-                total: 658800,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "cooking",
-                statusName: "Đang chế biến",
-                server: "Trần Hoàng Nam"
-            },
-            {
-                id: "DH-1026",
-                period: "today",
-                type: "takeaway",
-                typeName: "Mang về",
-                table: "Quầy Takeaway",
-                tableShort: "Mang về",
-                customer: "Trần Đình Trọng",
-                phone: "0987 111 222",
-                guests: 1,
-                time: "12:00 28/09/2026",
-                dishes: [
-                    { name: "Cơm chiên hải sản Hoàng Kim", qty: 1, price: 120000, note: "Đóng hộp giữ nhiệt", status: "done" },
-                    { name: "Gà rán sốt cay Hàn Quốc", qty: 1, price: 140000, note: "Để sốt riêng", status: "done" },
-                    { name: "Trà tắc mật ong", qty: 1, price: 35000, note: "", status: "done" }
-                ],
-                subtotal: 295000,
-                voucherCode: "",
-                discount: 0,
-                vat: 23600,
-                total: 318600,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "pending_pay",
-                statusName: "Chờ thanh toán",
-                server: "Nguyễn Mạnh Tiến"
-            },
-            {
-                id: "DH-1025",
-                period: "today",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn VIP 01",
-                tableShort: "VIP 01",
-                customer: "Phạm Minh Tuấn",
-                phone: "0933 654 321",
-                guests: 6,
-                time: "10:15 28/09/2026",
-                dishes: [
-                    { name: "Thịt bò Wagyu thượng hạng", qty: 3, price: 350000, note: "", status: "done" },
-                    { name: "Combo Hải sản King Crab & Tôm hùm", qty: 1, price: 1850000, note: "Nướng bơ tỏi", status: "done" },
-                    { name: "Rượu vang đỏ Chile", qty: 1, price: 850000, note: "", status: "done" }
-                ],
-                subtotal: 3750000,
-                voucherCode: "VIP20%",
-                discount: 750000,
-                vat: 240000,
-                total: 3240000,
-                payment: "card",
-                paymentName: "Thẻ VISA / Mastercard",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1024",
-                period: "today",
-                type: "delivery",
-                typeName: "Giao hàng",
-                table: "GrabFood / ShopeeFood",
-                tableShort: "Giao hàng",
-                customer: "Hoàng Thảo My",
-                phone: "0944 555 666",
-                guests: 1,
-                time: "10:45 28/09/2026",
-                dishes: [
-                    { name: "Mì xào hải sản Singapore", qty: 2, price: 110000, note: "Cay vừa", status: "done" },
-                    { name: "Salad cá hồi sốt mè rang", qty: 1, price: 135000, note: "", status: "done" }
-                ],
-                subtotal: 355000,
-                voucherCode: "TIENMAT50K",
-                discount: 50000,
-                vat: 24400,
-                total: 329400,
-                payment: "transfer",
-                paymentName: "Chuyển khoản QR",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1023",
-                period: "today",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 02 (Tầng 1)",
-                tableShort: "Bàn 02",
-                customer: "Đỗ Gia Huy",
-                phone: "0977 444 333",
-                guests: 3,
-                time: "11:10 28/09/2026",
-                dishes: [
-                    { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "Cay cấp 3", status: "done" },
-                    { name: "Ba chỉ bò cuộn nấm", qty: 2, price: 140000, note: "", status: "done" },
-                    { name: "Bia tươi Sài Gòn Special", qty: 6, price: 25000, note: "Ướp lạnh", status: "done" }
-                ],
-                subtotal: 750000,
-                voucherCode: "",
-                discount: 0,
-                vat: 60000,
-                total: 810000,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "serving",
-                statusName: "Đang phục vụ",
-                server: "Trần Hoàng Nam"
-            },
-            {
-                id: "DH-1022",
-                period: "today",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 08 (Tầng 2)",
-                tableShort: "Bàn 08",
-                customer: "Khách lẻ đặt bàn",
-                phone: "0909 123 456",
-                guests: 2,
-                time: "09:30 28/09/2026",
-                dishes: [
-                    { name: "Bò Wagyu thượng hạng", qty: 1, price: 350000, note: "", status: "cancelled" }
-                ],
-                subtotal: 350000,
-                voucherCode: "",
-                discount: 0,
-                vat: 0,
-                total: 350000,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "cancelled",
-                statusName: "Đã hủy",
-                server: "Nguyễn Mạnh Tiến"
-            },
-            {
-                id: "DH-1021",
-                period: "today",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 03 (Tầng 1)",
-                tableShort: "Bàn 03",
-                customer: "Vũ Bảo Ngọc",
-                phone: "0938 777 888",
-                guests: 4,
-                time: "09:00 28/09/2026",
-                dishes: [
-                    { name: "Lẩu Kim Chi Hải Sản", qty: 1, price: 310000, note: "", status: "done" },
-                    { name: "Bò Mỹ cao cấp", qty: 2, price: 180000, note: "", status: "done" },
-                    { name: "Rau nấm tổng hợp", qty: 1, price: 75000, note: "", status: "done" }
-                ],
-                subtotal: 745000,
-                voucherCode: "",
-                discount: 0,
-                vat: 59600,
-                total: 804600,
-                payment: "transfer",
-                paymentName: "Chuyển khoản QR",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-
-            // ================= ĐƠN HÔM QUA (yesterday - 5 đơn) =================
-            {
-                id: "DH-1020",
-                period: "yesterday",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn VIP 02",
-                tableShort: "VIP 02",
-                customer: "Trương Quốc Bảo",
-                phone: "0918 222 333",
-                guests: 8,
-                time: "19:20 27/09/2026",
-                dishes: [
-                    { name: "Combo Hải sản King Crab & Tôm hùm", qty: 1, price: 1850000, note: "", status: "done" },
-                    { name: "Lẩu Tomyum Thái Lan", qty: 2, price: 290000, note: "", status: "done" },
-                    { name: "Bia tươi Sài Gòn Special", qty: 10, price: 25000, note: "", status: "done" }
-                ],
-                subtotal: 2680000,
-                voucherCode: "GIAM10%",
-                discount: 268000,
-                vat: 192960,
-                total: 2604960,
-                payment: "card",
-                paymentName: "Thẻ VISA / Mastercard",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1019",
-                period: "yesterday",
-                type: "takeaway",
-                typeName: "Mang về",
-                table: "Quầy Takeaway",
-                tableShort: "Mang về",
-                customer: "Ngô Thanh Vân",
-                phone: "0905 666 777",
-                guests: 1,
-                time: "18:10 27/09/2026",
-                dishes: [
-                    { name: "Cơm chiên hải sản Hoàng Kim", qty: 2, price: 120000, note: "", status: "done" },
-                    { name: "Sủi cảo tôm thịt hoàng gia", qty: 1, price: 95000, note: "", status: "done" }
-                ],
-                subtotal: 335000,
-                voucherCode: "",
-                discount: 0,
-                vat: 26800,
-                total: 361800,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Trần Hoàng Nam"
-            },
-            {
-                id: "DH-1018",
-                period: "yesterday",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 01 (Tầng 1)",
-                tableShort: "Bàn 01",
-                customer: "Lý Hoàng Long",
-                phone: "0972 333 444",
-                guests: 4,
-                time: "17:30 27/09/2026",
-                dishes: [
-                    { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "", status: "done" },
-                    { name: "Ba chỉ bò Mỹ cuộn nấm", qty: 3, price: 160000, note: "", status: "done" }
-                ],
-                subtotal: 800000,
-                voucherCode: "",
-                discount: 0,
-                vat: 64000,
-                total: 864000,
-                payment: "transfer",
-                paymentName: "Chuyển khoản QR",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Nguyễn Mạnh Tiến"
-            },
-            {
-                id: "DH-1017",
-                period: "yesterday",
-                type: "delivery",
-                typeName: "Giao hàng",
-                table: "ShopeeFood",
-                tableShort: "Giao hàng",
-                customer: "Bùi Bích Phương",
-                phone: "0963 111 999",
-                guests: 1,
-                time: "14:15 27/09/2026",
-                dishes: [
-                    { name: "Salad cá hồi sốt mè rang", qty: 2, price: 135000, note: "", status: "done" },
-                    { name: "Trà đào cam sả thanh mát", qty: 2, price: 40000, note: "", status: "done" }
-                ],
-                subtotal: 350000,
-                voucherCode: "",
-                discount: 0,
-                vat: 28000,
-                total: 378000,
-                payment: "transfer",
-                paymentName: "Chuyển khoản QR",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1016",
-                period: "yesterday",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 06 (Tầng 2)",
-                tableShort: "Bàn 06",
-                customer: "Đặng Văn Lâm",
-                phone: "0934 888 111",
-                guests: 2,
-                time: "12:30 27/09/2026",
-                dishes: [
-                    { name: "Mực một nắng nướng sa tế", qty: 1, price: 180000, note: "", status: "cancelled" }
-                ],
-                subtotal: 180000,
-                voucherCode: "",
-                discount: 0,
-                vat: 0,
-                total: 180000,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "cancelled",
-                statusName: "Đã hủy",
-                server: "Trần Hoàng Nam"
-            },
-
-            // ================= ĐƠN TRONG TUẦN NÀY (week - thêm 5 đơn, cộng dồn = 18 đơn) =================
-            {
-                id: "DH-1015",
-                period: "week",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn VIP 01",
-                tableShort: "VIP 01",
-                customer: "Phan Mạnh Quỳnh",
-                phone: "0915 777 222",
-                guests: 6,
-                time: "20:00 25/09/2026",
-                dishes: [
-                    { name: "Thịt bò Wagyu thượng hạng", qty: 4, price: 350000, note: "", status: "done" },
-                    { name: "Lẩu nấm dưỡng sinh", qty: 1, price: 250000, note: "", status: "done" },
-                    { name: "Rượu vang đỏ Chile", qty: 1, price: 850000, note: "", status: "done" }
-                ],
-                subtotal: 2500000,
-                voucherCode: "VIP20%",
-                discount: 500000,
-                vat: 160000,
-                total: 2160000,
-                payment: "card",
-                paymentName: "Thẻ VISA / Mastercard",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1014",
-                period: "week",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 02 (Tầng 1)",
-                tableShort: "Bàn 02",
-                customer: "Hà Anh Tuấn",
-                phone: "0988 999 000",
-                guests: 4,
-                time: "19:10 24/09/2026",
-                dishes: [
-                    { name: "Lẩu Tomyum Thái Lan", qty: 1, price: 290000, note: "", status: "done" },
-                    { name: "Ba chỉ bò Mỹ cuộn nấm", qty: 2, price: 160000, note: "", status: "done" },
-                    { name: "Mực một nắng nướng sa tế", qty: 1, price: 180000, note: "", status: "done" }
-                ],
-                subtotal: 790000,
-                voucherCode: "",
-                discount: 0,
-                vat: 63200,
-                total: 853200,
-                payment: "transfer",
-                paymentName: "Chuyển khoản QR",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Nguyễn Mạnh Tiến"
-            },
-            {
-                id: "DH-1013",
-                period: "week",
-                type: "takeaway",
-                typeName: "Mang về",
-                table: "Quầy Takeaway",
-                tableShort: "Mang về",
-                customer: "Lê Bảo Bình",
-                phone: "0942 123 789",
-                guests: 1,
-                time: "12:15 24/09/2026",
-                dishes: [
-                    { name: "Cơm chiên hải sản Hoàng Kim", qty: 3, price: 120000, note: "", status: "done" }
-                ],
-                subtotal: 360000,
-                voucherCode: "",
-                discount: 0,
-                vat: 28800,
-                total: 388800,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Trần Hoàng Nam"
-            },
-            {
-                id: "DH-1012",
-                period: "week",
-                type: "delivery",
-                typeName: "Giao hàng",
-                table: "GrabFood",
-                tableShort: "Giao hàng",
-                customer: "Nguyễn Thúc Thùy Tiên",
-                phone: "0908 555 123",
-                guests: 2,
-                time: "18:40 23/09/2026",
-                dishes: [
-                    { name: "Salad cá hồi sốt mè rang", qty: 2, price: 135000, note: "", status: "done" },
-                    { name: "Sủi cảo tôm thịt hoàng gia", qty: 2, price: 95000, note: "", status: "done" }
-                ],
-                subtotal: 460000,
-                voucherCode: "TIENMAT50K",
-                discount: 50000,
-                vat: 32800,
-                total: 442800,
-                payment: "transfer",
-                paymentName: "Chuyển khoản QR",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1011",
-                period: "week",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 07 (Tầng 2)",
-                tableShort: "Bàn 07",
-                customer: "Đoàn Văn Hậu",
-                phone: "0966 777 888",
-                guests: 4,
-                time: "19:00 22/09/2026",
-                dishes: [
-                    { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "", status: "done" },
-                    { name: "Thịt bò Wagyu thượng hạng", qty: 2, price: 350000, note: "", status: "done" }
-                ],
-                subtotal: 1020000,
-                voucherCode: "",
-                discount: 0,
-                vat: 81600,
-                total: 1101600,
-                payment: "card",
-                paymentName: "Thẻ VISA / Mastercard",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Trần Hoàng Nam"
-            },
-
-            // ================= ĐƠN TRONG THÁNG NÀY (month - thêm 6 đơn, cộng dồn = 24 đơn) =================
-            {
-                id: "DH-1010",
-                period: "month",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn VIP 01",
-                tableShort: "VIP 01",
-                customer: "Công ty TNHH Sao Việt",
-                phone: "0903 111 222",
-                guests: 10,
-                time: "18:30 18/09/2026",
-                dishes: [
-                    { name: "Combo Hải sản King Crab & Tôm hùm", qty: 2, price: 1850000, note: "", status: "done" },
-                    { name: "Rượu vang đỏ Chile", qty: 2, price: 850000, note: "", status: "done" }
-                ],
-                subtotal: 5400000,
-                voucherCode: "VIP20%",
-                discount: 1080000,
-                vat: 345600,
-                total: 4665600,
-                payment: "card",
-                paymentName: "Thẻ VISA / Mastercard",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1009",
-                period: "month",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 03 (Tầng 1)",
-                tableShort: "Bàn 03",
-                customer: "Lương Xuân Trường",
-                phone: "0912 345 678",
-                guests: 4,
-                time: "19:45 15/09/2026",
-                dishes: [
-                    { name: "Lẩu nấm dưỡng sinh", qty: 1, price: 250000, note: "", status: "done" },
-                    { name: "Ba chỉ bò Mỹ cuộn nấm", qty: 3, price: 160000, note: "", status: "done" }
-                ],
-                subtotal: 730000,
-                voucherCode: "",
-                discount: 0,
-                vat: 58400,
-                total: 788400,
-                payment: "transfer",
-                paymentName: "Chuyển khoản QR",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Nguyễn Mạnh Tiến"
-            },
-            {
-                id: "DH-1008",
-                period: "month",
-                type: "takeaway",
-                typeName: "Mang về",
-                table: "Quầy Takeaway",
-                tableShort: "Mang về",
-                customer: "Nguyễn Quang Hải",
-                phone: "0989 191 919",
-                guests: 1,
-                time: "11:50 12/09/2026",
-                dishes: [
-                    { name: "Mực một nắng nướng sa tế", qty: 2, price: 180000, note: "", status: "done" },
-                    { name: "Cơm chiên hải sản Hoàng Kim", qty: 1, price: 120000, note: "", status: "done" }
-                ],
-                subtotal: 480000,
-                voucherCode: "",
-                discount: 0,
-                vat: 38400,
-                total: 518400,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Trần Hoàng Nam"
-            },
-            {
-                id: "DH-1007",
-                period: "month",
-                type: "delivery",
-                typeName: "Giao hàng",
-                table: "ShopeeFood",
-                tableShort: "Giao hàng",
-                customer: "Đỗ Duy Mạnh",
-                phone: "0975 282 828",
-                guests: 2,
-                time: "13:10 10/09/2026",
-                dishes: [
-                    { name: "Sủi cảo tôm thịt hoàng gia", qty: 3, price: 95000, note: "", status: "done" },
-                    { name: "Trà đào cam sả thanh mát", qty: 3, price: 40000, note: "", status: "done" }
-                ],
-                subtotal: 405000,
-                voucherCode: "",
-                discount: 0,
-                vat: 32400,
-                total: 437400,
-                payment: "transfer",
-                paymentName: "Chuyển khoản QR",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Hồ Kim Lưu Thống"
-            },
-            {
-                id: "DH-1006",
-                period: "month",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 05 (Tầng 1)",
-                tableShort: "Bàn 05",
-                customer: "Văn Toàn",
-                phone: "0939 090 909",
-                guests: 3,
-                time: "20:15 06/09/2026",
-                dishes: [
-                    { name: "Lẩu Tomyum Thái Lan", qty: 1, price: 290000, note: "", status: "done" },
-                    { name: "Thịt bò Wagyu thượng hạng", qty: 1, price: 350000, note: "", status: "done" }
-                ],
-                subtotal: 640000,
-                voucherCode: "",
-                discount: 0,
-                vat: 51200,
-                total: 691200,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "paid",
-                statusName: "Đã thanh toán",
-                server: "Nguyễn Mạnh Tiến"
-            },
-            {
-                id: "DH-1005",
-                period: "month",
-                type: "dinein",
-                typeName: "Ăn tại bàn",
-                table: "Bàn 02 (Tầng 1)",
-                tableShort: "Bàn 02",
-                customer: "Khách đặt bàn hủy",
-                phone: "0902 444 555",
-                guests: 4,
-                time: "18:00 02/09/2026",
-                dishes: [
-                    { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "", status: "cancelled" }
-                ],
-                subtotal: 320000,
-                voucherCode: "",
-                discount: 0,
-                vat: 0,
-                total: 320000,
-                payment: "cash",
-                paymentName: "Tiền mặt",
-                status: "cancelled",
-                statusName: "Đã hủy",
-                server: "Trần Hoàng Nam"
-            }
-        ];
-
-        // Kết hợp đơn hàng thực từ MySQL Database vào đầu danh sách
-        if (Array.isArray(dbOrdersFromServer) && dbOrdersFromServer.length > 0) {
-            dbOrdersFromServer.forEach(dbOrd => {
-                if (!initialOrdersData.some(o => o.id === dbOrd.id)) {
-                    initialOrdersData.unshift(dbOrd);
-                }
-            });
-        }
-
-        // Sao lưu bản sâu (deep copy) để có thể làm mới/khôi phục trạng thái bất cứ lúc nào
+        // Dữ liệu đơn hàng lấy trực tiếp từ bảng orders & order_items (restaurant_insert.sql)
+        const initialOrdersData = <?= json_encode($dbOrders, JSON_UNESCAPED_UNICODE) ?>;
         let ordersData = JSON.parse(JSON.stringify(initialOrdersData));
 
         // ---------------------------------------------------------
-        // 2. MENU MÓN ĂN DÀNH CHO MODAL TẠO ĐƠN HÀNG (Mini POS - Lấy từ DB FoodModel)
+        // 2. MENU MÓN ĂN DÀNH CHO MODAL TẠO ĐƠN HÀNG (Lấy trực tiếp từ bảng food trong Database)
         // ---------------------------------------------------------
-        const defaultMenuDishes = [
-            { id: 1, name: "Thịt bò Wagyu thượng hạng", cat: "beef", price: 350000, unit: "Dĩa" },
-            { id: 2, name: "Ba chỉ bò Mỹ cuộn nấm", cat: "beef", price: 160000, unit: "Dĩa" },
-            { id: 3, name: "Lẩu Tomyum Thái Lan", cat: "beef", price: 290000, unit: "Nồi" },
-            { id: 4, name: "Lẩu Tứ Xuyên siêu cay", cat: "beef", price: 320000, unit: "Nồi" },
-            { id: 5, name: "Lẩu nấm dưỡng sinh", cat: "beef", price: 250000, unit: "Nồi" },
-            { id: 6, name: "Combo Hải sản King Crab & Tôm hùm", cat: "seafood", price: 1850000, unit: "Set" },
-            { id: 7, name: "Sủi cảo tôm thịt hoàng gia", cat: "seafood", price: 95000, unit: "Phần" },
-            { id: 8, name: "Mực một nắng nướng sa tế", cat: "seafood", price: 180000, unit: "Dĩa" },
-            { id: 9, name: "Salad cá hồi sốt mè rang", cat: "appetizer", price: 135000, unit: "Phần" },
-            { id: 10, name: "Cơm chiên hải sản Hoàng Kim", cat: "appetizer", price: 120000, unit: "Dĩa" },
-            { id: 11, name: "Trà đào cam sả thanh mát", cat: "drink", price: 40000, unit: "Ly" },
-            { id: 12, name: "Bia tươi Sài Gòn Special", cat: "drink", price: 25000, unit: "Lon" },
-            { id: 13, name: "Rượu vang đỏ Chile", cat: "drink", price: 850000, unit: "Chai" },
-            { id: 14, name: "Nước khoáng đóng chai", cat: "drink", price: 20000, unit: "Chai" }
-        ];
-        const menuDishes = (Array.isArray(dbFoodsFromServer) && dbFoodsFromServer.length > 0) ? dbFoodsFromServer : defaultMenuDishes;
+        const menuDishes = <?= json_encode($dbFoodsPos, JSON_UNESCAPED_UNICODE) ?>;
 
         let selectedPosCart = [];
         let currentViewingOrderId = null;
@@ -1997,87 +1346,37 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             }
         });
 
-        // Bấm Tạo đơn hàng mới
+        // Bấm Tạo đơn hàng mới (Gửi dữ liệu xuống OrderModel để INSERT vào Database)
         document.getElementById('btnSubmitNewOrder').addEventListener('click', function () {
             if (selectedPosCart.length === 0) {
                 showToast('Vui lòng chọn ít nhất 1 món ăn cho đơn hàng!', 'danger');
                 return;
             }
 
-            const orderType = document.getElementById('posOrderType').value;
-            let tableVal = document.getElementById('posTableSelect').value;
-            let tableShortVal = tableVal;
-            let typeName = "Ăn tại bàn";
+            const formData = new FormData();
+            formData.append('action', 'create_order');
+            formData.append('orderType', document.getElementById('posOrderType').value);
+            formData.append('table', document.getElementById('posTableSelect').value);
+            formData.append('customerName', document.getElementById('posCustomerName').value.trim() || 'Khách lẻ');
+            formData.append('guests', document.getElementById('posCustomerGuests').value || 2);
+            formData.append('paymentMethod', document.getElementById('posPaymentMethod').value);
+            formData.append('voucherVal', document.getElementById('posVoucherSelect').value);
+            formData.append('dishes', JSON.stringify(selectedPosCart));
 
-            if (orderType === 'takeaway') {
-                tableVal = "Quầy Takeaway";
-                tableShortVal = "Mang về";
-                typeName = "Mang về";
-            } else if (orderType === 'delivery') {
-                tableVal = "Đơn Online Delivery";
-                tableShortVal = "Giao hàng";
-                typeName = "Giao hàng";
-            }
-
-            const custName = document.getElementById('posCustomerName').value.trim() || 'Khách lẻ';
-            const guests = parseInt(document.getElementById('posCustomerGuests').value) || 2;
-            const paymentMethod = document.getElementById('posPaymentMethod').value;
-            let paymentName = "Tiền mặt";
-            if (paymentMethod === 'transfer') paymentName = "Chuyển khoản VietQR";
-            if (paymentMethod === 'card') paymentName = "Thẻ ngân hàng";
-
-            const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} 28/09/2026`;
-
-            let subtotal = selectedPosCart.reduce((s, i) => s + (i.price * i.qty), 0);
-            const voucherVal = document.getElementById('posVoucherSelect').value;
-            let discount = 0;
-            let voucherCode = "";
-            if (voucherVal === '10') { discount = subtotal * 0.1; voucherCode = "GIAM10%"; }
-            else if (voucherVal === '20') { discount = subtotal * 0.2; voucherCode = "VIP20%"; }
-            else if (voucherVal === '50000') { discount = 50000; voucherCode = "TIENMAT50K"; }
-
-            if (discount > subtotal) discount = subtotal;
-            const vat = Math.round((subtotal - discount) * 0.08);
-            const total = subtotal - discount + vat;
-
-            const newId = "DH-" + (1004 + ordersData.length + 1);
-
-            const newOrderObj = {
-                id: newId,
-                period: "today",
-                type: orderType,
-                typeName: typeName,
-                table: tableVal,
-                tableShort: tableShortVal,
-                customer: custName,
-                phone: "09" + Math.floor(10000000 + Math.random() * 90000000),
-                guests: guests,
-                time: timeStr,
-                dishes: selectedPosCart.map(i => ({
-                    name: i.name,
-                    qty: i.qty,
-                    price: i.price,
-                    note: i.note || "",
-                    status: "cooking"
-                })),
-                subtotal: subtotal,
-                voucherCode: voucherCode,
-                discount: discount,
-                vat: vat,
-                total: total,
-                payment: paymentMethod,
-                paymentName: paymentName,
-                status: "cooking",
-                statusName: "Đang chế biến",
-                server: "Hồ Kim Lưu Thống"
-            };
-
-            ordersData.unshift(newOrderObj);
-            updateStatCards();
-            renderOrdersTable();
-            closeNewOrderModal();
-            showToast(`Đã tạo thành công đơn hàng ${newId} và gửi thông báo xuống bếp!`, 'success');
+            fetch(window.location.href, { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.order) {
+                        ordersData.unshift(data.order);
+                        updateStatCards();
+                        renderOrdersTable();
+                        closeNewOrderModal();
+                        showToast(`Đã tạo thành công đơn hàng ${data.order.id} vào Database và gửi xuống bếp!`, 'success');
+                    }
+                })
+                .catch(() => {
+                    showToast('Lỗi kết nối khi lưu đơn hàng vào cơ sở dữ liệu!', 'danger');
+                });
         });
 
         // ---------------------------------------------------------
