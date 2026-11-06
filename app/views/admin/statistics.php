@@ -10,33 +10,35 @@ $extraHead  = '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
 // ============================================================================
 // 1. KẾT NỐI DATABASE VỚI STATISTICMODEL ĐỂ LẤY SỐ LIỆU DOANH THU & ĐƠN HÀNG
 // ============================================================================
-$dbStatistics = null;
-try {
-    require_once __DIR__ . '/../../models/StatisticModel.php';
-    $statModel = new StatisticModel();
-
-    // Lấy tổng quan toàn bộ đơn hàng trong Database
-    $allSummary   = $statModel->getSummary('2000-01-01 00:00:00', '2099-12-31 23:59:59');
-    $allStatus    = $statModel->getOrderStatus('2000-01-01 00:00:00', '2099-12-31 23:59:59');
-    $topFoods     = $statModel->getTopFoods('2000-01-01 00:00:00', '2099-12-31 23:59:59', 4);
-    $customerSrc  = $statModel->getCustomerSource('2000-01-01 00:00:00', '2099-12-31 23:59:59');
-
-    // Lấy doanh thu theo ngày trong tháng hiện tại
-    $monthStart = date('Y-m-01 00:00:00');
-    $monthEnd   = date('Y-m-t 23:59:59');
-    $monthRevDay = $statModel->getRevenueByPeriod($monthStart, $monthEnd, 'day');
-
-    if (!empty($allSummary['totalOrders']) && $allSummary['totalOrders'] > 0) {
-        $dbStatistics = [
-            'summary'     => $allSummary,
-            'status'      => $allStatus,
-            'topFoods'    => $topFoods,
-            'source'      => $customerSrc,
-            'monthRevDay' => $monthRevDay
-        ];
-    }
-} catch (Throwable $e) {
+if (!isset($dbStatistics)) {
     $dbStatistics = null;
+    try {
+        require_once __DIR__ . '/../../models/StatisticModel.php';
+        $statModel = new StatisticModel();
+
+        // Lấy tổng quan toàn bộ đơn hàng trong Database
+        $allSummary   = $statModel->getSummary('2000-01-01 00:00:00', '2099-12-31 23:59:59');
+        $allStatus    = $statModel->getOrderStatus('2000-01-01 00:00:00', '2099-12-31 23:59:59');
+        $topFoods     = $statModel->getTopFoods('2000-01-01 00:00:00', '2099-12-31 23:59:59', 4);
+        $customerSrc  = $statModel->getCustomerSource('2000-01-01 00:00:00', '2099-12-31 23:59:59');
+
+        // Lấy doanh thu theo ngày trong tháng hiện tại
+        $monthStart = date('Y-m-01 00:00:00');
+        $monthEnd   = date('Y-m-t 23:59:59');
+        $monthRevDay = $statModel->getRevenueByPeriod($monthStart, $monthEnd, 'day');
+
+        if (!empty($allSummary['totalOrders']) && $allSummary['totalOrders'] > 0) {
+            $dbStatistics = [
+                'summary'     => $allSummary,
+                'status'      => $allStatus,
+                'topFoods'    => $topFoods,
+                'source'      => $customerSrc,
+                'monthRevDay' => $monthRevDay
+            ];
+        }
+    } catch (Throwable $e) {
+        $dbStatistics = null;
+    }
 }
 
 include_once __DIR__ . '/../layouts/admin_header.php';

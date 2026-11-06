@@ -2,34 +2,67 @@
 $isDirectView = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false;
 $assetPrefix  = $isDirectView ? '../../../' : '';
 
+// ============================================================================
+// 1. KẾT NỐI DATABASE VỚI ORDERMODEL VÀ FOODMODEL (Hỗ trợ cả MVC Controller & Direct View)
+// ============================================================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+    header('Content-Type: application/json; charset=utf-8');
+    $rawId     = $_POST['orderId'] ?? '';
+    $newStatus = $_POST['status'] ?? '';
+    $numId     = (int) preg_replace('/\D/', '', $rawId);
+    $ok = false;
+    try {
+        require_once __DIR__ . '/../../models/OrderModel.php';
+        $orderModel = new OrderModel();
+        if ($numId > 0) {
+            $ok = $orderModel->updateStatus($numId, $newStatus);
+        }
+    } catch (Throwable $e) {
+        $ok = false;
+    }
+    echo json_encode(['success' => $ok, 'orderId' => $rawId, 'status' => $newStatus]);
+    exit;
+}
+
+if (!isset($dbOrders)) {
+    $dbOrders = [];
+    try {
+        require_once __DIR__ . '/../../models/OrderModel.php';
+        $orderModel = new OrderModel();
+        $dbOrders = $orderModel->getAllOrders(100);
+    } catch (Throwable $e) {
+        $dbOrders = [];
+    }
+}
+
+if (!isset($dbFoodsPos)) {
+    $dbFoodsPos = [];
+    try {
+        require_once __DIR__ . '/../../models/FoodModel.php';
+        $foodModel = new FoodModel();
+        $rawFoods = $foodModel->getAllAdmin();
+        foreach ($rawFoods as $f) {
+            $catId = (int)($f['categoryId'] ?? 1);
+            $catKey = 'beef';
+            if ($catId === 2) $catKey = 'seafood';
+            elseif ($catId === 3 || $catId === 4) $catKey = 'appetizer';
+            elseif ($catId === 5) $catKey = 'drink';
+            $dbFoodsPos[] = [
+                'id'    => (int)$f['foodId'],
+                'name'  => $f['foodName'] ?? $f['name'] ?? 'Món ăn',
+                'cat'   => $catKey,
+                'price' => (float)($f['foodPrice'] ?? $f['price'] ?? 0),
+                'unit'  => 'Phần'
+            ];
+        }
+    } catch (Throwable $e) {
+        $dbFoodsPos = [];
+    }
+}
+
 $pageTitle  = "Quản lý đơn hàng - Restaurant Management System";
 $pageCss    = $assetPrefix . "public/asset/css/admin/orders.css";
 $activePage = "orders";
-
-// ============================================================================
-// 1. KẾT NỐI DATABASE: TẢI ĐƠN HÀNG THỰC TẾ & XỬ LÝ CẬP NHẬT TRẠNG THÁI
-// ============================================================================
-$dbOrders = [];
-try {
-    require_once __DIR__ . '/../../models/OrderModel.php';
-    $orderModel = new OrderModel();
-
-    // Xử lý cập nhật trạng thái đơn hàng khi gọi qua AJAX/Fetch
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-        header('Content-Type: application/json; charset=utf-8');
-        if ($_POST['action'] === 'update_status' && !empty($_POST['orderId'])) {
-            $rawId = (int)preg_replace('/[^0-9]/', '', $_POST['orderId']);
-            $updated = $orderModel->updateStatus($rawId, $_POST['status'] ?? 'serving');
-            echo json_encode(['success' => (bool)$updated]);
-            exit;
-        }
-    }
-
-    $dbOrders = $orderModel->getAllOrders(100);
-} catch (Throwable $e) {
-    $dbOrders = [];
-}
-
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
             <!-- PAGE TITLE BAR -->
@@ -221,6 +254,8 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <button class="pagination__btn" id="prevPageBtn" disabled><i
                                 class="bx bx-chevron-left"></i></button>
                         <button class="pagination__btn active">1</button>
+                        <button class="pagination__btn">2</button>
+                        <button class="pagination__btn">3</button>
                         <button class="pagination__btn" id="nextPageBtn" disabled><i
                                 class="bx bx-chevron-right"></i></button>
                     </div>
@@ -595,7 +630,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
          ========================================================================== -->
     <script>
         // ---------------------------------------------------------
-        // 1. DỮ LIỆU ĐƠN HÀNG MẪU ĐẦY ĐỦ THEO NGÀY, TUẦN, THÁNG
+        // 1. DỮ LIỆU ĐƠN HÀNG TỪ DATABASE KẾT HỢP DỮ LIỆU MẪU THEO NGÀY, TUẦN, THÁNG
         // ---------------------------------------------------------
         const STATUS_MAP = {
             cooking:     { name: "Đang chế biến", badgeClass: "badge--cooking",     selectClass: "status-select--cooking" },
@@ -604,6 +639,9 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             paid:        { name: "Đã thanh toán", badgeClass: "badge--paid",        selectClass: "status-select--paid" },
             cancelled:   { name: "Đã hủy",        badgeClass: "badge--cancelled",   selectClass: "status-select--cancelled" }
         };
+
+        const dbOrdersFromServer = <?= json_encode($dbOrders, JSON_UNESCAPED_UNICODE) ?>;
+        const dbFoodsFromServer  = <?= json_encode($dbFoodsPos, JSON_UNESCAPED_UNICODE) ?>;
 
         const initialOrdersData = [
             // ================= ĐƠN HÔM NAY (today - 8 đơn) =================
@@ -1245,20 +1283,22 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             }
         ];
 
-        // Tích hợp dữ liệu đơn hàng thực tế từ Database MySQL nếu có
-        const databaseOrders = <?= json_encode($dbOrders, JSON_UNESCAPED_UNICODE) ?>;
-        if (Array.isArray(databaseOrders) && databaseOrders.length > 0) {
-            const dbIds = databaseOrders.map(d => d.id);
-            initialOrdersData = [...databaseOrders, ...initialOrdersData.filter(m => !dbIds.includes(m.id))];
+        // Kết hợp đơn hàng thực từ MySQL Database vào đầu danh sách
+        if (Array.isArray(dbOrdersFromServer) && dbOrdersFromServer.length > 0) {
+            dbOrdersFromServer.forEach(dbOrd => {
+                if (!initialOrdersData.some(o => o.id === dbOrd.id)) {
+                    initialOrdersData.unshift(dbOrd);
+                }
+            });
         }
 
-        // Sao lưu bản deep copy để có thể làm mới/khôi phục trạng thái bất cứ lúc nào
+        // Sao lưu bản sâu (deep copy) để có thể làm mới/khôi phục trạng thái bất cứ lúc nào
         let ordersData = JSON.parse(JSON.stringify(initialOrdersData));
 
         // ---------------------------------------------------------
-        // 2. MENU MẪU DÀNH CHO MODAL TẠO ĐƠN HÀNG (Mini POS)
+        // 2. MENU MÓN ĂN DÀNH CHO MODAL TẠO ĐƠN HÀNG (Mini POS - Lấy từ DB FoodModel)
         // ---------------------------------------------------------
-        const menuDishes = [
+        const defaultMenuDishes = [
             { id: 1, name: "Thịt bò Wagyu thượng hạng", cat: "beef", price: 350000, unit: "Dĩa" },
             { id: 2, name: "Ba chỉ bò Mỹ cuộn nấm", cat: "beef", price: 160000, unit: "Dĩa" },
             { id: 3, name: "Lẩu Tomyum Thái Lan", cat: "beef", price: 290000, unit: "Nồi" },
@@ -1274,6 +1314,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             { id: 13, name: "Rượu vang đỏ Chile", cat: "drink", price: 850000, unit: "Chai" },
             { id: 14, name: "Nước khoáng đóng chai", cat: "drink", price: 20000, unit: "Chai" }
         ];
+        const menuDishes = (Array.isArray(dbFoodsFromServer) && dbFoodsFromServer.length > 0) ? dbFoodsFromServer : defaultMenuDishes;
 
         let selectedPosCart = [];
         let currentViewingOrderId = null;
@@ -1411,7 +1452,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         }
 
         // ---------------------------------------------------------
-        // 6. THAO TÁC ĐỔI TRẠNG THÁI ĐƠN HÀNG & MÓN ĂN TRỰC TIẾP
+        // 6. THAO TÁC ĐỔI TRẠNG THÁI ĐƠN HÀNG & ĐỒNG BỘ DATABASE
         // ---------------------------------------------------------
         function changeOrderStatus(orderId, newStatus) {
             const order = ordersData.find(o => o.id === orderId);
@@ -1430,17 +1471,15 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 order.dishes.forEach(d => d.status = 'cancelled');
             }
 
+            // Gửi yêu cầu AJAX POST lưu trạng thái mới xuống MySQL Database
+            const formData = new FormData();
+            formData.append('action', 'update_status');
+            formData.append('orderId', orderId);
+            formData.append('status', newStatus);
+            fetch(window.location.href, { method: 'POST', body: formData }).catch(() => {});
+
             updateStatCards();
             renderOrdersTable();
-
-            // Đồng bộ trạng thái về Database MySQL nếu đơn có trong DB
-            if (order.dbId) {
-                const formData = new FormData();
-                formData.append('action', 'update_status');
-                formData.append('orderId', order.dbId);
-                formData.append('status', newStatus);
-                fetch('orders.php', { method: 'POST', body: formData }).catch(() => {});
-            }
 
             // Nếu đang mở modal chi tiết của chính đơn này thì cập nhật luôn modal
             if (currentViewingOrderId === orderId && document.getElementById('orderDetailModal').classList.contains('active')) {
@@ -1548,6 +1587,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                     typeIcon = 'bx-cycling';
                 }
 
+                // Badge trạng thái
                 const statusCfg = STATUS_MAP[order.status] || STATUS_MAP.serving;
 
                 // Tóm tắt món ăn
@@ -2144,11 +2184,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             const order = ordersData.find(o => o.id === cancelOrderIdTarget);
             if (order) {
                 const reason = document.getElementById('cancelOrderReason').value;
-                order.status = 'cancelled';
-                order.statusName = 'Đã hủy';
-                order.dishes.forEach(d => d.status = 'cancelled');
-                updateStatCards();
-                renderOrdersTable();
+                changeOrderStatus(order.id, 'cancelled');
                 showToast(`Đã hủy đơn ${order.id} (Lý do: ${reason})`, 'danger');
             }
             closeCancelModal();
@@ -2220,7 +2256,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
 
         // Nút Làm mới trạng thái & bộ lọc
         document.getElementById('btnRefreshList').addEventListener('click', function () {
-            // Khôi phục lại trạng thái gốc của các đơn hàng mẫu
+            // Khôi phục lại trạng thái gốc của các đơn hàng
             ordersData = JSON.parse(JSON.stringify(initialOrdersData));
 
             // Đặt lại toàn bộ bộ lọc

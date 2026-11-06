@@ -1,18 +1,38 @@
 <?php
 /**
  * Điểm vào chính của ứng dụng (Front Controller)
- * Điều hướng toàn bộ request thông qua Router
+ * Điều hướng toàn bộ request thông qua Router (Mô hình MVC)
  */
 
 require_once __DIR__ . '/app/core/Router.php';
 
 $router = new Router();
+
+// ======================== ROUTES ADMIN (QUẢN TRỊ VIÊN) ========================
 $router->get('admin-login', 'AdminController', 'login');
 $router->post('admin-login', 'AdminController', 'login');
-$router->get('admin-users', 'AdminController', 'users');
+
+$router->get('admin-overview', 'AdminController', 'overview');
+
+$router->get('admin-menu', 'AdminController', 'menu');
+$router->post('admin-menu', 'AdminController', 'menu');
+
 $router->get('admin-tables', 'AdminController', 'tables');
 
-// ======================== ROUTES CLIENT ========================
+$router->get('admin-orders', 'AdminController', 'orders');
+$router->post('admin-orders', 'AdminController', 'orders');
+
+$router->get('admin-vouchers', 'AdminController', 'vouchers');
+$router->post('admin-vouchers', 'AdminController', 'vouchers');
+
+$router->get('admin-warehouse', 'AdminController', 'warehouse');
+
+$router->get('admin-users', 'AdminController', 'users');
+
+$router->get('admin-statistics', 'AdminController', 'statistics');
+$router->get('admin-statistics-data', 'StatisticController', 'data');
+
+// ======================== ROUTES CLIENT (KHÁCH HÀNG) ========================
 // 1. Trang chủ
 $router->get('trangchu', 'HomeController', 'index');
 
@@ -43,5 +63,3 @@ $router->post('doimatkhau', 'AuthController', 'changePassword');
 
 // Kích hoạt điều hướng request
 $router->dispatch();
-
-

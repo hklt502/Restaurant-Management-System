@@ -52,12 +52,12 @@ class OrderModel {
             }
         }
 
-        // Chuẩn hóa dữ liệu sang cấu trúc giao diện
+        // Chuẩn hóa dữ liệu sang cấu trúc giao diện (neo mốc ngày mới nhất trong DB làm today để luôn hiển thị ngay)
         $formattedOrders = [];
-        $now = new DateTime();
-        $todayStr = $now->format('Y-m-d');
-        $yesterdayStr = (clone $now)->modify('-1 day')->format('Y-m-d');
-        $mondayStr = (clone $now)->modify('monday this week')->format('Y-m-d');
+        $anchorDate   = !empty($orders[0]['orderDate']) ? new DateTime($orders[0]['orderDate']) : new DateTime();
+        $todayStr     = $anchorDate->format('Y-m-d');
+        $yesterdayStr = (clone $anchorDate)->modify('-1 day')->format('Y-m-d');
+        $mondayStr    = (clone $anchorDate)->modify('monday this week')->format('Y-m-d');
 
         foreach ($orders as $row) {
             $orderDate = new DateTime($row['orderDate']);

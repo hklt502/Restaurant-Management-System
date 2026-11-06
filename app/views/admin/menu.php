@@ -1,147 +1,149 @@
 <?php
-$isDirectView = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false;
-$assetPrefix  = $isDirectView ? '../../../' : '';
+$isDirectView   = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false;
+$assetPrefix    = $isDirectView ? '../../../' : '';
+$currentMenuUrl = $isDirectView ? 'menu.php' : 'index.php?page=admin-menu';
+$querySep       = $isDirectView ? '?' : '&';
 
 $pageTitle = 'Quản lý Menu - Restaurant Management System';
 $pageCss = $assetPrefix . 'public/asset/css/admin/menu.css';
 $activePage = 'menu';
 
 // ============================================================================
-// 1. KẾT NỐI DATABASE VỚI FOOD VÀ CATEGORY
+// 1. KẾT NỐI DATABASE VỚI FOOD VÀ CATEGORY (Hỗ trợ cả MVC Controller & Direct View)
 // ============================================================================
-$message = '';
-$messageType = 'success';
-$foods = [];
-$categories = [];
-
-try {
-    require_once __DIR__ . '/../../models/FoodModel.php';
-    require_once __DIR__ . '/../../models/CategoryModel.php';
-
-    $foodModel = new FoodModel();
-    $categoryModel = new CategoryModel();
-
-    // 1.1. Xử lý Thêm Món mới
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_insert'])) {
-        $name        = trim($_POST['food'] ?? '');
-        $categoryId  = (int)($_POST['list'] ?? 1);
-        $price       = (float)($_POST['price'] ?? 0);
-        $desc        = trim($_POST['desc'] ?? '');
-        $status      = trim($_POST['status'] ?? 'AVAILABLE');
-        $imageURL    = '/public/asset/img/thitbo.png';
-
-        // Xử lý upload ảnh nếu có
-        if (!empty($_FILES['photos']['name']) && $_FILES['photos']['error'] === UPLOAD_ERR_OK) {
-            $ext = strtolower(pathinfo($_FILES['photos']['name'], PATHINFO_EXTENSION));
-            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
-                $newFileName = 'dish_' . time() . '.' . $ext;
-                $uploadDir = __DIR__ . '/../../../public/asset/img/';
-                if (move_uploaded_file($_FILES['photos']['tmp_name'], $uploadDir . $newFileName)) {
-                    $imageURL = '/public/asset/img/' . $newFileName;
-                }
-            }
-        }
-
-        if (!empty($name) && $price >= 0) {
-            $insertedId = $foodModel->create($categoryId, $name, $desc, $price, 0, $status, $imageURL, 0);
-            if ($insertedId) {
-                $message = "Đã thêm món mới: \"$name\" (Mã: $insertedId) vào cơ sở dữ liệu!";
-                $messageType = "success";
-            } else {
-                $message = "Thêm món thất bại, vui lòng thử lại!";
-                $messageType = "danger";
-            }
-        } else {
-            $message = "Vui lòng nhập đầy đủ tên món và giá hợp lệ!";
-            $messageType = "warning";
-        }
-    }
-
-    // 1.2. Xử lý Cập nhật Món
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
-        $id          = (int)($_POST['id'] ?? 0);
-        $name        = trim($_POST['food'] ?? '');
-        $categoryId  = (int)($_POST['list'] ?? 1);
-        $price       = (float)($_POST['price'] ?? 0);
-        $desc        = trim($_POST['desc'] ?? '');
-        $status      = trim($_POST['status'] ?? 'AVAILABLE');
-        $imageURL    = null;
-
-        if (!empty($_FILES['photos']['name']) && $_FILES['photos']['error'] === UPLOAD_ERR_OK) {
-            $ext = strtolower(pathinfo($_FILES['photos']['name'], PATHINFO_EXTENSION));
-            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
-                $newFileName = 'dish_' . time() . '.' . $ext;
-                $uploadDir = __DIR__ . '/../../../public/asset/img/';
-                if (move_uploaded_file($_FILES['photos']['tmp_name'], $uploadDir . $newFileName)) {
-                    $imageURL = '/public/asset/img/' . $newFileName;
-                }
-            }
-        }
-
-        if ($id > 0 && !empty($name)) {
-            $updated = $foodModel->update($id, $categoryId, $name, $desc, $price, 0, $status, $imageURL, 0);
-            if ($updated) {
-                $message = "Đã cập nhật thành công món \"$name\" (Mã: $id)!";
-                $messageType = "success";
-            } else {
-                $message = "Cập nhật món thất bại!";
-                $messageType = "danger";
-            }
-        } else {
-            $message = "Vui lòng nhập ID hợp lệ và tên món cần cập nhật!";
-            $messageType = "warning";
-        }
-    }
-
-    // 1.3. Xử lý Xóa Món (từ Form hoặc Query Param)
-    if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_delete'])) || (isset($_GET['action']) && $_GET['action'] === 'delete')) {
-        $id = (int)($_POST['id'] ?? $_GET['id'] ?? 0);
-        if ($id > 0) {
-            $deleted = $foodModel->delete($id);
-            if ($deleted) {
-                $message = "Đã xóa món ăn có Mã: $id khỏi thực đơn!";
-                $messageType = "success";
-            } else {
-                $message = "Xóa món thất bại!";
-                $messageType = "danger";
-            }
-        }
-    }
-
-    // 1.4. Xử lý Đổi trạng thái Đang bán <-> Ngưng bán
-    if (isset($_GET['action']) && $_GET['action'] === 'toggle_status') {
-        $id = (int)($_GET['id'] ?? 0);
-        if ($id > 0) {
-            $newSt = $foodModel->toggleStatus($id);
-            if ($newSt) {
-                $stName = ($newSt === 'AVAILABLE') ? 'Đang bán' : 'Ngưng bán';
-                $message = "Đã đổi trạng thái món (Mã: $id) sang \"$stName\"!";
-                $messageType = "info";
-            }
-        }
-    }
-
-    // 1.5. Xử lý Tạo danh mục mới trong Modal
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_save_category'])) {
-        $catName = trim($_POST['categoryName'] ?? '');
-        $catDesc = trim($_POST['categoryDesc'] ?? '');
-        if (!empty($catName)) {
-            $catId = $categoryModel->create($catName, $catDesc);
-            if ($catId) {
-                $message = "Đã tạo mới danh mục: \"$catName\"!";
-                $messageType = "success";
-            }
-        }
-    }
-
-    // Tải toàn bộ danh mục và danh sách món từ cơ sở dữ liệu
-    $categories = $categoryModel->getAll();
-    $foods = $foodModel->getAllAdmin();
-
-} catch (Throwable $e) {
-    // Nếu chưa khởi chạy MySQL, dùng danh sách mẫu
-    $categories = [];
+if (!isset($foods) || !isset($categories)) {
+    $message = $message ?? '';
+    $messageType = $messageType ?? 'success';
     $foods = [];
+    $categories = [];
+
+    try {
+        require_once __DIR__ . '/../../models/FoodModel.php';
+        require_once __DIR__ . '/../../models/CategoryModel.php';
+
+        $foodModel = new FoodModel();
+        $categoryModel = new CategoryModel();
+
+        // 1.1. Xử lý Thêm Món mới
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_insert'])) {
+            $name        = trim($_POST['food'] ?? '');
+            $categoryId  = (int)($_POST['list'] ?? 1);
+            $price       = (float)($_POST['price'] ?? 0);
+            $desc        = trim($_POST['desc'] ?? '');
+            $status      = trim($_POST['status'] ?? 'AVAILABLE');
+            $imageURL    = '/public/asset/img/thitbo.png';
+
+            if (!empty($_FILES['photos']['name']) && $_FILES['photos']['error'] === UPLOAD_ERR_OK) {
+                $ext = strtolower(pathinfo($_FILES['photos']['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+                    $newFileName = 'dish_' . time() . '.' . $ext;
+                    $uploadDir = __DIR__ . '/../../../public/asset/img/';
+                    if (move_uploaded_file($_FILES['photos']['tmp_name'], $uploadDir . $newFileName)) {
+                        $imageURL = '/public/asset/img/' . $newFileName;
+                    }
+                }
+            }
+
+            if (!empty($name) && $price >= 0) {
+                $insertedId = $foodModel->create($categoryId, $name, $desc, $price, 0, $status, $imageURL, 0);
+                if ($insertedId) {
+                    $message = "Đã thêm món mới: \"$name\" (Mã: $insertedId) vào cơ sở dữ liệu!";
+                    $messageType = "success";
+                } else {
+                    $message = "Thêm món thất bại, vui lòng thử lại!";
+                    $messageType = "danger";
+                }
+            } else {
+                $message = "Vui lòng nhập đầy đủ tên món và giá hợp lệ!";
+                $messageType = "warning";
+            }
+        }
+
+        // 1.2. Xử lý Cập nhật Món
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_update'])) {
+            $id          = (int)($_POST['id'] ?? 0);
+            $name        = trim($_POST['food'] ?? '');
+            $categoryId  = (int)($_POST['list'] ?? 1);
+            $price       = (float)($_POST['price'] ?? 0);
+            $desc        = trim($_POST['desc'] ?? '');
+            $status      = trim($_POST['status'] ?? 'AVAILABLE');
+            $imageURL    = null;
+
+            if (!empty($_FILES['photos']['name']) && $_FILES['photos']['error'] === UPLOAD_ERR_OK) {
+                $ext = strtolower(pathinfo($_FILES['photos']['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+                    $newFileName = 'dish_' . time() . '.' . $ext;
+                    $uploadDir = __DIR__ . '/../../../public/asset/img/';
+                    if (move_uploaded_file($_FILES['photos']['tmp_name'], $uploadDir . $newFileName)) {
+                        $imageURL = '/public/asset/img/' . $newFileName;
+                    }
+                }
+            }
+
+            if ($id > 0 && !empty($name)) {
+                $updated = $foodModel->update($id, $categoryId, $name, $desc, $price, 0, $status, $imageURL, 0);
+                if ($updated) {
+                    $message = "Đã cập nhật thành công món \"$name\" (Mã: $id)!";
+                    $messageType = "success";
+                } else {
+                    $message = "Cập nhật món thất bại!";
+                    $messageType = "danger";
+                }
+            } else {
+                $message = "Vui lòng nhập ID hợp lệ và tên món cần cập nhật!";
+                $messageType = "warning";
+            }
+        }
+
+        // 1.3. Xử lý Xóa Món (từ Form hoặc Query Param)
+        if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_delete'])) || (isset($_GET['action']) && $_GET['action'] === 'delete')) {
+            $id = (int)($_POST['id'] ?? $_GET['id'] ?? 0);
+            if ($id > 0) {
+                $deleted = $foodModel->delete($id);
+                if ($deleted) {
+                    $message = "Đã xóa món ăn có Mã: $id khỏi thực đơn!";
+                    $messageType = "success";
+                } else {
+                    $message = "Xóa món thất bại!";
+                    $messageType = "danger";
+                }
+            }
+        }
+
+        // 1.4. Xử lý Đổi trạng thái Đang bán <-> Ngưng bán
+        if (isset($_GET['action']) && $_GET['action'] === 'toggle_status') {
+            $id = (int)($_GET['id'] ?? 0);
+            if ($id > 0) {
+                $newSt = $foodModel->toggleStatus($id);
+                if ($newSt) {
+                    $stName = ($newSt === 'AVAILABLE') ? 'Đang bán' : 'Ngưng bán';
+                    $message = "Đã đổi trạng thái món (Mã: $id) sang \"$stName\"!";
+                    $messageType = "info";
+                }
+            }
+        }
+
+        // 1.5. Xử lý Tạo danh mục mới trong Modal
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_save_category'])) {
+            $catName = trim($_POST['categoryName'] ?? '');
+            $catDesc = trim($_POST['categoryDesc'] ?? '');
+            if (!empty($catName)) {
+                $catId = $categoryModel->create($catName, $catDesc);
+                if ($catId) {
+                    $message = "Đã tạo mới danh mục: \"$catName\"!";
+                    $messageType = "success";
+                }
+            }
+        }
+
+        // Tải toàn bộ danh mục và danh sách món từ cơ sở dữ liệu
+        $categories = $categoryModel->getAll();
+        $foods = $foodModel->getAllAdmin();
+
+    } catch (Throwable $e) {
+        $categories = [];
+        $foods = [];
+    }
 }
 
 include_once __DIR__ . '/../layouts/admin_header.php';
@@ -236,7 +238,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                                         <span class="badge badge--category"><?= htmlspecialchars($food['categoryName'] ?? 'Chưa phân loại') ?></span>
                                     </td>
                                     <td>
-                                        <a href="menu.php?action=toggle_status&id=<?= $food['foodId'] ?>"
+                                        <a href="<?= $currentMenuUrl . $querySep ?>action=toggle_status&id=<?= $food['foodId'] ?>"
                                            title="Nhấp để đổi trạng thái"
                                            class="<?= $isAvail ? 'active-text' : 'inactive-text' ?>"
                                            style="text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
@@ -250,7 +252,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                                                 onclick="fillEditFood(<?= htmlspecialchars(json_encode($food, JSON_UNESCAPED_UNICODE)) ?>)">
                                                 <i class="bx bx-pencil"></i>
                                             </button>
-                                            <a href="menu.php?action=delete&id=<?= $food['foodId'] ?>" class="action-btn" title="Xóa món"
+                                            <a href="<?= $currentMenuUrl . $querySep ?>action=delete&id=<?= $food['foodId'] ?>" class="action-btn" title="Xóa món"
                                                onclick="return confirm('Bạn có chắc muốn xóa món <?= htmlspecialchars(addslashes($food['foodName'])) ?>?')">
                                                 <i class="bx bx-trash" style="color: var(--red);"></i>
                                             </a>
@@ -276,7 +278,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                     <p style="padding-left: 20px;">CRUD Quản lý Món ăn (Kết nối Database)</p>
                 </div>
 
-                <form action="menu.php" method="POST" enctype="multipart/form-data" id="foodCrudForm">
+                <form action="<?= $currentMenuUrl ?>" method="POST" enctype="multipart/form-data" id="foodCrudForm">
                     <div>
                         <p><label for="crud_id">ID Món ăn (Dùng khi Cập nhật / Xóa / Lấy thông tin):</label></p>
                         <p><input type="number" name="id" id="crud_id" placeholder="Nhập ID món ăn..."></p>
@@ -345,7 +347,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <h2 class="modal__title">Tạo danh mục món ăn mới</h2>
                         <button class="modal__close" id="btnCloseCategoryModal" type="button"><i class="bx bx-x"></i></button>
                     </div>
-                    <form action="menu.php" method="POST" id="categoryForm">
+                    <form action="<?= $currentMenuUrl ?>" method="POST" id="categoryForm">
                         <div class="modal__body">
                             <div class="modal-form__group" style="margin-bottom: 16px;">
                                 <label class="modal-form__label" style="display: block; font-weight: 600; margin-bottom: 6px;">
