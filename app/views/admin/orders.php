@@ -5,6 +5,31 @@ $assetPrefix  = $isDirectView ? '../../../' : '';
 $pageTitle  = "Quản lý đơn hàng - Restaurant Management System";
 $pageCss    = $assetPrefix . "public/asset/css/admin/orders.css";
 $activePage = "orders";
+
+// ============================================================================
+// 1. KẾT NỐI DATABASE: TẢI ĐƠN HÀNG THỰC TẾ & XỬ LÝ CẬP NHẬT TRẠNG THÁI
+// ============================================================================
+$dbOrders = [];
+try {
+    require_once __DIR__ . '/../../models/OrderModel.php';
+    $orderModel = new OrderModel();
+
+    // Xử lý cập nhật trạng thái đơn hàng khi gọi qua AJAX/Fetch
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+        header('Content-Type: application/json; charset=utf-8');
+        if ($_POST['action'] === 'update_status' && !empty($_POST['orderId'])) {
+            $rawId = (int)preg_replace('/[^0-9]/', '', $_POST['orderId']);
+            $updated = $orderModel->updateStatus($rawId, $_POST['status'] ?? 'serving');
+            echo json_encode(['success' => (bool)$updated]);
+            exit;
+        }
+    }
+
+    $dbOrders = $orderModel->getAllOrders(100);
+} catch (Throwable $e) {
+    $dbOrders = [];
+}
+
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
             <!-- PAGE TITLE BAR -->
@@ -1220,7 +1245,14 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             }
         ];
 
-        // Sao lưu bản глубокий (deep copy) để có thể làm mới/khôi phục trạng thái bất cứ lúc nào
+        // Tích hợp dữ liệu đơn hàng thực tế từ Database MySQL nếu có
+        const databaseOrders = <?= json_encode($dbOrders, JSON_UNESCAPED_UNICODE) ?>;
+        if (Array.isArray(databaseOrders) && databaseOrders.length > 0) {
+            const dbIds = databaseOrders.map(d => d.id);
+            initialOrdersData = [...databaseOrders, ...initialOrdersData.filter(m => !dbIds.includes(m.id))];
+        }
+
+        // Sao lưu bản deep copy để có thể làm mới/khôi phục trạng thái bất cứ lúc nào
         let ordersData = JSON.parse(JSON.stringify(initialOrdersData));
 
         // ---------------------------------------------------------
@@ -1400,6 +1432,15 @@ include_once __DIR__ . '/../layouts/admin_header.php';
 
             updateStatCards();
             renderOrdersTable();
+
+            // Đồng bộ trạng thái về Database MySQL nếu đơn có trong DB
+            if (order.dbId) {
+                const formData = new FormData();
+                formData.append('action', 'update_status');
+                formData.append('orderId', order.dbId);
+                formData.append('status', newStatus);
+                fetch('orders.php', { method: 'POST', body: formData }).catch(() => {});
+            }
 
             // Nếu đang mở modal chi tiết của chính đơn này thì cập nhật luôn modal
             if (currentViewingOrderId === orderId && document.getElementById('orderDetailModal').classList.contains('active')) {
