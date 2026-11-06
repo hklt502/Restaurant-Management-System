@@ -1,10 +1,13 @@
 <?php
-$pageTitle = "Quản lý đơn hàng - Restaurant Management System";
-$pageCss = "../../../public/asset/css/admin/orders.css";
+$isDirectView = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false;
+$assetPrefix  = $isDirectView ? '../../../' : '';
+
+$pageTitle  = "Quản lý đơn hàng - Restaurant Management System";
+$pageCss    = $assetPrefix . "public/asset/css/admin/orders.css";
 $activePage = "orders";
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
-<!-- PAGE TITLE BAR -->
+            <!-- PAGE TITLE BAR -->
             <div class="page-title">
                 <div>
                     <h1 class="page-title__heading">
@@ -33,22 +36,22 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <div class="stat-card__icon stat-card__icon--primary">
                             <i class="bx bx-wallet-alt"></i>
                         </div>
-                        <span class="stat-card__badge stat-card__badge--up">+14.8%</span>
+                        <span class="stat-card__badge stat-card__badge--up" id="statRevenueBadge">+14.8%</span>
                     </div>
-                    <p class="stat-card__label">Doanh thu hôm nay</p>
+                    <p class="stat-card__label" id="statRevenueLabel">Doanh thu hôm nay</p>
                     <p class="stat-card__value" id="statTodayRevenue">18.450.000đ</p>
                 </div>
 
-                <!-- Tổng đơn hôm nay -->
+                <!-- Tổng đơn -->
                 <div class="stat-card">
                     <div class="stat-card__header">
                         <div class="stat-card__icon stat-card__icon--blue">
                             <i class="bx bx-receipt"></i>
                         </div>
-                        <span class="stat-card__badge stat-card__badge--up">+6 đơn</span>
+                        <span class="stat-card__badge stat-card__badge--up" id="statOrdersBadge">+6 đơn</span>
                     </div>
-                    <p class="stat-card__label">Tổng đơn trong ngày</p>
-                    <p class="stat-card__value" id="statTotalOrders">48</p>
+                    <p class="stat-card__label" id="statOrdersLabel">Tổng đơn trong ngày</p>
+                    <p class="stat-card__value" id="statTotalOrders">8</p>
                 </div>
 
                 <!-- Đang phục vụ -->
@@ -60,7 +63,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <span class="stat-card__badge stat-card__badge--neutral">Bàn bận</span>
                     </div>
                     <p class="stat-card__label">Đang phục vụ / Bếp</p>
-                    <p class="stat-card__value" id="statServingOrders">12</p>
+                    <p class="stat-card__value" id="statServingOrders">3</p>
                 </div>
 
                 <!-- Chờ thanh toán -->
@@ -72,7 +75,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <span class="stat-card__badge stat-card__badge--down">Cần thu</span>
                     </div>
                     <p class="stat-card__label">Chờ thanh toán</p>
-                    <p class="stat-card__value" id="statPendingPayOrders">4</p>
+                    <p class="stat-card__value" id="statPendingPayOrders">1</p>
                 </div>
 
                 <!-- Đã hoàn thành -->
@@ -84,7 +87,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <span class="stat-card__badge stat-card__badge--up">Thành công</span>
                     </div>
                     <p class="stat-card__label">Đã thanh toán xong</p>
-                    <p class="stat-card__value" id="statCompletedOrders">30</p>
+                    <p class="stat-card__value" id="statCompletedOrders">3</p>
                 </div>
             </div>
 
@@ -94,31 +97,31 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 <div class="orders-tabs" id="orderStatusTabs">
                     <div class="orders-tab active" data-status="all">
                         <i class="bx bx-list-ul"></i> Tất cả đơn
-                        <span class="orders-tab__count" id="countAll">48</span>
+                        <span class="orders-tab__count" id="countAll">8</span>
                     </div>
                     <div class="orders-tab" data-status="cooking">
                         <i class="bx bx-bowl-hot"></i> Đang chế biến
-                        <span class="orders-tab__count" id="countCooking">5</span>
+                        <span class="orders-tab__count" id="countCooking">1</span>
                     </div>
                     <div class="orders-tab" data-status="serving">
                         <i class="bx bx-restaurant"></i> Đang phục vụ
-                        <span class="orders-tab__count" id="countServing">7</span>
+                        <span class="orders-tab__count" id="countServing">2</span>
                     </div>
                     <div class="orders-tab" data-status="pending_pay">
                         <i class="bx bx-time-five"></i> Chờ thanh toán
-                        <span class="orders-tab__count" id="countPendingPay">4</span>
+                        <span class="orders-tab__count" id="countPendingPay">1</span>
                     </div>
                     <div class="orders-tab" data-status="paid">
                         <i class="bx bx-check-double"></i> Đã thanh toán
-                        <span class="orders-tab__count" id="countPaid">30</span>
+                        <span class="orders-tab__count" id="countPaid">3</span>
                     </div>
                     <div class="orders-tab" data-status="cancelled">
                         <i class="bx bx-x-circle"></i> Đã hủy
-                        <span class="orders-tab__count" id="countCancelled">2</span>
+                        <span class="orders-tab__count" id="countCancelled">1</span>
                     </div>
                 </div>
 
-                <!-- TOOLBAR TÌM KIẾM & BỘ LỌC -->
+                <!-- TOOLBAR LỌC & TÌM KIẾM -->
                 <div class="orders-toolbar">
                     <div class="orders-toolbar__left">
                         <!-- Ô tìm kiếm đơn -->
@@ -143,19 +146,19 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                             <option value="card">Quẹt thẻ (POS)</option>
                         </select>
 
-                        <!-- Lọc thời gian -->
+                        <!-- Lọc thời gian: Ngày / Tuần / Tháng -->
                         <select class="toolbar-select" id="filterDate">
-                            <option value="today">Hôm nay</option>
-                            <option value="yesterday">Hôm qua</option>
-                            <option value="week">7 ngày qua</option>
-                            <option value="month">Tháng này</option>
+                            <option value="today">Hôm nay (8 đơn)</option>
+                            <option value="yesterday">Hôm qua (5 đơn)</option>
+                            <option value="week">Tuần này (18 đơn)</option>
+                            <option value="month">Tháng này (24 đơn)</option>
                         </select>
                     </div>
 
                     <div class="orders-toolbar__right">
                         <button class="btn btn--secondary btn--sm" id="btnRefreshList" type="button"
-                            title="Làm mới danh sách">
-                            <i class="bx bx-refresh"></i> Làm mới
+                            title="Làm mới bộ lọc và khôi phục trạng thái mặc định">
+                            <i class="bx bx-refresh"></i> Làm mới trạng thái
                         </button>
                     </div>
                 </div>
@@ -187,20 +190,19 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 <!-- TABLE FOOTER & PHÂN TRANG -->
                 <div class="table-footer">
                     <div class="table-footer__info" id="tablePaginationInfo">
-                        Hiển thị 1 - 8 trong tổng số 48 đơn hàng
+                        Hiển thị 1 - 8 trong tổng số 8 đơn hàng
                     </div>
-                    <div class="pagination">
+                    <div class="pagination" id="ordersPaginationControls">
                         <button class="pagination__btn" id="prevPageBtn" disabled><i
                                 class="bx bx-chevron-left"></i></button>
                         <button class="pagination__btn active">1</button>
-                        <button class="pagination__btn">2</button>
-                        <button class="pagination__btn">3</button>
-                        <button class="pagination__btn" id="nextPageBtn"><i class="bx bx-chevron-right"></i></button>
+                        <button class="pagination__btn" id="nextPageBtn" disabled><i
+                                class="bx bx-chevron-right"></i></button>
                     </div>
                 </div>
             </div>
 
-<!-- ==========================================================================
+    <!-- ==========================================================================
          MODAL 1: CHI TIẾT ĐƠN HÀNG & IN BILL
          ========================================================================== -->
     <div class="modal" id="orderDetailModal">
@@ -231,40 +233,21 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <p class="summary-item__value" id="detailModalTime">11:30 - 28/09/2026</p>
                     </div>
                     <div>
-                        <p class="summary-item__label">Trạng thái đơn</p>
+                        <p class="summary-item__label">Đổi trạng thái đơn</p>
                         <div id="detailModalStatusBadge">
-                            <span class="badge badge--serving">Đang phục vụ</span>
+                            <!-- Select đổi trạng thái trực tiếp trong modal -->
                         </div>
                     </div>
                 </div>
 
-                <!-- Quy trình phục vụ (Timeline) -->
+                <!-- Quy trình phục vụ (Timeline tương tác) -->
                 <div class="order-timeline" id="detailModalTimeline">
-                    <div class="timeline-step completed">
-                        <div class="timeline-step__icon"><i class="bx bx-check"></i></div>
-                        <span class="timeline-step__text">Tạo đơn</span>
-                        <span class="timeline-step__time">11:30</span>
-                    </div>
-                    <div class="timeline-step completed">
-                        <div class="timeline-step__icon"><i class="bx bx-check"></i></div>
-                        <span class="timeline-step__text">Bếp chế biến</span>
-                        <span class="timeline-step__time">11:35</span>
-                    </div>
-                    <div class="timeline-step active">
-                        <div class="timeline-step__icon"><i class="bx bx-restaurant"></i></div>
-                        <span class="timeline-step__text">Đang phục vụ</span>
-                        <span class="timeline-step__time">11:50</span>
-                    </div>
-                    <div class="timeline-step">
-                        <div class="timeline-step__icon"><i class="bx bx-credit-card"></i></div>
-                        <span class="timeline-step__text">Thanh toán</span>
-                        <span class="timeline-step__time">Chờ</span>
-                    </div>
+                    <!-- Render động & có thể nhấp để chuyển trạng thái -->
                 </div>
 
                 <!-- Danh sách món ăn trong đơn -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <h3 style="font-size: 0.95rem; font-weight: 700;">Danh sách món đã gọi</h3>
+                    <h3 style="font-size: 0.95rem; font-weight: 700;">Danh sách món đã gọi (Nhấp vào trạng thái món để đổi)</h3>
                     <button class="btn btn--secondary btn--sm" id="btnQuickAddDish" type="button">
                         <i class="bx bx-plus"></i> Gọi thêm món
                     </button>
@@ -587,11 +570,21 @@ include_once __DIR__ . '/../layouts/admin_header.php';
          ========================================================================== -->
     <script>
         // ---------------------------------------------------------
-        // 1. DỮ LIỆU ĐƠN HÀNG MẪU ĐẦY ĐỦ (Mock Database)
+        // 1. DỮ LIỆU ĐƠN HÀNG MẪU ĐẦY ĐỦ THEO NGÀY, TUẦN, THÁNG
         // ---------------------------------------------------------
-        let ordersData = [
+        const STATUS_MAP = {
+            cooking:     { name: "Đang chế biến", badgeClass: "badge--cooking",     selectClass: "status-select--cooking" },
+            serving:     { name: "Đang phục vụ",  badgeClass: "badge--serving",     selectClass: "status-select--serving" },
+            pending_pay: { name: "Chờ thanh toán",badgeClass: "badge--pending-pay", selectClass: "status-select--pending_pay" },
+            paid:        { name: "Đã thanh toán", badgeClass: "badge--paid",        selectClass: "status-select--paid" },
+            cancelled:   { name: "Đã hủy",        badgeClass: "badge--cancelled",   selectClass: "status-select--cancelled" }
+        };
+
+        const initialOrdersData = [
+            // ================= ĐƠN HÔM NAY (today - 8 đơn) =================
             {
                 id: "DH-1028",
+                period: "today",
                 type: "dinein",
                 typeName: "Ăn tại bàn",
                 table: "Bàn 04 (Tầng 1)",
@@ -619,6 +612,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             },
             {
                 id: "DH-1027",
+                period: "today",
                 type: "dinein",
                 typeName: "Ăn tại bàn",
                 table: "Bàn 05 (Tầng 1)",
@@ -645,6 +639,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             },
             {
                 id: "DH-1026",
+                period: "today",
                 type: "takeaway",
                 typeName: "Mang về",
                 table: "Quầy Takeaway",
@@ -671,6 +666,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             },
             {
                 id: "DH-1025",
+                period: "today",
                 type: "dinein",
                 typeName: "Ăn tại bàn",
                 table: "Bàn VIP 01",
@@ -697,6 +693,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             },
             {
                 id: "DH-1024",
+                period: "today",
                 type: "delivery",
                 typeName: "Giao hàng",
                 table: "GrabFood / ShopeeFood",
@@ -722,6 +719,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             },
             {
                 id: "DH-1023",
+                period: "today",
                 type: "dinein",
                 typeName: "Ăn tại bàn",
                 table: "Bàn 02 (Tầng 1)",
@@ -733,7 +731,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 dishes: [
                     { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "Cay cấp 3", status: "done" },
                     { name: "Ba chỉ bò cuộn nấm", qty: 2, price: 140000, note: "", status: "done" },
-                    { name: "Bia tươi Sài Gòn Special", qty: 6, price: 25000, note: "Uớp lạnh", status: "done" }
+                    { name: "Bia tươi Sài Gòn Special", qty: 6, price: 25000, note: "Ướp lạnh", status: "done" }
                 ],
                 subtotal: 750000,
                 voucherCode: "",
@@ -748,6 +746,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             },
             {
                 id: "DH-1022",
+                period: "today",
                 type: "dinein",
                 typeName: "Ăn tại bàn",
                 table: "Bàn 08 (Tầng 2)",
@@ -772,6 +771,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             },
             {
                 id: "DH-1021",
+                period: "today",
                 type: "dinein",
                 typeName: "Ăn tại bàn",
                 table: "Bàn 03 (Tầng 1)",
@@ -795,8 +795,433 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 status: "paid",
                 statusName: "Đã thanh toán",
                 server: "Hồ Kim Lưu Thống"
+            },
+
+            // ================= ĐƠN HÔM QUA (yesterday - 5 đơn) =================
+            {
+                id: "DH-1020",
+                period: "yesterday",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn VIP 02",
+                tableShort: "VIP 02",
+                customer: "Trương Quốc Bảo",
+                phone: "0918 222 333",
+                guests: 8,
+                time: "19:20 27/09/2026",
+                dishes: [
+                    { name: "Combo Hải sản King Crab & Tôm hùm", qty: 1, price: 1850000, note: "", status: "done" },
+                    { name: "Lẩu Tomyum Thái Lan", qty: 2, price: 290000, note: "", status: "done" },
+                    { name: "Bia tươi Sài Gòn Special", qty: 10, price: 25000, note: "", status: "done" }
+                ],
+                subtotal: 2680000,
+                voucherCode: "GIAM10%",
+                discount: 268000,
+                vat: 192960,
+                total: 2604960,
+                payment: "card",
+                paymentName: "Thẻ VISA / Mastercard",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1019",
+                period: "yesterday",
+                type: "takeaway",
+                typeName: "Mang về",
+                table: "Quầy Takeaway",
+                tableShort: "Mang về",
+                customer: "Ngô Thanh Vân",
+                phone: "0905 666 777",
+                guests: 1,
+                time: "18:10 27/09/2026",
+                dishes: [
+                    { name: "Cơm chiên hải sản Hoàng Kim", qty: 2, price: 120000, note: "", status: "done" },
+                    { name: "Sủi cảo tôm thịt hoàng gia", qty: 1, price: 95000, note: "", status: "done" }
+                ],
+                subtotal: 335000,
+                voucherCode: "",
+                discount: 0,
+                vat: 26800,
+                total: 361800,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Trần Hoàng Nam"
+            },
+            {
+                id: "DH-1018",
+                period: "yesterday",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 01 (Tầng 1)",
+                tableShort: "Bàn 01",
+                customer: "Lý Hoàng Long",
+                phone: "0972 333 444",
+                guests: 4,
+                time: "17:30 27/09/2026",
+                dishes: [
+                    { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "", status: "done" },
+                    { name: "Ba chỉ bò Mỹ cuộn nấm", qty: 3, price: 160000, note: "", status: "done" }
+                ],
+                subtotal: 800000,
+                voucherCode: "",
+                discount: 0,
+                vat: 64000,
+                total: 864000,
+                payment: "transfer",
+                paymentName: "Chuyển khoản QR",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Nguyễn Mạnh Tiến"
+            },
+            {
+                id: "DH-1017",
+                period: "yesterday",
+                type: "delivery",
+                typeName: "Giao hàng",
+                table: "ShopeeFood",
+                tableShort: "Giao hàng",
+                customer: "Bùi Bích Phương",
+                phone: "0963 111 999",
+                guests: 1,
+                time: "14:15 27/09/2026",
+                dishes: [
+                    { name: "Salad cá hồi sốt mè rang", qty: 2, price: 135000, note: "", status: "done" },
+                    { name: "Trà đào cam sả thanh mát", qty: 2, price: 40000, note: "", status: "done" }
+                ],
+                subtotal: 350000,
+                voucherCode: "",
+                discount: 0,
+                vat: 28000,
+                total: 378000,
+                payment: "transfer",
+                paymentName: "Chuyển khoản QR",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1016",
+                period: "yesterday",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 06 (Tầng 2)",
+                tableShort: "Bàn 06",
+                customer: "Đặng Văn Lâm",
+                phone: "0934 888 111",
+                guests: 2,
+                time: "12:30 27/09/2026",
+                dishes: [
+                    { name: "Mực một nắng nướng sa tế", qty: 1, price: 180000, note: "", status: "cancelled" }
+                ],
+                subtotal: 180000,
+                voucherCode: "",
+                discount: 0,
+                vat: 0,
+                total: 180000,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "cancelled",
+                statusName: "Đã hủy",
+                server: "Trần Hoàng Nam"
+            },
+
+            // ================= ĐƠN TRONG TUẦN NÀY (week - thêm 5 đơn, cộng dồn = 18 đơn) =================
+            {
+                id: "DH-1015",
+                period: "week",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn VIP 01",
+                tableShort: "VIP 01",
+                customer: "Phan Mạnh Quỳnh",
+                phone: "0915 777 222",
+                guests: 6,
+                time: "20:00 25/09/2026",
+                dishes: [
+                    { name: "Thịt bò Wagyu thượng hạng", qty: 4, price: 350000, note: "", status: "done" },
+                    { name: "Lẩu nấm dưỡng sinh", qty: 1, price: 250000, note: "", status: "done" },
+                    { name: "Rượu vang đỏ Chile", qty: 1, price: 850000, note: "", status: "done" }
+                ],
+                subtotal: 2500000,
+                voucherCode: "VIP20%",
+                discount: 500000,
+                vat: 160000,
+                total: 2160000,
+                payment: "card",
+                paymentName: "Thẻ VISA / Mastercard",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1014",
+                period: "week",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 02 (Tầng 1)",
+                tableShort: "Bàn 02",
+                customer: "Hà Anh Tuấn",
+                phone: "0988 999 000",
+                guests: 4,
+                time: "19:10 24/09/2026",
+                dishes: [
+                    { name: "Lẩu Tomyum Thái Lan", qty: 1, price: 290000, note: "", status: "done" },
+                    { name: "Ba chỉ bò Mỹ cuộn nấm", qty: 2, price: 160000, note: "", status: "done" },
+                    { name: "Mực một nắng nướng sa tế", qty: 1, price: 180000, note: "", status: "done" }
+                ],
+                subtotal: 790000,
+                voucherCode: "",
+                discount: 0,
+                vat: 63200,
+                total: 853200,
+                payment: "transfer",
+                paymentName: "Chuyển khoản QR",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Nguyễn Mạnh Tiến"
+            },
+            {
+                id: "DH-1013",
+                period: "week",
+                type: "takeaway",
+                typeName: "Mang về",
+                table: "Quầy Takeaway",
+                tableShort: "Mang về",
+                customer: "Lê Bảo Bình",
+                phone: "0942 123 789",
+                guests: 1,
+                time: "12:15 24/09/2026",
+                dishes: [
+                    { name: "Cơm chiên hải sản Hoàng Kim", qty: 3, price: 120000, note: "", status: "done" }
+                ],
+                subtotal: 360000,
+                voucherCode: "",
+                discount: 0,
+                vat: 28800,
+                total: 388800,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Trần Hoàng Nam"
+            },
+            {
+                id: "DH-1012",
+                period: "week",
+                type: "delivery",
+                typeName: "Giao hàng",
+                table: "GrabFood",
+                tableShort: "Giao hàng",
+                customer: "Nguyễn Thúc Thùy Tiên",
+                phone: "0908 555 123",
+                guests: 2,
+                time: "18:40 23/09/2026",
+                dishes: [
+                    { name: "Salad cá hồi sốt mè rang", qty: 2, price: 135000, note: "", status: "done" },
+                    { name: "Sủi cảo tôm thịt hoàng gia", qty: 2, price: 95000, note: "", status: "done" }
+                ],
+                subtotal: 460000,
+                voucherCode: "TIENMAT50K",
+                discount: 50000,
+                vat: 32800,
+                total: 442800,
+                payment: "transfer",
+                paymentName: "Chuyển khoản QR",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1011",
+                period: "week",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 07 (Tầng 2)",
+                tableShort: "Bàn 07",
+                customer: "Đoàn Văn Hậu",
+                phone: "0966 777 888",
+                guests: 4,
+                time: "19:00 22/09/2026",
+                dishes: [
+                    { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "", status: "done" },
+                    { name: "Thịt bò Wagyu thượng hạng", qty: 2, price: 350000, note: "", status: "done" }
+                ],
+                subtotal: 1020000,
+                voucherCode: "",
+                discount: 0,
+                vat: 81600,
+                total: 1101600,
+                payment: "card",
+                paymentName: "Thẻ VISA / Mastercard",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Trần Hoàng Nam"
+            },
+
+            // ================= ĐƠN TRONG THÁNG NÀY (month - thêm 6 đơn, cộng dồn = 24 đơn) =================
+            {
+                id: "DH-1010",
+                period: "month",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn VIP 01",
+                tableShort: "VIP 01",
+                customer: "Công ty TNHH Sao Việt",
+                phone: "0903 111 222",
+                guests: 10,
+                time: "18:30 18/09/2026",
+                dishes: [
+                    { name: "Combo Hải sản King Crab & Tôm hùm", qty: 2, price: 1850000, note: "", status: "done" },
+                    { name: "Rượu vang đỏ Chile", qty: 2, price: 850000, note: "", status: "done" }
+                ],
+                subtotal: 5400000,
+                voucherCode: "VIP20%",
+                discount: 1080000,
+                vat: 345600,
+                total: 4665600,
+                payment: "card",
+                paymentName: "Thẻ VISA / Mastercard",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1009",
+                period: "month",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 03 (Tầng 1)",
+                tableShort: "Bàn 03",
+                customer: "Lương Xuân Trường",
+                phone: "0912 345 678",
+                guests: 4,
+                time: "19:45 15/09/2026",
+                dishes: [
+                    { name: "Lẩu nấm dưỡng sinh", qty: 1, price: 250000, note: "", status: "done" },
+                    { name: "Ba chỉ bò Mỹ cuộn nấm", qty: 3, price: 160000, note: "", status: "done" }
+                ],
+                subtotal: 730000,
+                voucherCode: "",
+                discount: 0,
+                vat: 58400,
+                total: 788400,
+                payment: "transfer",
+                paymentName: "Chuyển khoản QR",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Nguyễn Mạnh Tiến"
+            },
+            {
+                id: "DH-1008",
+                period: "month",
+                type: "takeaway",
+                typeName: "Mang về",
+                table: "Quầy Takeaway",
+                tableShort: "Mang về",
+                customer: "Nguyễn Quang Hải",
+                phone: "0989 191 919",
+                guests: 1,
+                time: "11:50 12/09/2026",
+                dishes: [
+                    { name: "Mực một nắng nướng sa tế", qty: 2, price: 180000, note: "", status: "done" },
+                    { name: "Cơm chiên hải sản Hoàng Kim", qty: 1, price: 120000, note: "", status: "done" }
+                ],
+                subtotal: 480000,
+                voucherCode: "",
+                discount: 0,
+                vat: 38400,
+                total: 518400,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Trần Hoàng Nam"
+            },
+            {
+                id: "DH-1007",
+                period: "month",
+                type: "delivery",
+                typeName: "Giao hàng",
+                table: "ShopeeFood",
+                tableShort: "Giao hàng",
+                customer: "Đỗ Duy Mạnh",
+                phone: "0975 282 828",
+                guests: 2,
+                time: "13:10 10/09/2026",
+                dishes: [
+                    { name: "Sủi cảo tôm thịt hoàng gia", qty: 3, price: 95000, note: "", status: "done" },
+                    { name: "Trà đào cam sả thanh mát", qty: 3, price: 40000, note: "", status: "done" }
+                ],
+                subtotal: 405000,
+                voucherCode: "",
+                discount: 0,
+                vat: 32400,
+                total: 437400,
+                payment: "transfer",
+                paymentName: "Chuyển khoản QR",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Hồ Kim Lưu Thống"
+            },
+            {
+                id: "DH-1006",
+                period: "month",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 05 (Tầng 1)",
+                tableShort: "Bàn 05",
+                customer: "Văn Toàn",
+                phone: "0939 090 909",
+                guests: 3,
+                time: "20:15 06/09/2026",
+                dishes: [
+                    { name: "Lẩu Tomyum Thái Lan", qty: 1, price: 290000, note: "", status: "done" },
+                    { name: "Thịt bò Wagyu thượng hạng", qty: 1, price: 350000, note: "", status: "done" }
+                ],
+                subtotal: 640000,
+                voucherCode: "",
+                discount: 0,
+                vat: 51200,
+                total: 691200,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "paid",
+                statusName: "Đã thanh toán",
+                server: "Nguyễn Mạnh Tiến"
+            },
+            {
+                id: "DH-1005",
+                period: "month",
+                type: "dinein",
+                typeName: "Ăn tại bàn",
+                table: "Bàn 02 (Tầng 1)",
+                tableShort: "Bàn 02",
+                customer: "Khách đặt bàn hủy",
+                phone: "0902 444 555",
+                guests: 4,
+                time: "18:00 02/09/2026",
+                dishes: [
+                    { name: "Lẩu Tứ Xuyên siêu cay", qty: 1, price: 320000, note: "", status: "cancelled" }
+                ],
+                subtotal: 320000,
+                voucherCode: "",
+                discount: 0,
+                vat: 0,
+                total: 320000,
+                payment: "cash",
+                paymentName: "Tiền mặt",
+                status: "cancelled",
+                statusName: "Đã hủy",
+                server: "Trần Hoàng Nam"
             }
         ];
+
+        // Sao lưu bản глубокий (deep copy) để có thể làm mới/khôi phục trạng thái bất cứ lúc nào
+        let ordersData = JSON.parse(JSON.stringify(initialOrdersData));
 
         // ---------------------------------------------------------
         // 2. MENU MẪU DÀNH CHO MODAL TẠO ĐƠN HÀNG (Mini POS)
@@ -820,6 +1245,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
 
         let selectedPosCart = [];
         let currentViewingOrderId = null;
+        let currentStatusFilter = 'all';
 
         // ---------------------------------------------------------
         // 3. TIỆN ÍCH FORMAT TIỀN & THÔNG BÁO
@@ -830,10 +1256,11 @@ include_once __DIR__ . '/../layouts/admin_header.php';
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) return;
             const toast = document.createElement('div');
             toast.className = `toast toast--${type}`;
             let icon = 'bx-check-circle';
-            if (type === 'danger') icon = 'bx-x-circle';
+            if (type === 'danger' || type === 'error') icon = 'bx-x-circle';
             if (type === 'info') icon = 'bx-info-circle';
 
             toast.innerHTML = `<i class="bx ${icon}" style="font-size: 1.3rem;"></i> <span>${message}</span>`;
@@ -859,18 +1286,55 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         updateClock();
 
         // ---------------------------------------------------------
-        // 4. CẬP NHẬT CÁC THẺ THỐNG KÊ (STAT CARDS)
+        // 4. LỌC ĐƠN HÀNG THEO KỲ (NGÀY / HÔM QUA / TUẦN / THÁNG)
+        // ---------------------------------------------------------
+        function getOrdersByDatePeriod(dateFilterVal) {
+            if (dateFilterVal === 'today') {
+                return ordersData.filter(o => o.period === 'today');
+            } else if (dateFilterVal === 'yesterday') {
+                return ordersData.filter(o => o.period === 'yesterday');
+            } else if (dateFilterVal === 'week') {
+                // Tuần này gồm: Hôm nay + Hôm qua + Trong tuần
+                return ordersData.filter(o => o.period === 'today' || o.period === 'yesterday' || o.period === 'week');
+            } else {
+                // Tháng này gồm toàn bộ đơn trong tháng
+                return ordersData;
+            }
+        }
+
+        // Cập nhật số lượng đơn hiển thị ngay trong các option của select #filterDate
+        function updateDateSelectCounts() {
+            const selectEl = document.getElementById('filterDate');
+            if (!selectEl) return;
+            const cToday     = getOrdersByDatePeriod('today').length;
+            const cYesterday = getOrdersByDatePeriod('yesterday').length;
+            const cWeek      = getOrdersByDatePeriod('week').length;
+            const cMonth     = getOrdersByDatePeriod('month').length;
+
+            selectEl.options[0].textContent = `Hôm nay (${cToday} đơn)`;
+            selectEl.options[1].textContent = `Hôm qua (${cYesterday} đơn)`;
+            selectEl.options[2].textContent = `Tuần này (${cWeek} đơn)`;
+            selectEl.options[3].textContent = `Tháng này (${cMonth} đơn)`;
+        }
+
+        // ---------------------------------------------------------
+        // 5. CẬP NHẬT CÁC THẺ THỐNG KÊ (STAT CARDS) & SỐ ĐẾM TABS
         // ---------------------------------------------------------
         function updateStatCards() {
+            updateDateSelectCounts();
+
+            const datePeriod = document.getElementById('filterDate').value;
+            const periodOrders = getOrdersByDatePeriod(datePeriod);
+
             let totalRevenue = 0;
-            let totalOrders = ordersData.length;
+            let totalOrders = periodOrders.length;
             let countServing = 0;
             let countCooking = 0;
             let countPendingPay = 0;
             let countPaid = 0;
             let countCancelled = 0;
 
-            ordersData.forEach(order => {
+            periodOrders.forEach(order => {
                 if (order.status === 'paid') {
                     totalRevenue += order.total;
                     countPaid++;
@@ -885,35 +1349,111 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 }
             });
 
-            document.getElementById('statTodayRevenue').textContent = formatVND(totalRevenue);
-            document.getElementById('statTotalOrders').textContent = totalOrders;
-            document.getElementById('statServingOrders').textContent = countServing + countCooking;
-            document.getElementById('statPendingPayOrders').textContent = countPendingPay;
-            document.getElementById('statCompletedOrders').textContent = countPaid;
+            // Đổi nhãn tiêu đề thẻ theo Ngày / Tuần / Tháng
+            const periodLabels = {
+                today:     { rev: "Doanh thu hôm nay",   ord: "Tổng đơn trong ngày",  badgeRev: "+14.8%", badgeOrd: `+${totalOrders} đơn` },
+                yesterday: { rev: "Doanh thu hôm qua",   ord: "Tổng đơn hôm qua",     badgeRev: "+8.2%",  badgeOrd: `${totalOrders} đơn` },
+                week:      { rev: "Doanh thu tuần này",  ord: "Tổng đơn trong tuần",  badgeRev: "+18.4%", badgeOrd: `${totalOrders} đơn` },
+                month:     { rev: "Doanh thu tháng này", ord: "Tổng đơn trong tháng", badgeRev: "+22.6%", badgeOrd: `${totalOrders} đơn` }
+            };
+            const lbl = periodLabels[datePeriod] || periodLabels.today;
 
-            // Cập nhật số đếm trên các Tabs
-            document.getElementById('countAll').textContent = totalOrders;
-            document.getElementById('countCooking').textContent = countCooking;
-            document.getElementById('countServing').textContent = countServing;
+            document.getElementById('statRevenueLabel').textContent = lbl.rev;
+            document.getElementById('statOrdersLabel').textContent  = lbl.ord;
+            document.getElementById('statRevenueBadge').textContent = lbl.badgeRev;
+            document.getElementById('statOrdersBadge').textContent  = lbl.badgeOrd;
+
+            document.getElementById('statTodayRevenue').textContent     = formatVND(totalRevenue);
+            document.getElementById('statTotalOrders').textContent      = totalOrders;
+            document.getElementById('statServingOrders').textContent    = countServing + countCooking;
+            document.getElementById('statPendingPayOrders').textContent = countPendingPay;
+            document.getElementById('statCompletedOrders').textContent  = countPaid;
+
+            // Cập nhật số đếm trên 6 Tabs trạng thái theo đúng kỳ Ngày / Tuần / Tháng
+            document.getElementById('countAll').textContent        = totalOrders;
+            document.getElementById('countCooking').textContent    = countCooking;
+            document.getElementById('countServing').textContent    = countServing;
             document.getElementById('countPendingPay').textContent = countPendingPay;
-            document.getElementById('countPaid').textContent = countPaid;
-            document.getElementById('countCancelled').textContent = countCancelled;
+            document.getElementById('countPaid').textContent       = countPaid;
+            document.getElementById('countCancelled').textContent  = countCancelled;
         }
 
         // ---------------------------------------------------------
-        // 5. RENDER BẢNG ĐƠN HÀNG (Orders Table)
+        // 6. THAO TÁC ĐỔI TRẠNG THÁI ĐƠN HÀNG & MÓN ĂN TRỰC TIẾP
         // ---------------------------------------------------------
-        let currentStatusFilter = 'all';
+        function changeOrderStatus(orderId, newStatus) {
+            const order = ordersData.find(o => o.id === orderId);
+            if (!order || !STATUS_MAP[newStatus]) return;
 
+            order.status = newStatus;
+            order.statusName = STATUS_MAP[newStatus].name;
+
+            // Đồng bộ trạng thái món ăn bên trong đơn khi chuyển sang Đã thanh toán hoặc Đã hủy
+            if (newStatus === 'paid' || newStatus === 'pending_pay' || newStatus === 'serving') {
+                order.dishes.forEach(d => {
+                    if (d.status === 'cancelled') d.status = 'done';
+                    if (newStatus === 'paid' || newStatus === 'pending_pay') d.status = 'done';
+                });
+            } else if (newStatus === 'cancelled') {
+                order.dishes.forEach(d => d.status = 'cancelled');
+            }
+
+            updateStatCards();
+            renderOrdersTable();
+
+            // Nếu đang mở modal chi tiết của chính đơn này thì cập nhật luôn modal
+            if (currentViewingOrderId === orderId && document.getElementById('orderDetailModal').classList.contains('active')) {
+                openOrderDetail(orderId);
+            }
+
+            const toastType = newStatus === 'cancelled' ? 'danger' : (newStatus === 'paid' ? 'success' : 'info');
+            showToast(`Đơn ${order.id} đã chuyển sang trạng thái "${order.statusName}"!`, toastType);
+        }
+
+        // Chuyển nhanh sang bước trạng thái kế tiếp
+        function advanceOrderNextStep(orderId) {
+            const order = ordersData.find(o => o.id === orderId);
+            if (!order) return;
+
+            const nextStepMap = {
+                cooking:     'serving',
+                serving:     'pending_pay',
+                pending_pay: 'paid',
+                cancelled:   'cooking',
+                paid:        'serving'
+            };
+            const nextStatus = nextStepMap[order.status] || 'serving';
+            changeOrderStatus(orderId, nextStatus);
+        }
+
+        // Đổi trạng thái từng món ăn trong Modal chi tiết (Đang nấu <-> Đã lên món)
+        function toggleDishStatus(orderId, dishIdx) {
+            const order = ordersData.find(o => o.id === orderId);
+            if (!order || !order.dishes[dishIdx]) return;
+
+            const dish = order.dishes[dishIdx];
+            dish.status = (dish.status === 'cooking') ? 'done' : 'cooking';
+
+            openOrderDetail(orderId);
+            renderOrdersTable();
+            showToast(`Món "${dish.name}" đã cập nhật: ${dish.status === 'done' ? 'Đã lên món' : 'Đang nấu'}!`, 'info');
+        }
+
+        // ---------------------------------------------------------
+        // 7. RENDER BẢNG ĐƠN HÀNG (Orders Table - Chuẩn 9 cột)
+        // ---------------------------------------------------------
         function renderOrdersTable() {
             const tbody = document.getElementById('ordersTableBody');
             const searchKeyword = document.getElementById('orderSearchInput').value.toLowerCase().trim();
             const typeFilter = document.getElementById('filterOrderType').value;
             const paymentFilter = document.getElementById('filterPayment').value;
+            const dateFilter = document.getElementById('filterDate').value;
 
             tbody.innerHTML = '';
 
-            const filteredOrders = ordersData.filter(order => {
+            const periodOrders = getOrdersByDatePeriod(dateFilter);
+
+            const filteredOrders = periodOrders.filter(order => {
                 // Tab trạng thái
                 if (currentStatusFilter !== 'all' && order.status !== currentStatusFilter) {
                     return false;
@@ -950,7 +1490,8 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 return;
             }
 
-            document.getElementById('tablePaginationInfo').textContent = `Hiển thị 1 - ${filteredOrders.length} trong tổng số ${ordersData.length} đơn hàng`;
+            document.getElementById('tablePaginationInfo').textContent =
+                `Hiển thị 1 - ${filteredOrders.length} trong tổng số ${periodOrders.length} đơn hàng`;
 
             filteredOrders.forEach(order => {
                 const tr = document.createElement('tr');
@@ -966,16 +1507,33 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                     typeIcon = 'bx-cycling';
                 }
 
-                // Badge trạng thái
-                let statusBadgeClass = 'badge--serving';
-                if (order.status === 'cooking') statusBadgeClass = 'badge--cooking';
-                if (order.status === 'pending_pay') statusBadgeClass = 'badge--pending-pay';
-                if (order.status === 'paid') statusBadgeClass = 'badge--paid';
-                if (order.status === 'cancelled') statusBadgeClass = 'badge--cancelled';
+                const statusCfg = STATUS_MAP[order.status] || STATUS_MAP.serving;
 
                 // Tóm tắt món ăn
                 let dishSummary = order.dishes.map(d => `${d.name} (x${d.qty})`).join(', ');
                 if (dishSummary.length > 35) dishSummary = dishSummary.substring(0, 35) + '...';
+
+                // Nút chuyển bước trạng thái nhanh
+                let stepActionBtn = '';
+                if (order.status === 'cooking') {
+                    stepActionBtn = `
+                        <button class="action-btn" title="Chuyển sang: Đang phục vụ" onclick="changeOrderStatus('${order.id}', 'serving')">
+                            <i class="bx bx-dish" style="color: var(--primary-400);"></i>
+                        </button>
+                    `;
+                } else if (order.status === 'serving') {
+                    stepActionBtn = `
+                        <button class="action-btn" title="Chuyển sang: Chờ thanh toán" onclick="changeOrderStatus('${order.id}', 'pending_pay')">
+                            <i class="bx bx-time-five" style="color: var(--orange);"></i>
+                        </button>
+                    `;
+                } else if (order.status === 'cancelled') {
+                    stepActionBtn = `
+                        <button class="action-btn" title="Khôi phục đơn hàng" onclick="changeOrderStatus('${order.id}', 'cooking')">
+                            <i class="bx bx-revision" style="color: var(--blue);"></i>
+                        </button>
+                    `;
+                }
 
                 tr.innerHTML = `
                     <td style="text-align: center;" onclick="event.stopPropagation();">
@@ -984,7 +1542,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                     <td>
                         <div class="order-code">
                             <span class="order-code__id">${order.id}</span>
-                            <span class="order-code__time"><i class="bx bx-time"></i> ${order.time.split(' ')[0]}</span>
+                            <span class="order-code__time"><i class="bx bx-time"></i> ${order.time}</span>
                         </div>
                     </td>
                     <td>
@@ -1009,19 +1567,30 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                     <td>
                         <div class="order-amount">
                             <span class="order-amount__total">${formatVND(order.total)}</span>
-                            <span class="order-amount__payment">
-                                <i class="bx bx-credit-card-front"></i> ${order.paymentName}
-                            </span>
                         </div>
                     </td>
                     <td>
-                        <span class="badge ${statusBadgeClass}">${order.statusName}</span>
+                        <span class="order-amount__payment" style="font-size: 0.82rem; color: var(--text2);">
+                            <i class="bx bx-credit-card-front"></i> ${order.paymentName}
+                        </span>
+                    </td>
+                    <td onclick="event.stopPropagation();">
+                        <select class="status-select ${statusCfg.selectClass}"
+                            onchange="changeOrderStatus('${order.id}', this.value)"
+                            title="Nhấp để đổi trạng thái đơn hàng">
+                            <option value="cooking"     ${order.status === 'cooking' ? 'selected' : ''}>Đang chế biến</option>
+                            <option value="serving"     ${order.status === 'serving' ? 'selected' : ''}>Đang phục vụ</option>
+                            <option value="pending_pay" ${order.status === 'pending_pay' ? 'selected' : ''}>Chờ thanh toán</option>
+                            <option value="paid"        ${order.status === 'paid' ? 'selected' : ''}>Đã thanh toán</option>
+                            <option value="cancelled"   ${order.status === 'cancelled' ? 'selected' : ''}>Đã hủy</option>
+                        </select>
                     </td>
                     <td style="text-align: right;" onclick="event.stopPropagation();">
                         <div class="action-btns" style="justify-content: flex-end;">
                             <button class="action-btn" title="Xem chi tiết đơn" onclick="openOrderDetail('${order.id}')">
                                 <i class="bx bx-show"></i>
                             </button>
+                            ${stepActionBtn}
                             <button class="action-btn action-btn--print" title="In hóa đơn" onclick="openPrintInvoice('${order.id}')">
                                 <i class="bx bx-printer"></i>
                             </button>
@@ -1046,7 +1615,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         }
 
         // ---------------------------------------------------------
-        // 6. XỬ LÝ MODAL CHI TIẾT ĐƠN HÀNG (Order Detail)
+        // 8. XỬ LÝ MODAL CHI TIẾT ĐƠN HÀNG (Order Detail)
         // ---------------------------------------------------------
         function openOrderDetail(orderId) {
             const order = ordersData.find(o => o.id === orderId);
@@ -1058,48 +1627,79 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             document.getElementById('detailModalCustomer').textContent = `${order.customer} (${order.guests} khách)`;
             document.getElementById('detailModalTime').textContent = order.time;
 
-            // Badge trạng thái
-            let statusBadgeClass = 'badge--serving';
-            if (order.status === 'cooking') statusBadgeClass = 'badge--cooking';
-            if (order.status === 'pending_pay') statusBadgeClass = 'badge--pending-pay';
-            if (order.status === 'paid') statusBadgeClass = 'badge--paid';
-            if (order.status === 'cancelled') statusBadgeClass = 'badge--cancelled';
+            const statusCfg = STATUS_MAP[order.status] || STATUS_MAP.serving;
 
+            // Select đổi trạng thái trực tiếp ngay trong Modal
             document.getElementById('detailModalStatusBadge').innerHTML = `
-                <span class="badge ${statusBadgeClass}">${order.statusName}</span>
+                <select class="status-select ${statusCfg.selectClass}"
+                    onchange="changeOrderStatus('${order.id}', this.value)">
+                    <option value="cooking"     ${order.status === 'cooking' ? 'selected' : ''}>Đang chế biến</option>
+                    <option value="serving"     ${order.status === 'serving' ? 'selected' : ''}>Đang phục vụ</option>
+                    <option value="pending_pay" ${order.status === 'pending_pay' ? 'selected' : ''}>Chờ thanh toán</option>
+                    <option value="paid"        ${order.status === 'paid' ? 'selected' : ''}>Đã thanh toán</option>
+                    <option value="cancelled"   ${order.status === 'cancelled' ? 'selected' : ''}>Đã hủy</option>
+                </select>
             `;
 
-            // Render Timeline
+            // Render Timeline tương tác (nhấp vào bước nào sẽ chuyển đơn sang trạng thái đó)
             const timelineEl = document.getElementById('detailModalTimeline');
-            if (order.status === 'paid') {
+            if (order.status === 'cancelled') {
                 timelineEl.innerHTML = `
-                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Tạo đơn</span><span class="timeline-step__time">Xong</span></div>
-                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Chế biến</span><span class="timeline-step__time">Xong</span></div>
-                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Phục vụ</span><span class="timeline-step__time">Xong</span></div>
-                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check-double"></i></div><span class="timeline-step__text">Đã thanh toán</span><span class="timeline-step__time">Hoàn tất</span></div>
-                `;
-            } else if (order.status === 'cancelled') {
-                timelineEl.innerHTML = `
-                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Tạo đơn</span></div>
-                    <div class="timeline-step" style="color: var(--red);"><div class="timeline-step__icon" style="background: var(--red-bg); border-color: var(--red); color: var(--red);"><i class="bx bx-x"></i></div><span class="timeline-step__text" style="color: var(--red);">Đã hủy đơn</span></div>
+                    <div class="timeline-step completed" style="cursor:pointer;" onclick="changeOrderStatus('${order.id}', 'cooking')" title="Nhấp để khôi phục sang Đang chế biến">
+                        <div class="timeline-step__icon"><i class="bx bx-revision"></i></div>
+                        <span class="timeline-step__text">Khôi phục đơn</span>
+                    </div>
+                    <div class="timeline-step" style="color: var(--red);">
+                        <div class="timeline-step__icon" style="background: var(--red-bg); border-color: var(--red); color: var(--red);"><i class="bx bx-x"></i></div>
+                        <span class="timeline-step__text" style="color: var(--red);">Đã hủy đơn</span>
+                    </div>
                 `;
             } else {
+                const stepOrder = ['cooking', 'serving', 'pending_pay', 'paid'];
+                const curIdx = stepOrder.indexOf(order.status);
+
+                const getStepClass = (idx) => {
+                    if (order.status === 'paid') return 'completed';
+                    if (idx < curIdx) return 'completed';
+                    if (idx === curIdx) return 'active';
+                    return '';
+                };
+
                 timelineEl.innerHTML = `
-                    <div class="timeline-step completed"><div class="timeline-step__icon"><i class="bx bx-check"></i></div><span class="timeline-step__text">Tạo đơn</span><span class="timeline-step__time">11:30</span></div>
-                    <div class="timeline-step ${order.status === 'cooking' ? 'active' : 'completed'}"><div class="timeline-step__icon"><i class="bx bx-bowl-hot"></i></div><span class="timeline-step__text">Bếp chế biến</span></div>
-                    <div class="timeline-step ${order.status === 'serving' ? 'active' : ''}"><div class="timeline-step__icon"><i class="bx bx-restaurant"></i></div><span class="timeline-step__text">Đang phục vụ</span></div>
-                    <div class="timeline-step ${order.status === 'pending_pay' ? 'active' : ''}"><div class="timeline-step__icon"><i class="bx bx-credit-card"></i></div><span class="timeline-step__text">Thanh toán</span></div>
+                    <div class="timeline-step completed">
+                        <div class="timeline-step__icon"><i class="bx bx-check"></i></div>
+                        <span class="timeline-step__text">Tạo đơn</span>
+                        <span class="timeline-step__time">${order.time.split(' ')[0]}</span>
+                    </div>
+                    <div class="timeline-step ${getStepClass(0)}" style="cursor:pointer;" onclick="changeOrderStatus('${order.id}', 'cooking')" title="Chuyển sang: Đang chế biến">
+                        <div class="timeline-step__icon"><i class="bx bx-bowl-hot"></i></div>
+                        <span class="timeline-step__text">Bếp chế biến</span>
+                    </div>
+                    <div class="timeline-step ${getStepClass(1)}" style="cursor:pointer;" onclick="changeOrderStatus('${order.id}', 'serving')" title="Chuyển sang: Đang phục vụ">
+                        <div class="timeline-step__icon"><i class="bx bx-restaurant"></i></div>
+                        <span class="timeline-step__text">Đang phục vụ</span>
+                    </div>
+                    <div class="timeline-step ${getStepClass(2)}" style="cursor:pointer;" onclick="changeOrderStatus('${order.id}', 'pending_pay')" title="Chuyển sang: Chờ thanh toán">
+                        <div class="timeline-step__icon"><i class="bx bx-time-five"></i></div>
+                        <span class="timeline-step__text">Chờ thanh toán</span>
+                    </div>
+                    <div class="timeline-step ${getStepClass(3)}" style="cursor:pointer;" onclick="changeOrderStatus('${order.id}', 'paid')" title="Chuyển sang: Đã thanh toán">
+                        <div class="timeline-step__icon"><i class="bx bx-check-double"></i></div>
+                        <span class="timeline-step__text">Đã thanh toán</span>
+                    </div>
                 `;
             }
 
-            // Render danh sách món
+            // Render danh sách món (bấm vào trạng thái món để đổi Đang nấu <-> Đã lên món)
             const dishesTbody = document.getElementById('detailModalDishesBody');
             dishesTbody.innerHTML = '';
             order.dishes.forEach((dish, idx) => {
                 const tr = document.createElement('tr');
-                let statusText = '<span style="color: var(--green); font-size: 0.8rem; font-weight: 600;"><i class="bx bx-check"></i> Đã lên món</span>';
+                let statusText = `<button type="button" onclick="toggleDishStatus('${order.id}', ${idx})" style="color: var(--green); font-size: 0.8rem; font-weight: 600; cursor: pointer;" title="Nhấp để đổi trạng thái món"><i class="bx bx-check"></i> Đã lên món</button>`;
                 if (dish.status === 'cooking') {
-                    statusText = '<span style="color: var(--orange); font-size: 0.8rem; font-weight: 600;"><i class="bx bx-loader-alt bx-spin"></i> Đang nấu</span>';
+                    statusText = `<button type="button" onclick="toggleDishStatus('${order.id}', ${idx})" style="color: var(--orange); font-size: 0.8rem; font-weight: 600; cursor: pointer;" title="Nhấp để đánh dấu Đã lên món"><i class="bx bx-loader-alt bx-spin"></i> Đang nấu</button>`;
+                } else if (dish.status === 'cancelled') {
+                    statusText = `<span style="color: var(--red); font-size: 0.8rem; font-weight: 600;"><i class="bx bx-x"></i> Đã hủy</span>`;
                 }
                 tr.innerHTML = `
                     <td>
@@ -1150,7 +1750,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         });
 
         // ---------------------------------------------------------
-        // 7. XỬ LÝ MODAL TẠO ĐƠN HÀNG MỚI (Mini POS)
+        // 9. XỬ LÝ MODAL TẠO ĐƠN HÀNG MỚI (Mini POS)
         // ---------------------------------------------------------
         const newOrderModal = document.getElementById('newOrderModal');
         const btnOpenCreateOrder = document.getElementById('btnOpenCreateOrder');
@@ -1309,9 +1909,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         // Đổi loại đơn (Tại bàn / Mang về / Giao hàng) trong POS
         document.getElementById('posOrderType').addEventListener('change', function () {
             const tableGroup = document.getElementById('posTableSelectGroup');
-            if (this.value === 'takeaway') {
-                tableGroup.style.display = 'none';
-            } else if (this.value === 'delivery') {
+            if (this.value === 'takeaway' || this.value === 'delivery') {
                 tableGroup.style.display = 'none';
             } else {
                 tableGroup.style.display = 'flex';
@@ -1362,10 +1960,11 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             const vat = Math.round((subtotal - discount) * 0.08);
             const total = subtotal - discount + vat;
 
-            const newId = "DH-" + (1028 + ordersData.length + 1);
+            const newId = "DH-" + (1004 + ordersData.length + 1);
 
             const newOrderObj = {
                 id: newId,
+                period: "today",
                 type: orderType,
                 typeName: typeName,
                 table: tableVal,
@@ -1401,16 +2000,10 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         });
 
         // ---------------------------------------------------------
-        // 8. XỬ LÝ THANH TOÁN ĐƠN HÀNG (Payment Execution)
+        // 10. XỬ LÝ THANH TOÁN ĐƠN HÀNG (Payment Execution)
         // ---------------------------------------------------------
         function quickPayOrder(orderId) {
-            const order = ordersData.find(o => o.id === orderId);
-            if (!order) return;
-            order.status = 'paid';
-            order.statusName = 'Đã thanh toán';
-            updateStatCards();
-            renderOrdersTable();
-            showToast(`Đơn hàng ${order.id} đã thanh toán thành công số tiền ${formatVND(order.total)}!`, 'success');
+            changeOrderStatus(orderId, 'paid');
         }
 
         document.getElementById('btnPayOrderAction').addEventListener('click', function () {
@@ -1421,7 +2014,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         });
 
         // ---------------------------------------------------------
-        // 9. XỬ LÝ MODAL IN HÓA ĐƠN (Print Invoice)
+        // 11. XỬ LÝ MODAL IN HÓA ĐƠN (Print Invoice)
         // ---------------------------------------------------------
         const printModal = document.getElementById('printModal');
 
@@ -1481,7 +2074,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         });
 
         // ---------------------------------------------------------
-        // 10. XỬ LÝ HỦY ĐƠN HÀNG (Cancel Order)
+        // 12. XỬ LÝ HỦY ĐƠN HÀNG (Cancel Order)
         // ---------------------------------------------------------
         let cancelOrderIdTarget = null;
         const cancelModal = document.getElementById('cancelOrderModal');
@@ -1509,9 +2102,10 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             if (!cancelOrderIdTarget) return;
             const order = ordersData.find(o => o.id === cancelOrderIdTarget);
             if (order) {
+                const reason = document.getElementById('cancelOrderReason').value;
                 order.status = 'cancelled';
                 order.statusName = 'Đã hủy';
-                const reason = document.getElementById('cancelOrderReason').value;
+                order.dishes.forEach(d => d.status = 'cancelled');
                 updateStatCards();
                 renderOrdersTable();
                 showToast(`Đã hủy đơn ${order.id} (Lý do: ${reason})`, 'danger');
@@ -1520,7 +2114,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         });
 
         // ---------------------------------------------------------
-        // 11. XỬ LÝ GỌI THÊM MÓN TRONG MODAL CHI TIẾT
+        // 13. XỬ LÝ GỌI THÊM MÓN TRONG MODAL CHI TIẾT
         // ---------------------------------------------------------
         document.getElementById('btnQuickAddDish').addEventListener('click', function () {
             if (!currentViewingOrderId) return;
@@ -1549,7 +2143,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         });
 
         // ---------------------------------------------------------
-        // 12. SỰ KIỆN TÌM KIẾM, TAB TRẠNG THÁI & BỘ LỌC
+        // 14. SỰ KIỆN TÌM KIẾM, TAB TRẠNG THÁI, BỘ LỌC NGÀY/TUẦN/THÁNG & LÀM MỚI
         // ---------------------------------------------------------
         const tabItems = document.querySelectorAll('#orderStatusTabs .orders-tab');
         tabItems.forEach(tab => {
@@ -1562,22 +2156,46 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         });
 
         document.getElementById('orderSearchInput').addEventListener('input', renderOrdersTable);
-        document.getElementById('headerGlobalSearch').addEventListener('input', function () {
-            document.getElementById('orderSearchInput').value = this.value;
-            renderOrdersTable();
-        });
+
+        // Hỗ trợ ô tìm kiếm trên thanh Header chung
+        const headerSearchInput = document.querySelector('.header__search input');
+        if (headerSearchInput) {
+            headerSearchInput.addEventListener('input', function () {
+                document.getElementById('orderSearchInput').value = this.value;
+                renderOrdersTable();
+            });
+        }
+
         document.getElementById('filterOrderType').addEventListener('change', renderOrdersTable);
         document.getElementById('filterPayment').addEventListener('change', renderOrdersTable);
+
+        // Khi đổi Ngày / Tuần / Tháng: cập nhật cả 5 Thẻ thống kê, số đếm trên 6 Tabs và Bảng đơn hàng
+        document.getElementById('filterDate').addEventListener('change', function () {
+            updateStatCards();
+            renderOrdersTable();
+            const labelText = this.options[this.selectedIndex].text;
+            showToast(`Đang hiển thị dữ liệu: ${labelText}`, 'info');
+        });
+
+        // Nút Làm mới trạng thái & bộ lọc
         document.getElementById('btnRefreshList').addEventListener('click', function () {
+            // Khôi phục lại trạng thái gốc của các đơn hàng mẫu
+            ordersData = JSON.parse(JSON.stringify(initialOrdersData));
+
+            // Đặt lại toàn bộ bộ lọc
             document.getElementById('orderSearchInput').value = '';
-            document.getElementById('headerGlobalSearch').value = '';
+            if (headerSearchInput) headerSearchInput.value = '';
             document.getElementById('filterOrderType').value = 'all';
             document.getElementById('filterPayment').value = 'all';
+            document.getElementById('filterDate').value = 'today';
             currentStatusFilter = 'all';
+
             tabItems.forEach(t => t.classList.remove('active'));
             tabItems[0].classList.add('active');
+
+            updateStatCards();
             renderOrdersTable();
-            showToast('Đã làm mới danh sách đơn hàng!', 'info');
+            showToast('Đã làm mới bộ lọc và khôi phục lại trạng thái đơn hàng!', 'info');
         });
 
         // Check All
@@ -1588,10 +2206,11 @@ include_once __DIR__ . '/../layouts/admin_header.php';
 
         // Xuất dữ liệu Excel / CSV
         document.getElementById('btnExportData').addEventListener('click', function () {
+            const currentPeriodOrders = getOrdersByDatePeriod(document.getElementById('filterDate').value);
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             csvContent += "Mã đơn,Bàn/Hình thức,Khách hàng,Số điện thoại,Tổng tiền,Thanh toán,Trạng thái,Thời gian\n";
 
-            ordersData.forEach(o => {
+            currentPeriodOrders.forEach(o => {
                 csvContent += `"${o.id}","${o.tableShort}","${o.customer}","${o.phone}","${o.total}","${o.paymentName}","${o.statusName}","${o.time}"\n`;
             });
 
@@ -1610,6 +2229,10 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         renderOrdersTable();
     </script>
 
-<?php
-include_once __DIR__ . '/../layouts/admin_footer.php';
-?>
+    <!-- KẾT THÚC VÙNG NỘI DUNG CHÍNH -->
+    </main>
+  </div>
+
+</body>
+
+</html>
