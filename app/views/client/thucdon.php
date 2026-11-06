@@ -38,7 +38,7 @@ include_once __DIR__ . '/../layouts/client_header.php';
           <div class="dish-grid">
             <?php foreach ($foodsByCategory[$cat['categoryId']] as $food): ?>
               <div class="dish-card">
-                <img src="<?= htmlspecialchars(!empty($food['imageURL']) ? $food['imageURL'] : 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop&auto=format') ?>"
+                <img src="<?= htmlspecialchars(!empty($food['imageURL']) ? ltrim($food['imageURL'], '/') : 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop&auto=format') ?>"
                   alt="<?= htmlspecialchars($food['foodName']) ?>" />
                 <div class="dish-card-body">
                   <div class="dish-card-head">

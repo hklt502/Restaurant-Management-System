@@ -445,4 +445,6 @@
     </script>
 </body>
 
-</html>
+<?php
+include_once __DIR__ . '/../layouts/admin_footer.php';
+?>

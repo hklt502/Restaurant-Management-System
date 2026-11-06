@@ -33,7 +33,7 @@ include_once __DIR__ . '/../layouts/client_header.php';
         <?php foreach ($promotions as $promo): ?>
           <div class="promo">
             <div class="promo-image">
-              <img src="<?= htmlspecialchars(!empty($promo['imageURL']) ? $promo['imageURL'] : 'https://images.unsplash.com/photo-1709548145082-04d0cde481d4?w=600&h=400&fit=crop&auto=format') ?>"
+              <img src="<?= htmlspecialchars(!empty($promo['imageURL']) ? ltrim($promo['imageURL'], '/') : 'https://images.unsplash.com/photo-1709548145082-04d0cde481d4?w=600&h=400&fit=crop&auto=format') ?>"
                 alt="<?= htmlspecialchars($promo['title']) ?>" />
               <?php if (!empty($promo['badgeText'])): ?>
                 <span class="badge"><?= htmlspecialchars($promo['badgeText']) ?></span>

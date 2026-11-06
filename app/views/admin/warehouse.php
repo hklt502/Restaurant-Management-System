@@ -185,7 +185,11 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 </form>
             </div>
 
-<?php
-include_once __DIR__ . '/../layouts/admin_footer.php';
-?>
+    <!-- KẾT THÚC VÙNG NỘI DUNG CHÍNH -->
+    </main>
+  </div>
+
+</body>
+
+</html>
 

@@ -35,8 +35,7 @@ Restaurant-Management-System/
 │       │   ├── client_head.php             # Thẻ <head>, font chữ, stylesheet cho khách hàng
 │       │   ├── client_header.php           # Thanh điều hướng menu (#header) cho khách hàng
 │       │   ├── client_footer.php           # Chân trang (.footer) cho khách hàng
-│       │   ├── admin_header.php            # Toàn bộ phần đầu Admin (thẻ <head>, Sidebar menu, Topbar header)
-│       │   └── admin_footer.php            # Đóng thẻ vùng nội dung chính và chân trang admin
+│       │   └── admin_header.php            # Toàn bộ phần đầu Admin (thẻ <head>, Sidebar menu, Topbar header)
 │       ├── admin/                          # Giao diện các trang quản trị (.php)
 │       │   ├── overview.php                # Tổng quan Dashboard & KPI
 │       │   ├── menu.php                    # Quản lý Menu & Danh mục món
@@ -86,8 +85,7 @@ Hệ thống đã được tách các khối **Head**, **Header**, **Footer**, *
 
 ### 2. Phân hệ Quản trị (`Admin`):
 
-- `admin_header.php`: Hợp nhất toàn bộ phần đầu trang Admin: thẻ `<!DOCTYPE html>`, `<head>`, font `Inter`, thư viện icon `Boxicons`, file CSS riêng của từng trang (`$pageCss`), thanh menu điều hướng bên trái (`.sidebar`) và thanh topbar trên cùng (`.header`).
-- `admin_footer.php`: Đóng thẻ `</main>`, `.main-wrapper` và `</body></html>`.
+- `admin_header.php`: Hợp nhất toàn bộ phần đầu trang Admin: thẻ `<!DOCTYPE html>`, `<head>`, font `Inter`, thư viện icon `Boxicons`, file CSS riêng của từng trang (`$pageCss`), thanh menu điều hướng bên trái (`.sidebar`) và thanh topbar trên cùng (`.header`). Các thẻ đóng `</main>`, `.main-wrapper` và `</body></html>` được đặt trực tiếp ở cuối mỗi trang admin.
 
 ---
 

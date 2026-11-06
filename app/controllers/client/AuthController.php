@@ -5,20 +5,24 @@ require_once __DIR__ . '/../../models/CustomerModel.php';
 require_once __DIR__ . '/../../models/ReservationModel.php';
 require_once __DIR__ . '/../../models/VoucherModel.php';
 
-class AuthController extends BaseController {
+class AuthController extends BaseController
+{
     private $customers;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->customers = new CustomerModel();
     }
 
     // ---------- Đăng nhập ----------
-    public function loginForm() {
+    public function loginForm()
+    {
         $this->render('client/dangnhap', ['error' => null]);
     }
 
-    public function login() {
+    public function login()
+    {
         $phone    = trim($_POST['phone'] ?? '');
         $password = $_POST['password'] ?? '';
 
@@ -31,30 +35,37 @@ class AuthController extends BaseController {
         $_SESSION['customer'] = [
             'customerId'   => $customer['customerId'],
             'customerName' => $customer['customerName'],
+            'customerPhone' => $customer['customerPhone'],
+            'customerEmail' => $customer['customerEmail']
         ];
         $this->redirect('index.php?page=trangchu');
     }
 
-    public function logout() {
+    public function logout()
+    {
         session_unset();
         session_destroy();
         $this->redirect('index.php?page=dangnhap');
     }
 
     // ---------- Đăng ký ----------
-    public function registerForm() {
+    public function registerForm()
+    {
         $this->render('client/dangky', ['error' => null]);
     }
 
-    public function register() {
+    public function register()
+    {
         $name     = trim($_POST['name'] ?? '');
         $email    = trim($_POST['email'] ?? '');
         $phone    = trim($_POST['phone'] ?? '');
         $birth    = $_POST['birth'] ?? null;
         $password = $_POST['password'] ?? '';
         $confirm  = $_POST['confirm'] ?? '';
-        // Form gửi nam/nu/khac -> map sang ENUM của DB
-        $gender   = ['nam' => 'MALE', 'nu' => 'FEMALE'][$_POST['gender'] ?? ''] ?? 'OTHER';
+        //chuyển đổi 
+        $map = ['nam' => 'MALE', 'nu' => 'FEMALE'];
+        $key = $_POST['gender'] ?? '';
+        $gender = $map[$key] ?? 'OTHER';
 
         $error = null;
         if ($name === '' || $phone === '' || $email === '' || $password === '') {
@@ -78,7 +89,8 @@ class AuthController extends BaseController {
     }
 
     // ---------- Trang cá nhân ----------
-    public function profile() {
+    public function profile()
+    {
         $this->requireLogin();
         $this->render('client/canhan', [
             'customer'     => $this->customers->getById($this->customerId()),
@@ -88,12 +100,14 @@ class AuthController extends BaseController {
     }
 
     // ---------- Đổi mật khẩu ----------
-    public function changePasswordForm() {
+    public function changePasswordForm()
+    {
         $this->requireLogin();
         $this->render('client/doimatkhau', ['error' => null, 'success' => false]);
     }
 
-    public function changePassword() {
+    public function changePassword()
+    {
         $this->requireLogin();
         $old     = $_POST['old-pass'] ?? '';
         $new     = $_POST['new-pass'] ?? '';
@@ -109,4 +123,3 @@ class AuthController extends BaseController {
         $this->render('client/doimatkhau', ['error' => $error, 'success' => $error === null]);
     }
 }
-

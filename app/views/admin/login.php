@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nhóm 3 - Đăng nhập</title>
-    <link rel="stylesheet" href="../../../public/asset/css/admin/stylev.css">
+    <link rel="stylesheet" href="../../../public/asset/css/admin/login.css">
 </head>
 
 <body class="login-page">
@@ -37,4 +37,3 @@
 </body>
 
 </html>
-
