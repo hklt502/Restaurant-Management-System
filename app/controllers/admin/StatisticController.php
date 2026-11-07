@@ -8,18 +8,49 @@ class StatisticController extends BaseController {
 
     public function __construct() {
         parent::__construct();
-        $this->statistics = new StatisticModel();
+        try {
+            $this->statistics = new StatisticModel();
+        } catch (Throwable $e) {
+            $this->statistics = null;
+        }
     }
 
-    // Trang thống kê: mặc định hiển thị "Tháng này", gom doanh thu theo ngày
+    // Trang Thống kê & Báo cáo (Statistics với StatisticModel)
     public function index() {
-        $this->render('admin/statistics', ['stats' => $this->buildStatistics()]);
+        if (isset($_GET['ajax_custom']) && $_GET['ajax_custom'] === '1') {
+            header('Content-Type: application/json; charset=utf-8');
+            try {
+                $statModel  = $this->statistics ?? new StatisticModel();
+                $customData = $statModel->buildCustomRangeData($_GET['from'] ?? '', $_GET['to'] ?? '');
+                echo json_encode(['success' => true, 'data' => $customData], JSON_UNESCAPED_UNICODE);
+            } catch (Throwable $e) {
+                echo json_encode(['success' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+            }
+            exit;
+        }
+
+        $dbStatistics = null;
+        try {
+            $statModel    = $this->statistics ?? new StatisticModel();
+            $dbStatistics = $statModel->getAllPeriodsData();
+        } catch (Throwable $e) {
+            $dbStatistics = null;
+        }
+
+        $this->render('admin/statistics', [
+            'dbStatistics' => $dbStatistics
+        ]);
     }
 
     // Trả dữ liệu JSON cho JavaScript mỗi khi đổi bộ lọc (không cần tải lại trang)
     public function data() {
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($this->buildStatistics(), JSON_UNESCAPED_UNICODE);
+        try {
+            $this->statistics = $this->statistics ?? new StatisticModel();
+            echo json_encode($this->buildStatistics(), JSON_UNESCAPED_UNICODE);
+        } catch (Throwable $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+        }
         exit;
     }
 

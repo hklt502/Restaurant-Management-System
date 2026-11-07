@@ -1,83 +1,15 @@
 <?php
-$isDirectView = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false;
-$assetPrefix  = $isDirectView ? '../../../' : '';
-
-// ============================================================================
-// 1. KẾT NỐI DATABASE VỚI ORDERMODEL VÀ FOODMODEL (Hỗ trợ cả MVC Controller & Direct View)
-// ============================================================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    header('Content-Type: application/json; charset=utf-8');
-    require_once __DIR__ . '/../../models/OrderModel.php';
-
-    // 1.1. Cập nhật trạng thái đơn hàng xuống Database
-    if ($_POST['action'] === 'update_status') {
-        $rawId     = $_POST['orderId'] ?? '';
-        $newStatus = $_POST['status'] ?? '';
-        $numId     = (int) preg_replace('/\D/', '', $rawId);
-        $ok = false;
-        try {
-            $orderModel = new OrderModel();
-            if ($numId > 0) {
-                $ok = $orderModel->updateStatus($numId, $newStatus);
-            }
-        } catch (Throwable $e) {
-            $ok = false;
-        }
-        echo json_encode(['success' => $ok, 'orderId' => $rawId, 'status' => $newStatus]);
-        exit;
-    }
-
-    // 1.2. Tạo đơn hàng mới từ POS và INSERT trực tiếp vào Database (bảng orders & order_items)
-    if ($_POST['action'] === 'create_order') {
-        try {
-            $orderModel = new OrderModel();
-            $newOrder   = $orderModel->createOrderFromPos($_POST);
-            echo json_encode(['success' => true, 'order' => $newOrder], JSON_UNESCAPED_UNICODE);
-        } catch (Throwable $e) {
-            echo json_encode(['success' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
-        }
-        exit;
-    }
+// Nếu truy cập trực tiếp file View trên trình duyệt -> chuyển hướng về Front Controller (OrderController::index)
+if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false) {
+    header('Location: ../../../index.php?page=admin-orders');
+    exit;
 }
 
-if (!isset($dbOrders)) {
-    $dbOrders = [];
-    try {
-        require_once __DIR__ . '/../../models/OrderModel.php';
-        $orderModel = new OrderModel();
-        $dbOrders = $orderModel->getAllOrders(100);
-    } catch (Throwable $e) {
-        $dbOrders = [];
-    }
-}
-
-if (!isset($dbFoodsPos)) {
-    $dbFoodsPos = [];
-    try {
-        require_once __DIR__ . '/../../models/FoodModel.php';
-        $foodModel = new FoodModel();
-        $rawFoods = $foodModel->getAllAdmin();
-        foreach ($rawFoods as $f) {
-            $catId = (int)($f['categoryId'] ?? 1);
-            $catKey = 'beef';
-            if ($catId === 2) $catKey = 'seafood';
-            elseif ($catId === 3 || $catId === 4) $catKey = 'appetizer';
-            elseif ($catId === 5) $catKey = 'drink';
-            $dbFoodsPos[] = [
-                'id'    => (int)$f['foodId'],
-                'name'  => $f['foodName'] ?? $f['name'] ?? 'Món ăn',
-                'cat'   => $catKey,
-                'price' => (float)($f['foodPrice'] ?? $f['price'] ?? 0),
-                'unit'  => 'Phần'
-            ];
-        }
-    } catch (Throwable $e) {
-        $dbFoodsPos = [];
-    }
-}
+$dbOrders   = $dbOrders ?? [];
+$dbFoodsPos = $dbFoodsPos ?? [];
 
 $pageTitle  = "Quản lý đơn hàng - Restaurant Management System";
-$pageCss    = $assetPrefix . "public/asset/css/admin/orders.css";
+$pageCss    = "public/asset/css/admin/orders.css";
 $activePage = "orders";
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
@@ -1372,6 +1304,8 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         renderOrdersTable();
                         closeNewOrderModal();
                         showToast(`Đã tạo thành công đơn hàng ${data.order.id} vào Database và gửi xuống bếp!`, 'success');
+                    } else {
+                        showToast((data && data.message) || 'Không thể lưu đơn hàng vào cơ sở dữ liệu!', 'danger');
                     }
                 })
                 .catch(() => {

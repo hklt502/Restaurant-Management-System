@@ -9,27 +9,31 @@ require_once __DIR__ . '/app/core/Router.php';
 $router = new Router();
 
 // ======================== ROUTES ADMIN (QUẢN TRỊ VIÊN) ========================
-$router->get('admin-login', 'AdminController', 'login');
-$router->post('admin-login', 'AdminController', 'login');
+$router->get('admin-login', 'AdminAuthController', 'login');
+$router->post('admin-login', 'AdminAuthController', 'login');
+$router->get('admin-logout', 'AdminAuthController', 'logout');
 
-$router->get('admin-overview', 'AdminController', 'overview');
+$router->get('admin-overview', 'OverviewController', 'index');
 
-$router->get('admin-menu', 'AdminController', 'menu');
-$router->post('admin-menu', 'AdminController', 'menu');
+$router->get('admin-menu', 'AdminMenuController', 'index');
+$router->post('admin-menu', 'AdminMenuController', 'index');
 
-$router->get('admin-tables', 'AdminController', 'tables');
+$router->get('admin-tables', 'TableController', 'index');
+$router->post('admin-tables', 'TableController', 'index');
 
-$router->get('admin-orders', 'AdminController', 'orders');
-$router->post('admin-orders', 'AdminController', 'orders');
+$router->get('admin-orders', 'OrderController', 'index');
+$router->post('admin-orders', 'OrderController', 'index');
 
-$router->get('admin-vouchers', 'AdminController', 'vouchers');
-$router->post('admin-vouchers', 'AdminController', 'vouchers');
+$router->get('admin-vouchers', 'VoucherController', 'index');
+$router->post('admin-vouchers', 'VoucherController', 'index');
 
-$router->get('admin-warehouse', 'AdminController', 'warehouse');
+$router->get('admin-warehouse', 'WarehouseController', 'index');
+$router->post('admin-warehouse', 'WarehouseController', 'index');
 
-$router->get('admin-users', 'AdminController', 'users');
+$router->get('admin-users', 'UserController', 'index');
+$router->post('admin-users', 'UserController', 'index');
 
-$router->get('admin-statistics', 'AdminController', 'statistics');
+$router->get('admin-statistics', 'StatisticController', 'index');
 $router->get('admin-statistics-data', 'StatisticController', 'data');
 
 // ======================== ROUTES CLIENT (KHÁCH HÀNG) ========================

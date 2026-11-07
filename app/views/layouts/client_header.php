@@ -1,4 +1,10 @@
-<?php $activePage = $activePage ?? ''; ?>
+<?php
+if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/') !== false) {
+    header('Location: ../../../index.php?page=trangchu');
+    exit;
+}
+$activePage = $activePage ?? '';
+?>
   <!-- ===================== THANH MENU ===================== -->
   <div id="header">
     <input type="checkbox" id="nav-toggle" />

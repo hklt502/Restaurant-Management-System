@@ -2,78 +2,20 @@
 // app/models/OrderModel.php
 require_once __DIR__ . '/../core/Database.php';
 
-class OrderModel {
+class OrderModel
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Database::getConnection();
-    }
-
-    /*
-     Tự động nạp bổ sung các đơn hàng mẫu từ restaurant_insert.sql nếu bảng orders mới chỉ có <= 7 bản ghi
-     */
-    private function syncInsertSqlIfNeeded() {
-        $res = $this->db->query("SELECT COUNT(*) AS cnt FROM orders");
-        if (!$res) return;
-        $row = $res->fetch_assoc();
-        if ((int)($row['cnt'] ?? 0) > 7) return;
-
-        $this->db->query("UPDATE `orders` SET `status` = 'PENDING_PAY' WHERE `orderId` = 7 AND `status` = 'SERVING'");
-        $this->db->query("INSERT IGNORE INTO `orders` (`orderId`, `customerId`, `adminId`, `tableId`, `reservationId`, `voucherId`, `guestCount`, `subtotal`, `discountAmount`, `totalAmount`, `paymentMethod`, `status`, `orderDate`, `paidAt`) VALUES
-            (8,  1, 1, 6,    NULL, NULL, 2,  350000,      0,  350000, 'CASH',     'CANCELLED', '2026-10-01 09:30:00', NULL),
-            (9,  3, 1, 10,   NULL, 1,    8, 2680000, 268000, 2412000, 'CARD',     'PAID',      '2026-09-30 19:20:00', '2026-09-30 21:00:00'),
-            (10, 4, 2, NULL, NULL, NULL, 1,  335000,      0,  335000, 'CASH',     'PAID',      '2026-09-30 18:10:00', '2026-09-30 18:40:00'),
-            (11, 5, 3, 1,    NULL, NULL, 4,  800000,      0,  800000, 'TRANSFER', 'PAID',      '2026-09-30 17:30:00', '2026-09-30 19:00:00'),
-            (12, 1, 1, NULL, NULL, NULL, 1,  350000,      0,  350000, 'TRANSFER', 'PAID',      '2026-09-30 14:15:00', '2026-09-30 14:50:00'),
-            (13, 2, 2, 6,    NULL, NULL, 2,  180000,      0,  180000, 'CASH',     'CANCELLED', '2026-09-30 12:30:00', NULL),
-            (14, 3, 1, 9,    NULL, 3,    6, 2500000, 500000, 2000000, 'CARD',     'PAID',      '2026-09-29 20:00:00', '2026-09-29 21:45:00'),
-            (15, 5, 3, 2,    NULL, NULL, 4,  790000,      0,  790000, 'TRANSFER', 'PAID',      '2026-09-29 19:10:00', '2026-09-29 20:30:00'),
-            (16, 1, 2, NULL, NULL, NULL, 1,  360000,      0,  360000, 'CASH',     'PAID',      '2026-09-29 12:15:00', '2026-09-29 12:45:00'),
-            (17, 4, 1, NULL, NULL, 2,    2,  460000,  50000,  410000, 'TRANSFER', 'PAID',      '2026-09-28 18:40:00', '2026-09-28 19:20:00'),
-            (18, 2, 4, 7,    NULL, NULL, 4, 1020000,      0, 1020000, 'CARD',     'PAID',      '2026-09-28 19:00:00', '2026-09-28 20:50:00'),
-            (19, 3, 1, 9,    NULL, 3,   10, 5400000,1080000, 4320000, 'CARD',     'PAID',      '2026-09-22 18:30:00', '2026-09-22 21:15:00'),
-            (20, 1, 3, 3,    NULL, NULL, 4,  730000,      0,  730000, 'TRANSFER', 'PAID',      '2026-09-18 19:45:00', '2026-09-18 21:00:00'),
-            (21, 5, 2, NULL, NULL, NULL, 1,  480000,      0,  480000, 'CASH',     'PAID',      '2026-09-15 11:50:00', '2026-09-15 12:20:00'),
-            (22, 2, 1, NULL, NULL, NULL, 2,  405000,      0,  405000, 'TRANSFER', 'PAID',      '2026-09-12 13:10:00', '2026-09-12 13:45:00'),
-            (23, 4, 3, 5,    NULL, NULL, 3,  640000,      0,  640000, 'CASH',     'PAID',      '2026-09-08 20:15:00', '2026-09-08 21:30:00'),
-            (24, 1, 2, 2,    NULL, NULL, 4,  320000,      0,  320000, 'CASH',     'CANCELLED', '2026-09-05 18:00:00', NULL)");
-
-        $this->db->query("INSERT IGNORE INTO `order_items` (`orderItemId`, `orderId`, `foodId`, `quantity`, `unitPrice`, `lineTotal`, `itemStatus`, `note`) VALUES
-            (21, 7, 1, 3, 350000,1050000, 'SERVED', NULL),
-            (22, 7, 6, 2, 150000, 300000, 'SERVED', NULL),
-            (23, 8, 1, 1, 350000, 350000, 'ORDER',  'Khách đổi ý hủy đơn'),
-            (24, 9, 1, 4, 350000,1400000, 'SERVED', NULL),
-            (25, 9, 7, 4, 250000,1000000, 'SERVED', NULL),
-            (26, 9,15, 8,  35000, 280000, 'SERVED', NULL),
-            (27,10, 3, 2, 120000, 240000, 'SERVED', 'Mang về'),
-            (28,10, 8, 1,  70000,  70000, 'SERVED', NULL),
-            (29,11, 2, 2, 280000, 560000, 'SERVED', NULL),
-            (30,11, 3, 2, 120000, 240000, 'SERVED', NULL),
-            (31,12, 5, 1, 180000, 180000, 'SERVED', 'Giao hàng'),
-            (32,12, 6, 1, 150000, 150000, 'SERVED', NULL),
-            (33,13, 6, 1, 150000, 150000, 'ORDER',  'Đã hủy'),
-            (34,14, 1, 5, 350000,1750000, 'SERVED', NULL),
-            (35,14, 7, 3, 250000, 750000, 'SERVED', NULL),
-            (36,15, 2, 2, 280000, 560000, 'SERVED', NULL),
-            (37,15, 9, 3,  75000, 225000, 'SERVED', NULL),
-            (38,16, 3, 3, 120000, 360000, 'SERVED', NULL),
-            (39,17, 5, 2, 180000, 360000, 'SERVED', NULL),
-            (40,18, 1, 2, 350000, 700000, 'SERVED', NULL),
-            (41,19, 1, 8, 350000,2800000, 'SERVED', 'Tiệc công ty'),
-            (42,19, 7, 8, 250000,2000000, 'SERVED', NULL),
-            (43,20, 2, 2, 280000, 560000, 'SERVED', NULL),
-            (44,21, 6, 3, 150000, 450000, 'SERVED', NULL),
-            (45,22, 5, 2, 180000, 360000, 'SERVED', NULL),
-            (46,23, 1, 1, 350000, 350000, 'SERVED', NULL),
-            (47,24, 2, 1, 280000, 280000, 'ORDER',  'Khách hủy bàn')");
     }
 
     /**
      * Lấy danh sách toàn bộ đơn hàng trong Database kèm thông tin Khách, Bàn, Voucher, Món ăn
      */
-    public function getAllOrders($limit = 100) {
-        $this->syncInsertSqlIfNeeded();
-
+    public function getAllOrders()
+    {
         $sql = "SELECT o.*, 
                        c.customerName, c.customerPhone,
                        t.tableNumber, t.area,
@@ -84,11 +26,9 @@ class OrderModel {
                 LEFT JOIN service_table t ON o.tableId = t.tableId
                 LEFT JOIN voucher v ON o.voucherId = v.voucherId
                 LEFT JOIN `admin` a ON o.adminId = a.adminId
-                ORDER BY o.orderDate DESC, o.orderId DESC
-                LIMIT ?";
-        
+                ORDER BY o.orderDate DESC, o.orderId DESC";
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("i", $limit);
         $stmt->execute();
         $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
@@ -234,11 +174,12 @@ class OrderModel {
     /**
      * Cập nhật trạng thái đơn hàng (Đồng bộ với Database)
      */
-    public function updateStatus($orderId, $status) {
+    public function updateStatus($orderId, $status)
+    {
         $statusMap = [
             'cooking'     => 'OPEN',
             'serving'     => 'SERVING',
-            'pending_pay' => 'SERVING',
+            'pending_pay' => 'PENDING_PAY',
             'paid'        => 'PAID',
             'cancelled'   => 'CANCELLED'
         ];
@@ -254,24 +195,26 @@ class OrderModel {
     /**
      * Tạo đơn hàng mới vào Database
      */
-    public function createOrder($data, $items = []) {
+    public function createOrder($data, $items = [])
+    {
         $this->db->begin_transaction();
         try {
-            $sql = "INSERT INTO orders (customerId, adminId, tableId, guestCount, subtotal, discountAmount, totalAmount, paymentMethod, status, orderDate)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+            $sql = "INSERT INTO orders (customerId, adminId, tableId, voucherId, guestCount, subtotal, discountAmount, totalAmount, paymentMethod, status, orderDate)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
             $stmt = $this->db->prepare($sql);
-            
-            $custId   = !empty($data['customerId']) ? (int)$data['customerId'] : null;
-            $adminId  = !empty($data['adminId']) ? (int)$data['adminId'] : 1;
-            $tableId  = !empty($data['tableId']) ? (int)$data['tableId'] : null;
-            $guests   = !empty($data['guestCount']) ? (int)$data['guestCount'] : 2;
-            $subtotal = !empty($data['subtotal']) ? (float)$data['subtotal'] : 0;
-            $discount = !empty($data['discount']) ? (float)$data['discount'] : 0;
-            $total    = !empty($data['total']) ? (float)$data['total'] : 0;
-            $payment  = strtoupper($data['paymentMethod'] ?? 'CASH');
-            $status   = 'OPEN';
 
-            $stmt->bind_param("iiiiddsss", $custId, $adminId, $tableId, $guests, $subtotal, $discount, $total, $payment, $status);
+            $custId    = !empty($data['customerId']) ? (int)$data['customerId'] : null;
+            $adminId   = max(1, (int)($data['adminId'] ?? 1));
+            $tableId   = !empty($data['tableId']) ? (int)$data['tableId'] : null;
+            $voucherId = !empty($data['voucherId']) ? (int)$data['voucherId'] : null;
+            $guests    = !empty($data['guestCount']) ? (int)$data['guestCount'] : 2;
+            $subtotal  = !empty($data['subtotal']) ? (float)$data['subtotal'] : 0;
+            $discount  = !empty($data['discount']) ? (float)$data['discount'] : 0;
+            $total     = !empty($data['total']) ? (float)$data['total'] : 0;
+            $payment   = strtoupper($data['paymentMethod'] ?? 'CASH');
+            $status    = 'OPEN';
+
+            $stmt->bind_param("iiiiiddsss", $custId, $adminId, $tableId, $voucherId, $guests, $subtotal, $discount, $total, $payment, $status);
             $stmt->execute();
             $orderId = $this->db->insert_id;
 
@@ -297,5 +240,246 @@ class OrderModel {
             return false;
         }
     }
-}
 
+    /**
+     * Tạo đơn hàng mới từ POS (OrderController) và trả về dữ liệu chuẩn cho giao diện
+     */
+    public function createOrderFromPos(array $post)
+    {
+        $dishesRaw = json_decode($post['dishes'] ?? '[]', true);
+        if (!is_array($dishesRaw) || empty($dishesRaw)) {
+            throw new RuntimeException('Vui lòng chọn ít nhất 1 món ăn!');
+        }
+
+        $orderType  = $post['orderType'] ?? 'dinein';
+        $rawTable   = trim($post['table'] ?? 'Bàn 01');
+        $tableId    = null;
+        $tableShort = 'Mang về';
+        $tableFull  = 'Quầy Takeaway';
+        $typeName   = 'Mang về';
+
+        if ($orderType === 'dinein') {
+            $typeName = 'Ăn tại bàn';
+            $num = (int)preg_replace('/\D/', '', $rawTable);
+            if (stripos($rawTable, 'VIP') !== false && $num === 1) {
+                $num = 9;
+            } elseif (stripos($rawTable, 'VIP') !== false && $num === 2) {
+                $num = 10;
+            }
+            if ($num > 0) {
+                $tCode = 'T' . str_pad((string)$num, 2, '0', STR_PAD_LEFT);
+                $tStmt = $this->db->prepare("SELECT tableId, tableNumber, area FROM service_table WHERE (tableId = ? OR tableNumber = ?) AND isDeleted = 0 LIMIT 1");
+                $tStmt->bind_param("is", $num, $tCode);
+                $tStmt->execute();
+                if ($tRow = $tStmt->get_result()->fetch_assoc()) {
+                    $tableId    = (int)$tRow['tableId'];
+                    $tableShort = 'Bàn ' . $tRow['tableNumber'];
+                    $tableFull  = 'Bàn ' . $tRow['tableNumber'] . ' (' . ($tRow['area'] ?? 'Trong nhà') . ')';
+                }
+            }
+            if (!$tableId) {
+                $tableShort = $rawTable ?: 'Bàn 01';
+                $tableFull  = $rawTable ?: 'Bàn 01';
+            }
+        } elseif ($orderType === 'delivery') {
+            $tableShort = 'Giao hàng';
+            $tableFull  = 'Đơn Online Delivery';
+            $typeName   = 'Giao hàng';
+        }
+
+        $subtotal = 0;
+        $items    = [];
+        $dishes   = [];
+        foreach ($dishesRaw as $d) {
+            if (!is_array($d)) {
+                continue;
+            }
+            $fId   = (int)($d['id'] ?? $d['foodId'] ?? 0);
+            $qty   = max(1, (int)($d['qty'] ?? $d['quantity'] ?? 1));
+            $price = max(0, (float)($d['price'] ?? 0));
+            $note  = trim($d['note'] ?? '');
+            if ($fId <= 0) {
+                continue;
+            }
+            $subtotal += $price * $qty;
+            $items[] = ['foodId' => $fId, 'quantity' => $qty, 'price' => $price, 'note' => $note];
+            $dishes[] = [
+                'name'   => $d['name'] ?? 'Món ăn',
+                'qty'    => $qty,
+                'price'  => $price,
+                'note'   => $note,
+                'status' => 'cooking'
+            ];
+        }
+
+        if (empty($items)) {
+            throw new RuntimeException('Danh sách món ăn không hợp lệ!');
+        }
+
+        $voucherVal  = (string)($post['voucherVal'] ?? '0');
+        $discount    = 0;
+        $voucherCode = '';
+        $voucherId   = null;
+        if ($voucherVal === '10') {
+            $discount    = round($subtotal * 0.1);
+            $voucherCode = 'GIAM10%';
+            $voucherId   = 1;
+        } elseif ($voucherVal === '20') {
+            $discount    = round($subtotal * 0.2);
+            $voucherCode = 'VIP20%';
+            $voucherId   = 3;
+        } elseif ($voucherVal === '50000') {
+            $discount    = 50000;
+            $voucherCode = 'TIENMAT50K';
+            $voucherId   = 2;
+        }
+        if ($voucherId !== null) {
+            $vRes = $this->db->query("SELECT voucherId, voucherCode FROM voucher WHERE voucherId = " . (int)$voucherId . " LIMIT 1");
+            if ($vRes && ($vRow = $vRes->fetch_assoc())) {
+                $voucherId   = (int)$vRow['voucherId'];
+                $voucherCode = $vRow['voucherCode'] ?: $voucherCode;
+            } else {
+                $voucherId = null;
+            }
+        }
+
+        $discount = min($subtotal, $discount);
+        $total    = max(0, $subtotal - $discount);
+        $vat      = max(0, round(($subtotal - $discount) * 0.08));
+
+        $payment = strtolower(trim($post['paymentMethod'] ?? 'cash'));
+        $paymentName = 'Tiền mặt';
+        if ($payment === 'transfer') $paymentName = 'Chuyển khoản QR';
+        elseif ($payment === 'card') $paymentName = 'Thẻ ngân hàng';
+
+        $guests    = max(1, (int)($post['guests'] ?? 2));
+        $custInput = trim($post['customerName'] ?? 'Khách lẻ') ?: 'Khách lẻ';
+        $custId    = null;
+        $custName  = $custInput;
+        $custPhone = trim($post['customerPhone'] ?? '') ?: '0901 234 567';
+
+        if (mb_strtolower($custInput, 'UTF-8') !== 'khách lẻ') {
+            $cStmt = $this->db->prepare("SELECT customerId, customerName, customerPhone FROM customer WHERE (LOWER(customerName) = LOWER(?) OR customerPhone = ?) AND isDeleted = 0 LIMIT 1");
+            $cStmt->bind_param("ss", $custInput, $custInput);
+            $cStmt->execute();
+            if ($cRow = $cStmt->get_result()->fetch_assoc()) {
+                $custId    = (int)$cRow['customerId'];
+                $custName  = $cRow['customerName'];
+                $custPhone = $cRow['customerPhone'] ?: $custPhone;
+            }
+        }
+
+        $orderId = $this->createOrder([
+            'customerId'    => $custId,
+            'adminId'       => max(1, (int)($_SESSION['admin']['adminId'] ?? 1)),
+            'tableId'       => $tableId,
+            'voucherId'     => $voucherId,
+            'guestCount'    => $guests,
+            'subtotal'      => $subtotal,
+            'discount'      => $discount,
+            'total'         => $total,
+            'paymentMethod' => strtoupper($payment),
+        ], $items);
+
+        if (!$orderId) {
+            throw new RuntimeException('Không thể lưu đơn hàng vào cơ sở dữ liệu!');
+        }
+
+        return [
+            'id'          => 'DH-' . str_pad((string)$orderId, 4, '0', STR_PAD_LEFT),
+            'dbId'        => (int)$orderId,
+            'period'      => 'today',
+            'type'        => $orderType,
+            'typeName'    => $typeName,
+            'table'       => $tableFull,
+            'tableShort'  => $tableShort,
+            'customer'    => $custName,
+            'phone'       => $custPhone,
+            'guests'      => $guests,
+            'time'        => date('H:i d/m/Y'),
+            'dishes'      => $dishes,
+            'subtotal'    => $subtotal,
+            'voucherCode' => $voucherCode,
+            'discount'    => $discount,
+            'vat'         => $vat,
+            'total'       => $total,
+            'payment'     => $payment,
+            'paymentName' => $paymentName,
+            'status'      => 'cooking',
+            'statusName'  => 'Đang chế biến',
+            'server'      => $_SESSION['admin']['adminName'] ?? 'Hồ Kim Lưu Thống'
+        ];
+    }
+
+    public function getOrders($begin, $end)
+    {
+        $baseSql = "SELECT o.*, c.customerName, c.customerPhone, t.tableNumber, t.area, v.voucherCode, a.adminName
+                    FROM orders o
+                    LEFT JOIN customer c ON o.customerId = c.customerId
+                    LEFT JOIN service_table t ON o.tableId = t.tableId
+                    LEFT JOIN voucher v ON o.voucherId = v.voucherId
+                    LEFT JOIN `admin` a ON o.adminId = a.adminId";
+
+        if (is_numeric($begin) && is_numeric($end)) {
+            $offset = max(0, (int)$begin);
+            $limit  = max(1, (int)$end);
+            $stmt   = $this->db->prepare($baseSql . " ORDER BY o.orderId DESC LIMIT ?, ?");
+            $stmt->bind_param("ii", $offset, $limit);
+        } else {
+            $stmt = $this->db->prepare($baseSql . " WHERE o.orderDate >= ? AND o.orderDate <= ? ORDER BY o.orderId DESC");
+            $stmt->bind_param("ss", $begin, $end);
+        }
+
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getBill($orderId)
+    {
+        $sql = "SELECT o.*,
+                       c.customerName, c.customerPhone, c.customerEmail,
+                       t.tableNumber, t.area, t.capacity,
+                       a.adminName, a.adminPhone,
+                       v.voucherCode, v.discountType, v.discountValue
+                FROM orders o
+                LEFT JOIN customer c ON o.customerId = c.customerId
+                LEFT JOIN service_table t ON o.tableId = t.tableId
+                LEFT JOIN `admin` a ON o.adminId = a.adminId
+                LEFT JOIN voucher v ON o.voucherId = v.voucherId
+                WHERE o.orderId = ?";
+        $stmt = $this->db->prepare($sql);
+        $id   = (int)$orderId;
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $bill = $stmt->get_result()->fetch_assoc();
+
+        if (!$bill) {
+            return null;
+        }
+
+        $itemSql = "SELECT oi.orderItemId, oi.foodId, f.foodName, f.imageURL,
+                           oi.quantity, oi.unitPrice, oi.lineTotal, oi.itemStatus, oi.note
+                    FROM order_items oi
+                    JOIN food f ON oi.foodId = f.foodId
+                    WHERE oi.orderId = ?
+                    ORDER BY oi.orderItemId ASC";
+        $itemStmt = $this->db->prepare($itemSql);
+        $itemStmt->bind_param("i", $id);
+        $itemStmt->execute();
+        $bill['items'] = $itemStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        return $bill;
+    }
+
+    public function grossIncome()
+    {
+        $res = $this->db->query("SELECT COALESCE(SUM(totalAmount), 0) AS total FROM orders WHERE status = 'PAID' AND DATE(orderDate) = CURDATE()");
+        return (float)($res ? ($res->fetch_assoc()['total'] ?? 0) : 0);
+    }
+
+    public function countOrder()
+    {
+        $res = $this->db->query("SELECT COUNT(*) AS total FROM orders WHERE DATE(orderDate) = CURDATE()");
+        return (int)($res ? ($res->fetch_assoc()['total'] ?? 0) : 0);
+    }
+}

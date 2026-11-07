@@ -34,4 +34,18 @@ class BaseController
             $this->redirect('index.php?page=dangnhap');
         }
     }
+
+    // ID admin đang đăng nhập (null nếu chưa)
+    protected function adminId()
+    {
+        return $_SESSION['admin']['adminId'] ?? null;
+    }
+
+    // Bắt buộc đăng nhập admin, nếu chưa thì chuyển về trang đăng nhập admin
+    protected function requireAdmin()
+    {
+        if (!$this->adminId()) {
+            $this->redirect('index.php?page=admin-login');
+        }
+    }
 }

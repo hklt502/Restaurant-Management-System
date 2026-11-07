@@ -57,7 +57,21 @@ INSERT INTO `food` (`foodId`, `categoryId`, `foodName`, `foodDescription`, `food
 (15, 5, 'Bia Heineken',        'Bia Heineken lon 330ml',                  35000,  0,  'AVAILABLE',   0, '/public/asset/img/heineken.jpg'),
 -- Khác
 (16, 6, 'Lòng Lợn',            'Lòng lợn sạch, đã sơ chế',                90000,  0,  'AVAILABLE',   0, '/public/asset/img/longlon.jpg'),
-(17, 6, 'Tim Bò',              'Tim bò tươi thái lát',                    110000, 0,  'UNAVAILABLE', 0, '/public/asset/img/timbo.jpg');
+(17, 6, 'Tim Bò',              'Tim bò tươi thái lát',                    110000, 0,  'UNAVAILABLE', 0, '/public/asset/img/timbo.jpg'),
+-- Món ăn chế biến (Menu món hoàn chỉnh)
+(18, 1, 'Bò Nhúng Sốt Tiêu Đen',          'Thịt bò mềm thái lát tẩm ướp sốt tiêu đen đậm đà', 189000, 0, 'AVAILABLE', 1, '/public/asset/img/thitbo.png'),
+(19, 1, 'Ba Chỉ Cuộn Nấm Kim Châm Nướng', 'Ba chỉ thơm ngậy cuộn nấm kim châm giòn nướng than hoa', 135000, 0, 'AVAILABLE', 1, '/public/asset/img/bachi.jpg'),
+(20, 1, 'Sườn Cừu Nướng Thảo Mộc',        'Sườn cừu hảo hạng tẩm lá hương thảo và bơ tỏi thơm lừng', 295000, 0, 'AVAILABLE', 1, '/public/asset/img/thitcuu.jpg'),
+(21, 1, 'Xúc Xích Nướng Phô Mai Cay',     'Xúc xích Đức áp chảo phô mai kéo sợi thơm cay ngọt', 95000, 0, 'AVAILABLE', 0, '/public/asset/img/xucxich.jpg'),
+(22, 2, 'Tôm Nướng Muối Ớt Xanh',         'Tôm sú biển tươi nướng giòn với muối ớt xanh cay nồng', 195000, 0, 'AVAILABLE', 1, '/public/asset/img/tomsu.jpg'),
+(23, 2, 'Mực Chiên Giòn Sốt Me',          'Mực ống tươi lăn bột giòn rụm chấm sốt me chua ngọt', 165000, 0, 'AVAILABLE', 0, '/public/asset/img/mucong.jpg'),
+(24, 2, 'Cua Rang Me Kiểu Thái',          'Cua biển chắc thịt rim sốt me chua ngọt cay dịu chuẩn vị', 285000, 0, 'AVAILABLE', 1, '/public/asset/img/cuabien.jpg'),
+(25, 3, 'Viên Tôm Phô Mai Hoàng Kim',     'Viên tôm giòn dai bọc nhân phô mai trứng muối béo ngậy', 85000, 0, 'AVAILABLE', 0, '/public/asset/img/vienbo.jpg'),
+(26, 4, 'Salad Rong Nho Rau Mầm',         'Rau mầm tươi mát kết hợp rong nho giòn và sốt mè rang', 55000, 0, 'AVAILABLE', 0, '/public/asset/img/raumuong.jpg'),
+(27, 4, 'Nấm Thập Cẩm Xào Dầu Hào',       'Nấm kim châm, nấm đùi gà xào dầu hào hành boa-rô thơm', 65000, 0, 'AVAILABLE', 0, '/public/asset/img/namkimcham.jpg'),
+(28, 6, 'Lẩu Lòng Bò Sa Tế Cay',          'Lòng bò giòn sần sật ninh nhừ trong nước lẩu sa tế thơm', 165000, 0, 'AVAILABLE', 0, '/public/asset/img/longlon.jpg'),
+(29, 5, 'Trà Đào Cam Sả Tươi',            'Trà đào ngát hương cam vàng và sả mát thanh nhiệt', 35000, 0, 'AVAILABLE', 1, '/public/asset/img/promo1.jpg'),
+(30, 5, 'Nước Ép Dưa Hấu Bạc Hà',         'Nước ép dưa hấu nguyên chất mát lạnh thanh lọc cơ thể', 40000, 0, 'AVAILABLE', 0, '/public/asset/img/promo2.jpg');
 
 -- ==========================================================================
 -- 5. SERVICE_TABLE (10 records) — status: AVAILABLE | OCCUPIED | RESERVED

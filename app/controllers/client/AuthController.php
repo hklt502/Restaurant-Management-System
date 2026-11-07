@@ -43,8 +43,7 @@ class AuthController extends BaseController
 
     public function logout()
     {
-        session_unset();
-        session_destroy();
+        unset($_SESSION['customer']);
         $this->redirect('index.php?page=dangnhap');
     }
 
@@ -92,8 +91,13 @@ class AuthController extends BaseController
     public function profile()
     {
         $this->requireLogin();
+        $customer = $this->customers->getById($this->customerId());
+        if (!$customer) {
+            unset($_SESSION['customer']);
+            $this->redirect('index.php?page=dangnhap');
+        }
         $this->render('client/canhan', [
-            'customer'     => $this->customers->getById($this->customerId()),
+            'customer'     => $customer,
             'reservations' => (new ReservationModel())->getByCustomer($this->customerId()),
             'vouchers'     => (new VoucherModel())->getByCustomer($this->customerId()),
         ]);

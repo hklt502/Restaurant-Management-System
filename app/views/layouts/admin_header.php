@@ -1,4 +1,16 @@
 <?php
+if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/') !== false) {
+    header('Location: ../../../index.php?page=admin-overview');
+    exit;
+}
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (empty($_SESSION['admin']['adminId'])) {
+    header('Location: index.php?page=admin-login');
+    exit;
+}
+
 $pageTitle  = $pageTitle ?? 'Quản lý Hệ thống - Nhóm 3';
 $activePage = $activePage ?? '';
 
@@ -33,6 +45,16 @@ $linkStatistics = $isDirectView ? 'statistics.php' : 'index.php?page=admin-stati
   <?php if (!empty($extraHead)): ?>
     <?= $extraHead ?>
   <?php endif; ?>
+  <script>
+    const _origFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const res = await _origFetch(...args);
+      if (res.redirected && res.url.includes('page=admin-login')) {
+        window.location.href = res.url;
+      }
+      return res;
+    };
+  </script>
 </head>
 
 <body>
@@ -69,10 +91,10 @@ $linkStatistics = $isDirectView ? 'statistics.php' : 'index.php?page=admin-stati
     <div class="sidebar__profile">
       <div class="sidebar__profile-avatar"></div>
       <div class="sidebar__profile-info">
-        <p class="sidebar__profile-name">Hồ Kim Lưu Thống</p>
+        <p class="sidebar__profile-name"><?= htmlspecialchars($_SESSION['admin']['adminName'] ?? 'Quản trị viên') ?></p>
         <p class="sidebar__profile-role">Quản trị viên</p>
       </div>
-      <button class="sidebar__profile-logout" type="button" title="Đăng xuất">
+      <button class="sidebar__profile-logout" type="button" title="Đăng xuất" onclick="window.location.href='index.php?page=admin-logout'">
         <i class="bx bx-log-out"></i>
       </button>
     </div>

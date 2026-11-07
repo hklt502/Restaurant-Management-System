@@ -1,7 +1,103 @@
 <?php
+if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false) {
+    header('Location: ../../../index.php?page=admin-tables');
+    exit;
+}
+
 $pageTitle = "Quản lý bàn - Nhóm 3";
 $pageCss = "../../../public/asset/css/admin/tables.css";
 $activePage = "tables";
+
+// Nạp cấu hình database của dự án
+$configCandidates = [
+    __DIR__ . '/../../config/database.php',
+    __DIR__ . '/../../../app/config/database.php',
+    __DIR__ . '/../config/database.php'
+];
+foreach ($configCandidates as $configFile) {
+    if (is_file($configFile)) { require_once $configFile; break; }
+}
+
+try {
+    $pdo = new PDO(
+        'mysql:host=' . (defined('DB_HOST') ? DB_HOST : 'localhost') . ';dbname=' . (defined('DB_NAME') ? DB_NAME : 'restaurant') . ';charset=utf8mb4',
+        defined('DB_USER') ? DB_USER : 'root',
+        defined('DB_PASS') ? DB_PASS : '',
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+    );
+} catch (PDOException $e) {
+    http_response_code(500);
+    die('Không thể kết nối database: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
+}
+
+// AJAX: cập nhật/thêm/xóa bàn trực tiếp trong service_table
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    try {
+        $action = $_POST['action'];
+        if ($action === 'update_status') {
+            $status = strtoupper(trim($_POST['status'] ?? ''));
+            if (!in_array($status, ['AVAILABLE', 'OCCUPIED', 'RESERVED'], true)) throw new Exception('Trạng thái không hợp lệ.');
+            $stmt = $pdo->prepare('UPDATE service_table SET status = ? WHERE tableId = ? AND isDeleted = 0');
+            $stmt->execute([$status, (int)($_POST['id'] ?? 0)]);
+            if (!$stmt->rowCount()) {
+                $check = $pdo->prepare('SELECT tableId FROM service_table WHERE tableId = ? AND isDeleted = 0');
+                $check->execute([(int)($_POST['id'] ?? 0)]);
+                if (!$check->fetch()) throw new Exception('Không tìm thấy bàn.');
+            }
+            echo json_encode(['success' => true]);
+        } elseif ($action === 'save_table') {
+            $id = (int)($_POST['id'] ?? 0);
+            $number = trim($_POST['tableNumber'] ?? '');
+            $area = trim($_POST['area'] ?? '');
+            $capacity = (int)($_POST['capacity'] ?? 0);
+            $status = strtoupper(trim($_POST['status'] ?? 'AVAILABLE'));
+            if ($number === '' || $area === '' || $capacity < 1) throw new Exception('Vui lòng nhập đầy đủ thông tin bàn.');
+            if (!in_array($status, ['AVAILABLE', 'OCCUPIED', 'RESERVED'], true)) throw new Exception('Trạng thái không hợp lệ.');
+            if ($id > 0) {
+                $stmt = $pdo->prepare('UPDATE service_table SET tableNumber=?, area=?, capacity=?, status=? WHERE tableId=? AND isDeleted=0');
+                $stmt->execute([$number, $area, $capacity, $status, $id]);
+            } else {
+                $stmt = $pdo->prepare('INSERT INTO service_table (tableNumber, area, capacity, status, isDeleted) VALUES (?, ?, ?, ?, 0)');
+                $stmt->execute([$number, $area, $capacity, $status]);
+            }
+            echo json_encode(['success' => true]);
+        } elseif ($action === 'delete_table') {
+            $stmt = $pdo->prepare('UPDATE service_table SET isDeleted = 1 WHERE tableId = ? AND isDeleted = 0');
+            $stmt->execute([(int)($_POST['id'] ?? 0)]);
+            if (!$stmt->rowCount()) throw new Exception('Không tìm thấy bàn để xóa.');
+            echo json_encode(['success' => true]);
+        } else {
+            throw new Exception('Yêu cầu không hợp lệ.');
+        }
+    } catch (Throwable $e) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+$stmt = $pdo->query('SELECT tableId, tableNumber, area, capacity, status FROM service_table WHERE isDeleted = 0 ORDER BY tableId ASC');
+$tables = $stmt->fetchAll();
+$totalTables = count($tables);
+$statusCounts = ['AVAILABLE' => 0, 'OCCUPIED' => 0, 'RESERVED' => 0];
+foreach ($tables as $row) if (isset($statusCounts[$row['status']])) $statusCounts[$row['status']]++;
+
+$areaMap = [
+    'Trong nhà' => ['slug' => 'tang1-trong', 'label' => 'Tầng 1 - Trong nhà', 'icon' => 'bx-building-house'],
+    'Ngoài trời' => ['slug' => 'tang1-ngoai', 'label' => 'Tầng 1 - Ngoài trời', 'icon' => 'bx-sun'],
+    'VIP' => ['slug' => 'tang2-vip', 'label' => 'Tầng 2 - VIP', 'icon' => 'bx-crown'],
+    'Phòng riêng' => ['slug' => 'tang2-rieng', 'label' => 'Tầng 2 - Phòng riêng', 'icon' => 'bx-door-open']
+];
+$areaGroups = [];
+foreach ($tables as $table) $areaGroups[$table['area'] ?: 'Chưa phân khu'][] = $table;
+
+function h($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); }
+function statusText($status) {
+    return ['AVAILABLE' => 'Trống', 'OCCUPIED' => 'Đang phục vụ', 'RESERVED' => 'Đã đặt trước'][$status] ?? $status;
+}
+function statusClass($status) { return strtolower((string)$status); }
+
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
 <!-- PAGE TITLE -->
@@ -30,38 +126,32 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 <div class="stat-card stat-card--total">
                     <div class="stat-card__icon"><i class="bx bx-table"></i></div>
                     <div class="stat-card__info">
-                        <p class="stat-card__value" id="statTotal">25</p>
+                        <p class="stat-card__value" id="statTotal"><?= $totalTables ?></p>
                         <p class="stat-card__label">Tổng số bàn</p>
                     </div>
                 </div>
                 <div class="stat-card stat-card--available">
                     <div class="stat-card__icon"><i class="bx bx-check-circle"></i></div>
                     <div class="stat-card__info">
-                        <p class="stat-card__value" id="statAvailable">10</p>
+                        <p class="stat-card__value" id="statAvailable"><?= $statusCounts['AVAILABLE'] ?></p>
                         <p class="stat-card__label">Bàn trống</p>
                     </div>
                 </div>
                 <div class="stat-card stat-card--occupied">
                     <div class="stat-card__icon"><i class="bx bx-user-check"></i></div>
                     <div class="stat-card__info">
-                        <p class="stat-card__value" id="statOccupied">9</p>
+                        <p class="stat-card__value" id="statOccupied"><?= $statusCounts['OCCUPIED'] ?></p>
                         <p class="stat-card__label">Đang phục vụ</p>
                     </div>
                 </div>
                 <div class="stat-card stat-card--reserved">
                     <div class="stat-card__icon"><i class="bx bx-calendar-check"></i></div>
                     <div class="stat-card__info">
-                        <p class="stat-card__value" id="statReserved">4</p>
+                        <p class="stat-card__value" id="statReserved"><?= $statusCounts['RESERVED'] ?></p>
                         <p class="stat-card__label">Đã đặt trước</p>
                     </div>
                 </div>
-                <div class="stat-card stat-card--maintenance">
-                    <div class="stat-card__icon"><i class="bx bx-wrench"></i></div>
-                    <div class="stat-card__info">
-                        <p class="stat-card__value" id="statMaintenance">2</p>
-                        <p class="stat-card__label">Bảo trì</p>
-                    </div>
-                </div>
+
             </div>
 
             <!-- TOOLBAR -->
@@ -71,10 +161,9 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <label class="toolbar__label">Khu vực:</label>
                         <select class="toolbar__select" id="filterZone">
                             <option value="">Tất cả</option>
-                            <option value="tang1-trong">Tầng 1 - Trong nhà</option>
-                            <option value="tang1-ngoai">Tầng 1 - Ngoài trời</option>
-                            <option value="tang2-vip">Tầng 2 - VIP</option>
-                            <option value="tang2-rieng">Tầng 2 - Phòng riêng</option>
+                            <?php foreach (array_keys($areaGroups) as $areaOption): ?>
+                                <option value="<?= h($areaMap[$areaOption]['slug'] ?? 'khac') ?>"><?= h($areaMap[$areaOption]['label'] ?? $areaOption) ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="toolbar__filter-group">
@@ -84,7 +173,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                             <option value="available">Trống</option>
                             <option value="occupied">Đang phục vụ</option>
                             <option value="reserved">Đã đặt trước</option>
-                            <option value="maintenance">Bảo trì</option>
+
                         </select>
                     </div>
                     <div class="toolbar__filter-group">
@@ -108,8 +197,6 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                             phục vụ</span>
                         <span class="status-legend__item"><span class="status-dot status-dot--reserved"></span> Đã
                             đặt</span>
-                        <span class="status-legend__item"><span class="status-dot status-dot--maintenance"></span> Bảo
-                            trì</span>
                     </div>
                 </div>
             </div>
@@ -118,628 +205,56 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                  GRID VIEW - SƠ ĐỒ BÀN 
             ============================ -->
             <div class="tables-view tables-view--grid active" id="gridView">
-
-                <!-- KHU VỰC: Tầng 1 - Trong nhà -->
-                <div class="zone-section">
-                    <div class="zone-section__header">
-                        <div class="zone-section__title">
-                            <i class="bx bx-building-house"></i>
-                            <h2>Tầng 1 - Trong nhà</h2>
-                            <span class="zone-section__count">8 bàn</span>
+                <?php if (!$tables): ?>
+                    <p class="quick-available__empty">Chưa có bàn nào trong database.</p>
+                <?php endif; ?>
+                <?php foreach ($areaGroups as $areaName => $areaTables):
+                    $areaInfo = $areaMap[$areaName] ?? ['slug' => 'khac', 'label' => $areaName, 'icon' => 'bx-map']; ?>
+                    <div class="zone-section">
+                        <div class="zone-section__header"><div class="zone-section__title">
+                            <i class="bx <?= h($areaInfo['icon']) ?>"></i>
+                            <h2><?= h($areaInfo['label']) ?></h2>
+                            <span class="zone-section__count"><?= count($areaTables) ?> bàn</span>
+                        </div></div>
+                        <div class="tables-grid">
+                            <?php foreach ($areaTables as $table):
+                                $id = (int)$table['tableId'];
+                                $status = $table['status'];
+                                $statusLower = statusClass($status);
+                                $zone = $areaInfo['slug']; ?>
+                                <div class="table-card table-card--<?= h($statusLower) ?>" data-id="<?= $id ?>" data-zone="<?= h($zone) ?>" data-area="<?= h($table['area']) ?>" data-status="<?= h($statusLower) ?>" data-capacity="<?= (int)$table['capacity'] ?>">
+                                    <div class="table-card__header"><span class="table-card__number"><?= h($table['tableNumber']) ?></span><div class="table-card__status-dot"></div></div>
+                                    <div class="table-card__icon"><i class="bx bx-chair"></i></div>
+                                    <div class="table-card__info">
+                                        <span class="table-card__capacity"><i class="bx bx-user"></i> <?= (int)$table['capacity'] ?> người</span>
+                                        <span class="table-card__status-text"><?= h(statusText($status)) ?></span>
+                                    </div>
+                                    <div class="table-card__actions">
+                                        <?php if ($status === 'AVAILABLE'): ?>
+                                            <button class="table-card__btn table-card__btn--seat" onclick="seatGuest(<?= $id ?>)"><i class="bx bx-user-plus"></i> Xếp khách</button>
+                                        <?php elseif ($status === 'OCCUPIED'): ?>
+                                            <button class="table-card__btn table-card__btn--bill" onclick="billTable(<?= $id ?>)"><i class="bx bx-receipt"></i> Thanh toán</button>
+                                        <?php else: ?>
+                                            <button class="table-card__btn table-card__btn--checkin" onclick="changeStatus(<?= $id ?>, 'OCCUPIED')"><i class="bx bx-log-in-circle"></i> Check-in</button>
+                                        <?php endif; ?>
+                                        <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(<?= $id ?>)"><i class="bx bx-dots-vertical-rounded"></i></button>
+                                    </div>
+                                    <div class="table-card__menu" id="menu-<?= $id ?>">
+                                        <button onclick="editTable(<?= $id ?>)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
+                                        <?php if ($status === 'AVAILABLE'): ?>
+                                            <button onclick="changeStatus(<?= $id ?>, 'RESERVED')"><i class="bx bx-calendar-check"></i> Đặt trước</button>
+                                        <?php elseif ($status === 'OCCUPIED'): ?>
+                                            <button onclick="changeStatus(<?= $id ?>, 'AVAILABLE')"><i class="bx bx-check-circle"></i> Trả bàn</button>
+                                        <?php else: ?>
+                                            <button onclick="changeStatus(<?= $id ?>, 'AVAILABLE')"><i class="bx bx-x-circle"></i> Hủy đặt</button>
+                                        <?php endif; ?>
+                                        <button class="table-card__menu-danger" onclick="deleteTable(<?= $id ?>)"><i class="bx bx-trash"></i> Xóa bàn</button>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
-                    <div class="tables-grid">
-                        <!-- Bàn 01 -->
-                        <div class="table-card table-card--available" data-id="1" data-zone="tang1-trong"
-                            data-status="available" data-capacity="4">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 01</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon">
-                                <i class="bx bx-chair"></i>
-                            </div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 4 người</span>
-                                <span class="table-card__status-text">Trống</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--seat" title="Xếp khách"
-                                    onclick="seatGuest(1)">
-                                    <i class="bx bx-user-plus"></i> Xếp khách
-                                </button>
-                                <button class="table-card__btn table-card__btn--more" title="Thêm"
-                                    onclick="toggleMenu(1)">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                            </div>
-                            <div class="table-card__menu" id="menu-1">
-                                <button onclick="editTable(1)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button onclick="changeStatus(1, 'reserved')"><i class="bx bx-calendar-check"></i> Đặt
-                                    trước</button>
-                                <button onclick="changeStatus(1, 'maintenance')"><i class="bx bx-wrench"></i> Bảo
-                                    trì</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(1)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                        <!-- Bàn 02 -->
-                        <div class="table-card table-card--occupied" data-id="2" data-zone="tang1-trong"
-                            data-status="occupied" data-capacity="4">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 02</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon">
-                                <i class="bx bx-chair"></i>
-                            </div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 4 người</span>
-                                <span class="table-card__status-text">Đang phục vụ</span>
-                            </div>
-                            <div class="table-card__time">
-                                <i class="bx bx-time-five"></i> 45 phút
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--bill" title="Thanh toán"
-                                    onclick="billTable(2)">
-                                    <i class="bx bx-receipt"></i> Thanh toán
-                                </button>
-                                <button class="table-card__btn table-card__btn--more" title="Thêm"
-                                    onclick="toggleMenu(2)">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                            </div>
-                            <div class="table-card__menu" id="menu-2">
-                                <button onclick="changeStatus(2, 'available')"><i class="bx bx-check-circle"></i> Trả
-                                    bàn</button>
-                                <button onclick="editTable(2)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <!-- Bàn 03 -->
-                        <div class="table-card table-card--occupied" data-id="3" data-zone="tang1-trong"
-                            data-status="occupied" data-capacity="2">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 03</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon">
-                                <i class="bx bx-chair"></i>
-                            </div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 2 người</span>
-                                <span class="table-card__status-text">Đang phục vụ</span>
-                            </div>
-                            <div class="table-card__time">
-                                <i class="bx bx-time-five"></i> 1h 20 phút
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--bill" title="Thanh toán"
-                                    onclick="billTable(3)">
-                                    <i class="bx bx-receipt"></i> Thanh toán
-                                </button>
-                                <button class="table-card__btn table-card__btn--more" title="Thêm"
-                                    onclick="toggleMenu(3)">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                            </div>
-                            <div class="table-card__menu" id="menu-3">
-                                <button onclick="changeStatus(3, 'available')"><i class="bx bx-check-circle"></i> Trả
-                                    bàn</button>
-                                <button onclick="editTable(3)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <!-- Bàn 04 -->
-                        <div class="table-card table-card--available" data-id="4" data-zone="tang1-trong"
-                            data-status="available" data-capacity="6">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 04</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon">
-                                <i class="bx bx-chair"></i>
-                            </div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 6 người</span>
-                                <span class="table-card__status-text">Trống</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--seat" title="Xếp khách"
-                                    onclick="seatGuest(4)">
-                                    <i class="bx bx-user-plus"></i> Xếp khách
-                                </button>
-                                <button class="table-card__btn table-card__btn--more" title="Thêm"
-                                    onclick="toggleMenu(4)">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                            </div>
-                            <div class="table-card__menu" id="menu-4">
-                                <button onclick="editTable(4)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button onclick="changeStatus(4, 'reserved')"><i class="bx bx-calendar-check"></i> Đặt
-                                    trước</button>
-                                <button onclick="changeStatus(4, 'maintenance')"><i class="bx bx-wrench"></i> Bảo
-                                    trì</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(4)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                        <!-- Bàn 05 -->
-                        <div class="table-card table-card--reserved" data-id="5" data-zone="tang1-trong"
-                            data-status="reserved" data-capacity="4">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 05</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon">
-                                <i class="bx bx-chair"></i>
-                            </div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 4 người</span>
-                                <span class="table-card__status-text">Đã đặt trước</span>
-                            </div>
-                            <div class="table-card__reserved-info">
-                                <i class="bx bx-calendar"></i> 19:00 - Nguyễn Văn A
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--checkin" title="Check-in"
-                                    onclick="changeStatus(5, 'occupied')">
-                                    <i class="bx bx-log-in-circle"></i> Check-in
-                                </button>
-                                <button class="table-card__btn table-card__btn--more" title="Thêm"
-                                    onclick="toggleMenu(5)">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                            </div>
-                            <div class="table-card__menu" id="menu-5">
-                                <button onclick="changeStatus(5, 'available')"><i class="bx bx-x-circle"></i> Hủy
-                                    đặt</button>
-                                <button onclick="editTable(5)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <!-- Bàn 06 -->
-                        <div class="table-card table-card--available" data-id="6" data-zone="tang1-trong"
-                            data-status="available" data-capacity="2">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 06</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon">
-                                <i class="bx bx-chair"></i>
-                            </div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 2 người</span>
-                                <span class="table-card__status-text">Trống</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--seat" title="Xếp khách"
-                                    onclick="seatGuest(6)">
-                                    <i class="bx bx-user-plus"></i> Xếp khách
-                                </button>
-                                <button class="table-card__btn table-card__btn--more" title="Thêm"
-                                    onclick="toggleMenu(6)">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                            </div>
-                            <div class="table-card__menu" id="menu-6">
-                                <button onclick="editTable(6)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button onclick="changeStatus(6, 'reserved')"><i class="bx bx-calendar-check"></i> Đặt
-                                    trước</button>
-                                <button onclick="changeStatus(6, 'maintenance')"><i class="bx bx-wrench"></i> Bảo
-                                    trì</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(6)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                        <!-- Bàn 07 -->
-                        <div class="table-card table-card--occupied" data-id="7" data-zone="tang1-trong"
-                            data-status="occupied" data-capacity="6">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 07</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon">
-                                <i class="bx bx-chair"></i>
-                            </div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 6 người</span>
-                                <span class="table-card__status-text">Đang phục vụ</span>
-                            </div>
-                            <div class="table-card__time">
-                                <i class="bx bx-time-five"></i> 30 phút
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--bill" title="Thanh toán"
-                                    onclick="billTable(7)">
-                                    <i class="bx bx-receipt"></i> Thanh toán
-                                </button>
-                                <button class="table-card__btn table-card__btn--more" title="Thêm"
-                                    onclick="toggleMenu(7)">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                            </div>
-                            <div class="table-card__menu" id="menu-7">
-                                <button onclick="changeStatus(7, 'available')"><i class="bx bx-check-circle"></i> Trả
-                                    bàn</button>
-                                <button onclick="editTable(7)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <!-- Bàn 08 -->
-                        <div class="table-card table-card--maintenance" data-id="8" data-zone="tang1-trong"
-                            data-status="maintenance" data-capacity="4">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 08</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon">
-                                <i class="bx bx-chair"></i>
-                            </div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 4 người</span>
-                                <span class="table-card__status-text">Bảo trì</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--restore" title="Hoàn tất"
-                                    onclick="changeStatus(8, 'available')">
-                                    <i class="bx bx-check"></i> Hoàn tất
-                                </button>
-                                <button class="table-card__btn table-card__btn--more" title="Thêm"
-                                    onclick="toggleMenu(8)">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                            </div>
-                            <div class="table-card__menu" id="menu-8">
-                                <button onclick="editTable(8)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(8)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KHU VỰC: Tầng 1 - Ngoài trời -->
-                <div class="zone-section">
-                    <div class="zone-section__header">
-                        <div class="zone-section__title">
-                            <i class="bx bx-sun"></i>
-                            <h2>Tầng 1 - Ngoài trời</h2>
-                            <span class="zone-section__count">5 bàn</span>
-                        </div>
-                    </div>
-                    <div class="tables-grid">
-                        <div class="table-card table-card--available" data-id="9" data-zone="tang1-ngoai"
-                            data-status="available" data-capacity="4">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 09</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-chair"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 4 người</span>
-                                <span class="table-card__status-text">Trống</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--seat" onclick="seatGuest(9)"><i
-                                        class="bx bx-user-plus"></i> Xếp khách</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(9)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-9">
-                                <button onclick="editTable(9)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button onclick="changeStatus(9, 'reserved')"><i class="bx bx-calendar-check"></i> Đặt
-                                    trước</button>
-                                <button onclick="changeStatus(9, 'maintenance')"><i class="bx bx-wrench"></i> Bảo
-                                    trì</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(9)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--occupied" data-id="10" data-zone="tang1-ngoai"
-                            data-status="occupied" data-capacity="2">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 10</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-chair"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 2 người</span>
-                                <span class="table-card__status-text">Đang phục vụ</span>
-                            </div>
-                            <div class="table-card__time"><i class="bx bx-time-five"></i> 15 phút</div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--bill" onclick="billTable(10)"><i
-                                        class="bx bx-receipt"></i> Thanh toán</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(10)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-10">
-                                <button onclick="changeStatus(10, 'available')"><i class="bx bx-check-circle"></i> Trả
-                                    bàn</button>
-                                <button onclick="editTable(10)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--available" data-id="11" data-zone="tang1-ngoai"
-                            data-status="available" data-capacity="4">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 11</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-chair"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 4 người</span>
-                                <span class="table-card__status-text">Trống</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--seat" onclick="seatGuest(11)"><i
-                                        class="bx bx-user-plus"></i> Xếp khách</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(11)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-11">
-                                <button onclick="editTable(11)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button onclick="changeStatus(11, 'reserved')"><i class="bx bx-calendar-check"></i> Đặt
-                                    trước</button>
-                                <button onclick="changeStatus(11, 'maintenance')"><i class="bx bx-wrench"></i> Bảo
-                                    trì</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(11)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--reserved" data-id="12" data-zone="tang1-ngoai"
-                            data-status="reserved" data-capacity="6">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 12</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-chair"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 6 người</span>
-                                <span class="table-card__status-text">Đã đặt trước</span>
-                            </div>
-                            <div class="table-card__reserved-info"><i class="bx bx-calendar"></i> 20:00 - Trần Văn B
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--checkin"
-                                    onclick="changeStatus(12, 'occupied')"><i class="bx bx-log-in-circle"></i>
-                                    Check-in</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(12)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-12">
-                                <button onclick="changeStatus(12, 'available')"><i class="bx bx-x-circle"></i> Hủy
-                                    đặt</button>
-                                <button onclick="editTable(12)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--occupied" data-id="13" data-zone="tang1-ngoai"
-                            data-status="occupied" data-capacity="4">
-                            <div class="table-card__header">
-                                <span class="table-card__number">Bàn 13</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-chair"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 4 người</span>
-                                <span class="table-card__status-text">Đang phục vụ</span>
-                            </div>
-                            <div class="table-card__time"><i class="bx bx-time-five"></i> 55 phút</div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--bill" onclick="billTable(13)"><i
-                                        class="bx bx-receipt"></i> Thanh toán</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(13)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-13">
-                                <button onclick="changeStatus(13, 'available')"><i class="bx bx-check-circle"></i> Trả
-                                    bàn</button>
-                                <button onclick="editTable(13)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KHU VỰC: Tầng 2 - VIP -->
-                <div class="zone-section">
-                    <div class="zone-section__header">
-                        <div class="zone-section__title">
-                            <i class="bx bx-crown"></i>
-                            <h2>Tầng 2 - VIP</h2>
-                            <span class="zone-section__count">4 bàn</span>
-                        </div>
-                    </div>
-                    <div class="tables-grid">
-                        <div class="table-card table-card--available" data-id="14" data-zone="tang2-vip"
-                            data-status="available" data-capacity="8">
-                            <div class="table-card__header">
-                                <span class="table-card__number">VIP 01</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-crown"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 8 người</span>
-                                <span class="table-card__status-text">Trống</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--seat" onclick="seatGuest(14)"><i
-                                        class="bx bx-user-plus"></i> Xếp khách</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(14)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-14">
-                                <button onclick="editTable(14)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button onclick="changeStatus(14, 'reserved')"><i class="bx bx-calendar-check"></i> Đặt
-                                    trước</button>
-                                <button onclick="changeStatus(14, 'maintenance')"><i class="bx bx-wrench"></i> Bảo
-                                    trì</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(14)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--occupied" data-id="15" data-zone="tang2-vip"
-                            data-status="occupied" data-capacity="10">
-                            <div class="table-card__header">
-                                <span class="table-card__number">VIP 02</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-crown"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 10 người</span>
-                                <span class="table-card__status-text">Đang phục vụ</span>
-                            </div>
-                            <div class="table-card__time"><i class="bx bx-time-five"></i> 1h 05 phút</div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--bill" onclick="billTable(15)"><i
-                                        class="bx bx-receipt"></i> Thanh toán</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(15)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-15">
-                                <button onclick="changeStatus(15, 'available')"><i class="bx bx-check-circle"></i> Trả
-                                    bàn</button>
-                                <button onclick="editTable(15)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--reserved" data-id="16" data-zone="tang2-vip"
-                            data-status="reserved" data-capacity="8">
-                            <div class="table-card__header">
-                                <span class="table-card__number">VIP 03</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-crown"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 8 người</span>
-                                <span class="table-card__status-text">Đã đặt trước</span>
-                            </div>
-                            <div class="table-card__reserved-info"><i class="bx bx-calendar"></i> 18:30 - Lê Thị C</div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--checkin"
-                                    onclick="changeStatus(16, 'occupied')"><i class="bx bx-log-in-circle"></i>
-                                    Check-in</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(16)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-16">
-                                <button onclick="changeStatus(16, 'available')"><i class="bx bx-x-circle"></i> Hủy
-                                    đặt</button>
-                                <button onclick="editTable(16)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--available" data-id="17" data-zone="tang2-vip"
-                            data-status="available" data-capacity="6">
-                            <div class="table-card__header">
-                                <span class="table-card__number">VIP 04</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-crown"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 6 người</span>
-                                <span class="table-card__status-text">Trống</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--seat" onclick="seatGuest(17)"><i
-                                        class="bx bx-user-plus"></i> Xếp khách</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(17)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-17">
-                                <button onclick="editTable(17)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button onclick="changeStatus(17, 'reserved')"><i class="bx bx-calendar-check"></i> Đặt
-                                    trước</button>
-                                <button onclick="changeStatus(17, 'maintenance')"><i class="bx bx-wrench"></i> Bảo
-                                    trì</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(17)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KHU VỰC: Tầng 2 - Phòng riêng -->
-                <div class="zone-section">
-                    <div class="zone-section__header">
-                        <div class="zone-section__title">
-                            <i class="bx bx-door-open"></i>
-                            <h2>Tầng 2 - Phòng riêng</h2>
-                            <span class="zone-section__count">3 bàn</span>
-                        </div>
-                    </div>
-                    <div class="tables-grid">
-                        <div class="table-card table-card--occupied" data-id="18" data-zone="tang2-rieng"
-                            data-status="occupied" data-capacity="12">
-                            <div class="table-card__header">
-                                <span class="table-card__number">P.Riêng 01</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-door-open"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 12 người</span>
-                                <span class="table-card__status-text">Đang phục vụ</span>
-                            </div>
-                            <div class="table-card__time"><i class="bx bx-time-five"></i> 2h 10 phút</div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--bill" onclick="billTable(18)"><i
-                                        class="bx bx-receipt"></i> Thanh toán</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(18)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-18">
-                                <button onclick="changeStatus(18, 'available')"><i class="bx bx-check-circle"></i> Trả
-                                    bàn</button>
-                                <button onclick="editTable(18)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--available" data-id="19" data-zone="tang2-rieng"
-                            data-status="available" data-capacity="10">
-                            <div class="table-card__header">
-                                <span class="table-card__number">P.Riêng 02</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-door-open"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 10 người</span>
-                                <span class="table-card__status-text">Trống</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--seat" onclick="seatGuest(19)"><i
-                                        class="bx bx-user-plus"></i> Xếp khách</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(19)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-19">
-                                <button onclick="editTable(19)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button onclick="changeStatus(19, 'reserved')"><i class="bx bx-calendar-check"></i> Đặt
-                                    trước</button>
-                                <button onclick="changeStatus(19, 'maintenance')"><i class="bx bx-wrench"></i> Bảo
-                                    trì</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(19)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                        <div class="table-card table-card--maintenance" data-id="20" data-zone="tang2-rieng"
-                            data-status="maintenance" data-capacity="15">
-                            <div class="table-card__header">
-                                <span class="table-card__number">P.Riêng 03</span>
-                                <div class="table-card__status-dot"></div>
-                            </div>
-                            <div class="table-card__icon"><i class="bx bx-door-open"></i></div>
-                            <div class="table-card__info">
-                                <span class="table-card__capacity"><i class="bx bx-user"></i> 15 người</span>
-                                <span class="table-card__status-text">Bảo trì</span>
-                            </div>
-                            <div class="table-card__actions">
-                                <button class="table-card__btn table-card__btn--restore"
-                                    onclick="changeStatus(20, 'available')"><i class="bx bx-check"></i> Hoàn
-                                    tất</button>
-                                <button class="table-card__btn table-card__btn--more" onclick="toggleMenu(20)"><i
-                                        class="bx bx-dots-vertical-rounded"></i></button>
-                            </div>
-                            <div class="table-card__menu" id="menu-20">
-                                <button onclick="editTable(20)"><i class="bx bx-edit-alt"></i> Chỉnh sửa</button>
-                                <button class="table-card__menu-danger" onclick="deleteTable(20)"><i
-                                        class="bx bx-trash"></i> Xóa bàn</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
 
             <!-- ===========================
@@ -767,106 +282,17 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><label class="custom-checkbox"><input type="checkbox"><span
-                                                class="custom-checkbox__mark"></span></label></td>
-                                    <td><strong>Bàn 01</strong></td>
-                                    <td><span class="zone-tag zone-tag--indoor">Tầng 1 - Trong nhà</span></td>
-                                    <td><i class="bx bx-user"></i> 4 người</td>
-                                    <td><span class="status-badge status-badge--available">Trống</span></td>
-                                    <td>—</td>
-                                    <td>—</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn action-btn--seat" title="Xếp khách"><i
-                                                    class="bx bx-user-plus"></i></button>
-                                            <button class="action-btn" title="Sửa"><i
-                                                    class="bx bx-edit-alt"></i></button>
-                                            <button class="action-btn action-btn--danger" title="Xóa"><i
-                                                    class="bx bx-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label class="custom-checkbox"><input type="checkbox"><span
-                                                class="custom-checkbox__mark"></span></label></td>
-                                    <td><strong>Bàn 02</strong></td>
-                                    <td><span class="zone-tag zone-tag--indoor">Tầng 1 - Trong nhà</span></td>
-                                    <td><i class="bx bx-user"></i> 4 người</td>
-                                    <td><span class="status-badge status-badge--occupied">Đang phục vụ</span></td>
-                                    <td>45 phút</td>
-                                    <td>—</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn action-btn--bill" title="Thanh toán"><i
-                                                    class="bx bx-receipt"></i></button>
-                                            <button class="action-btn" title="Sửa"><i
-                                                    class="bx bx-edit-alt"></i></button>
-                                            <button class="action-btn action-btn--danger" title="Xóa"><i
-                                                    class="bx bx-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label class="custom-checkbox"><input type="checkbox"><span
-                                                class="custom-checkbox__mark"></span></label></td>
-                                    <td><strong>Bàn 05</strong></td>
-                                    <td><span class="zone-tag zone-tag--indoor">Tầng 1 - Trong nhà</span></td>
-                                    <td><i class="bx bx-user"></i> 4 người</td>
-                                    <td><span class="status-badge status-badge--reserved">Đã đặt trước</span></td>
-                                    <td>—</td>
-                                    <td>19:00 - Nguyễn Văn A</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn action-btn--checkin" title="Check-in"><i
-                                                    class="bx bx-log-in-circle"></i></button>
-                                            <button class="action-btn" title="Sửa"><i
-                                                    class="bx bx-edit-alt"></i></button>
-                                            <button class="action-btn action-btn--danger" title="Hủy đặt"><i
-                                                    class="bx bx-x-circle"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label class="custom-checkbox"><input type="checkbox"><span
-                                                class="custom-checkbox__mark"></span></label></td>
-                                    <td><strong>VIP 01</strong></td>
-                                    <td><span class="zone-tag zone-tag--vip">Tầng 2 - VIP</span></td>
-                                    <td><i class="bx bx-user"></i> 8 người</td>
-                                    <td><span class="status-badge status-badge--available">Trống</span></td>
-                                    <td>—</td>
-                                    <td>—</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn action-btn--seat" title="Xếp khách"><i
-                                                    class="bx bx-user-plus"></i></button>
-                                            <button class="action-btn" title="Sửa"><i
-                                                    class="bx bx-edit-alt"></i></button>
-                                            <button class="action-btn action-btn--danger" title="Xóa"><i
-                                                    class="bx bx-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label class="custom-checkbox"><input type="checkbox"><span
-                                                class="custom-checkbox__mark"></span></label></td>
-                                    <td><strong>Bàn 08</strong></td>
-                                    <td><span class="zone-tag zone-tag--indoor">Tầng 1 - Trong nhà</span></td>
-                                    <td><i class="bx bx-user"></i> 4 người</td>
-                                    <td><span class="status-badge status-badge--maintenance">Bảo trì</span></td>
-                                    <td>—</td>
-                                    <td>Sửa chữa ghế</td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn action-btn--restore" title="Hoàn tất"><i
-                                                    class="bx bx-check"></i></button>
-                                            <button class="action-btn" title="Sửa"><i
-                                                    class="bx bx-edit-alt"></i></button>
-                                            <button class="action-btn action-btn--danger" title="Xóa"><i
-                                                    class="bx bx-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <?php foreach ($tables as $table): ?>
+                                    <tr data-id="<?= (int)$table['tableId'] ?>">
+                                        <td><input type="checkbox"></td>
+                                        <td><strong><?= h($table['tableNumber']) ?></strong></td>
+                                        <td><span class="zone-tag"><?= h($table['area']) ?></span></td>
+                                        <td><?= (int)$table['capacity'] ?> người</td>
+                                        <td><span class="status-badge status-badge--<?= h(statusClass($table['status'])) ?>"><?= h(statusText($table['status'])) ?></span></td>
+                                        <td>—</td><td>—</td>
+                                        <td><button type="button" class="table-card__btn" onclick="editTable(<?= (int)$table['tableId'] ?>)">Chỉnh sửa</button></td>
+                                    </tr>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
@@ -897,6 +323,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             </div>
             <div class="modal__body">
                 <form class="modal-form" id="tableForm">
+                    <input type="hidden" id="inputTableId" value="">
                     <div class="modal-form__row">
                         <div class="modal-form__group">
                             <label class="modal-form__label">Tên / Số bàn <span>*</span></label>
@@ -922,10 +349,9 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                                 <i class="bx bx-map"></i>
                                 <select class="modal-form__input" id="inputZone" required>
                                     <option value="">Chọn khu vực</option>
-                                    <option value="tang1-trong">Tầng 1 - Trong nhà</option>
-                                    <option value="tang1-ngoai">Tầng 1 - Ngoài trời</option>
-                                    <option value="tang2-vip">Tầng 2 - VIP</option>
-                                    <option value="tang2-rieng">Tầng 2 - Phòng riêng</option>
+                                    <?php foreach (array_keys($areaGroups) as $areaOption): ?>
+                                        <option value="<?= h($areaOption) ?>"><?= h($areaOption) ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
@@ -937,7 +363,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                                     <option value="available">Trống</option>
                                     <option value="occupied">Đang phục vụ</option>
                                     <option value="reserved">Đã đặt trước</option>
-                                    <option value="maintenance">Bảo trì</option>
+        
                                 </select>
                             </div>
                         </div>
@@ -1096,41 +522,39 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         //  ĐỔI TRẠNG THÁI BÀN
         // ============================
         const statusConfig = {
-            available: { class: 'table-card--available', text: 'Trống', icon: 'bx-check-circle' },
-            occupied: { class: 'table-card--occupied', text: 'Đang phục vụ', icon: 'bx-user-check' },
-            reserved: { class: 'table-card--reserved', text: 'Đã đặt trước', icon: 'bx-calendar-check' },
-            maintenance: { class: 'table-card--maintenance', text: 'Bảo trì', icon: 'bx-wrench' }
+            AVAILABLE: { class: 'table-card--available', text: 'Trống' },
+            OCCUPIED: { class: 'table-card--occupied', text: 'Đang phục vụ' },
+            RESERVED: { class: 'table-card--reserved', text: 'Đã đặt trước' }
         };
 
-        function changeStatus(id, newStatus) {
+        async function postTableData(data) {
+            const body = new URLSearchParams(data);
+            const response = await fetch(window.location.href, { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body });
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || 'Không thể lưu dữ liệu.');
+            return result;
+        }
+
+        async function changeStatus(id, newStatus) {
+            const normalized = String(newStatus).toUpperCase();
+            const config = statusConfig[normalized];
             const card = document.querySelector(`.table-card[data-id="${id}"]`);
-            if (!card) return;
-
-            // Xóa class cũ
-            Object.values(statusConfig).forEach(s => card.classList.remove(s.class));
-            // Thêm class mới
-            card.classList.add(statusConfig[newStatus].class);
-            card.dataset.status = newStatus;
-
-            // Cập nhật text
-            const statusText = card.querySelector('.table-card__status-text');
-            if (statusText) statusText.textContent = statusConfig[newStatus].text;
-
-            // Cập nhật nút hành động
-            updateCardActions(card, newStatus);
-
-            // Đóng menu
-            const menu = document.getElementById(`menu-${id}`);
-            if (menu) menu.classList.remove('active');
-
-            // Cập nhật thống kê
-            updateStats();
-
-            // Cập nhật bàn trống
-            updateQuickAvailable();
-
-            // Toast
-            showToast(`Bàn đã chuyển sang "${statusConfig[newStatus].text}"`, 'success');
+            if (!card || !config) return;
+            try {
+                await postTableData({action:'update_status', id, status:normalized});
+                Object.values(statusConfig).forEach(item => card.classList.remove(item.class));
+                card.classList.add(config.class);
+                card.dataset.status = normalized.toLowerCase();
+                const statusText = card.querySelector('.table-card__status-text');
+                if (statusText) statusText.textContent = config.text;
+                const row = document.querySelector(`.tables-table tbody tr[data-id="${id}"]`);
+                if (row) row.querySelector('.status-badge').textContent = config.text;
+                updateCardActions(card, normalized.toLowerCase());
+                const menu = document.getElementById(`menu-${id}`);
+                if (menu) menu.classList.remove('active');
+                updateStats(); updateQuickAvailable();
+                showToast('Đã cập nhật trạng thái bàn.', 'success');
+            } catch (error) { showToast(error.message, 'error'); }
         }
 
         function updateCardActions(card, status) {
@@ -1164,21 +588,21 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         // ============================
         function updateStats() {
             const cards = document.querySelectorAll('.table-card');
-            let total = 0, available = 0, occupied = 0, reserved = 0, maintenance = 0;
+            let total = 0, available = 0, occupied = 0, reserved = 0;
             cards.forEach(card => {
                 total++;
                 switch (card.dataset.status) {
                     case 'available': available++; break;
                     case 'occupied': occupied++; break;
                     case 'reserved': reserved++; break;
-                    case 'maintenance': maintenance++; break;
+
                 }
             });
             document.getElementById('statTotal').textContent = total;
             document.getElementById('statAvailable').textContent = available;
             document.getElementById('statOccupied').textContent = occupied;
             document.getElementById('statReserved').textContent = reserved;
-            document.getElementById('statMaintenance').textContent = maintenance;
+
         }
 
         // ============================
@@ -1247,7 +671,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             document.getElementById('tableForm').reset();
         }
 
-        btnAddTable.addEventListener('click', () => openTableModal());
+        btnAddTable.addEventListener('click', () => { document.getElementById('inputTableId').value = ''; openTableModal(); });
         btnCloseModal.addEventListener('click', closeTableModal);
         btnCancelTable.addEventListener('click', closeTableModal);
         tableModal.addEventListener('click', (e) => { if (e.target === tableModal) closeTableModal(); });
@@ -1255,10 +679,11 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         function editTable(id) {
             const card = document.querySelector(`.table-card[data-id="${id}"]`);
             if (!card) return;
+            document.getElementById('inputTableId').value = id;
             document.getElementById('inputTableName').value = card.querySelector('.table-card__number').textContent;
             document.getElementById('inputCapacity').value = card.dataset.capacity;
-            document.getElementById('inputZone').value = card.dataset.zone;
-            document.getElementById('inputStatus').value = card.dataset.status;
+            document.getElementById('inputZone').value = card.dataset.area;
+            document.getElementById('inputStatus').value = card.dataset.status.toUpperCase();
             openTableModal('Chỉnh sửa bàn');
             // Đóng dropdown
             document.querySelectorAll('.table-card__menu.active').forEach(m => m.classList.remove('active'));
@@ -1303,7 +728,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         document.getElementById('seatForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const id = seatModal.dataset.tableId;
-            changeStatus(id, 'occupied');
+            changeStatus(id, 'OCCUPIED');
             closeSeatModal();
             showToast('Đã xếp khách thành công!', 'success');
         });
@@ -1311,21 +736,16 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         // ============================
         //  XÓA BÀN
         // ============================
-        function deleteTable(id) {
-            if (confirm('Bạn có chắc muốn xóa bàn này?')) {
+        async function deleteTable(id) {
+            if (!confirm('Bạn có chắc muốn xóa bàn này?')) return;
+            try {
+                await postTableData({action:'delete_table', id});
                 const card = document.querySelector(`.table-card[data-id="${id}"]`);
-                if (card) {
-                    card.style.transition = 'all 0.3s ease';
-                    card.style.transform = 'scale(0.8)';
-                    card.style.opacity = '0';
-                    setTimeout(() => {
-                        card.remove();
-                        updateStats();
-                        updateQuickAvailable();
-                        showToast('Đã xóa bàn thành công!', 'success');
-                    }, 300);
-                }
-            }
+                const row = document.querySelector(`.tables-table tbody tr[data-id="${id}"]`);
+                if (card) card.remove(); if (row) row.remove();
+                updateStats(); updateQuickAvailable();
+                showToast('Đã xóa bàn khỏi danh sách.', 'success');
+            } catch (error) { showToast(error.message, 'error'); }
             document.querySelectorAll('.table-card__menu.active').forEach(m => m.classList.remove('active'));
         }
 
@@ -1369,10 +789,19 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         // ============================
         //  FORM SUBMIT: THÊM BÀN
         // ============================
-        document.getElementById('tableForm').addEventListener('submit', (e) => {
+        document.getElementById('tableForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            showToast('Đã lưu bàn thành công!', 'success');
-            closeTableModal();
+            try {
+                await postTableData({
+                    action:'save_table', id:document.getElementById('inputTableId').value,
+                    tableNumber:document.getElementById('inputTableName').value.trim(),
+                    capacity:document.getElementById('inputCapacity').value,
+                    area:document.getElementById('inputZone').value,
+                    status:document.getElementById('inputStatus').value
+                });
+                showToast('Đã lưu bàn vào database.', 'success');
+                window.location.reload();
+            } catch (error) { showToast(error.message, 'error'); }
         });
     </script>
 

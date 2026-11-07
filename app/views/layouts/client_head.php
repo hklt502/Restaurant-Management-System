@@ -1,3 +1,9 @@
+<?php
+if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/') !== false) {
+    header('Location: ../../../index.php?page=' . ($activePage ?? 'trangchu'));
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 

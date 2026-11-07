@@ -1,3 +1,9 @@
+<?php
+if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/') !== false) {
+    header('Location: ../../../index.php?page=trangchu');
+    exit;
+}
+?>
   <!-- ===================== CHÂN TRANG ===================== -->
   <div class="footer">
     <div class="footer-inner">
@@ -17,10 +23,14 @@
         <a href="index.php?page=thucdon">Thực Đơn</a>
         <a href="index.php?page=khuyenmai">Khuyến Mãi</a>
         <a href="index.php?page=datban">Đặt Bàn</a>
-        <a href="index.php?page=dangnhap">Đăng Nhập</a>
-        <a href="index.php?page=dangky">Đăng Ký</a>
-        <a href="index.php?page=canhan">Trang Cá Nhân</a>
-        <a href="index.php?page=doimatkhau">Đổi Mật Khẩu</a>
+        <?php if (!empty($_SESSION['customer'])): ?>
+          <a href="index.php?page=canhan">Trang Cá Nhân</a>
+          <a href="index.php?page=doimatkhau">Đổi Mật Khẩu</a>
+          <a href="index.php?page=dangxuat">Đăng Xuất</a>
+        <?php else: ?>
+          <a href="index.php?page=dangnhap">Đăng Nhập</a>
+          <a href="index.php?page=dangky">Đăng Ký</a>
+        <?php endif; ?>
       </div>
 
       <p>© 2026 Nhóm 3</p>

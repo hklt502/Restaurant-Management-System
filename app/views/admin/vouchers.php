@@ -1,4 +1,9 @@
 <?php
+if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false) {
+    header('Location: ../../../index.php?page=admin-vouchers');
+    exit;
+}
+
 $isDirectView      = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false;
 $assetPrefix       = $isDirectView ? '../../../' : '';
 $currentVoucherUrl = $isDirectView ? 'vouchers.php' : 'index.php?page=admin-vouchers';

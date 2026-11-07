@@ -54,11 +54,37 @@ class CustomerModel {
         return null;
     }
 
-   public function getAll() {
-    $sql = "SELECT * FROM customer WHERE isDeleted = 0";
-    $result = $this->db->query($sql);
-    return $result->fetch_all(MYSQLI_ASSOC);
-}
+    public function getAll($onlyActive = false) {
+        $sql = "SELECT * FROM customer" . ($onlyActive ? " WHERE isDeleted = 0" : "") . " ORDER BY customerId DESC";
+        $result = $this->db->query($sql);
+        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    }
+
+    // Đổi trạng thái khóa / kích hoạt khách hàng
+    public function toggleStatus($id): bool {
+        $stmt = $this->db->prepare("UPDATE customer SET isDeleted = 1 - isDeleted WHERE customerId = ?");
+        if (!$stmt) return false;
+        $stmt->bind_param("i", $id);
+        return (bool)$stmt->execute();
+    }
+
+    // Xóa mềm khách hàng
+    public function delete($id): bool {
+        $stmt = $this->db->prepare("UPDATE customer SET isDeleted = 1 WHERE customerId = ?");
+        if (!$stmt) return false;
+        $stmt->bind_param("i", $id);
+        return (bool)$stmt->execute();
+    }
+    public function update($id, $name, $phone, $email = null): bool {
+        $emailVal = !empty($email) ? $email : null;
+        $stmt = $this->db->prepare(
+            "UPDATE customer SET customerName = ?, customerPhone = ?, customerEmail = ? WHERE customerId = ?"
+        );
+        if (!$stmt) return false;
+        $stmt->bind_param("sssi", $name, $phone, $emailVal, $id);
+        return (bool)$stmt->execute();
+    }
+
     public function updateProfile($id, $name, $email, $birthDate, $gender, $address) {
         $stmt = $this->db->prepare(
             "UPDATE customer SET customerName = ?, customerEmail = ?, birthDate = ?, gender = ?, address = ?
@@ -82,6 +108,11 @@ class CustomerModel {
         $stmt = $this->db->prepare("UPDATE customer SET passwordHash = ? WHERE customerId = ?");
         $stmt->bind_param("si", $newHash, $id);
         return $stmt->execute();
+    }
+
+    public function countCustomer() {
+        $res = $this->db->query("SELECT COUNT(*) AS total FROM customer WHERE isDeleted = 0 AND DATE(createdAt) = CURDATE()");
+        return (int)($res ? ($res->fetch_assoc()['total'] ?? 0) : 0);
     }
 }
 
