@@ -5,83 +5,18 @@ if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/app/views/admin/') !== false) {
 }
 
 $pageTitle = "Quản lý bàn - Nhóm 3";
-$pageCss = "../../../public/asset/css/admin/tables.css";
+$pageCss = "public/asset/css/admin/tables.css";
 $activePage = "tables";
 
-// Nạp cấu hình database của dự án
-$configCandidates = [
-    __DIR__ . '/../../config/database.php',
-    __DIR__ . '/../../../app/config/database.php',
-    __DIR__ . '/../config/database.php'
-];
-foreach ($configCandidates as $configFile) {
-    if (is_file($configFile)) { require_once $configFile; break; }
-}
-
-try {
-    $pdo = new PDO(
-        'mysql:host=' . (defined('DB_HOST') ? DB_HOST : 'localhost') . ';dbname=' . (defined('DB_NAME') ? DB_NAME : 'restaurant') . ';charset=utf8mb4',
-        defined('DB_USER') ? DB_USER : 'root',
-        defined('DB_PASS') ? DB_PASS : '',
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
-    );
-} catch (PDOException $e) {
-    http_response_code(500);
-    die('Không thể kết nối database: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
-}
-
-// AJAX: cập nhật/thêm/xóa bàn trực tiếp trong service_table
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    header('Content-Type: application/json; charset=utf-8');
-    try {
-        $action = $_POST['action'];
-        if ($action === 'update_status') {
-            $status = strtoupper(trim($_POST['status'] ?? ''));
-            if (!in_array($status, ['AVAILABLE', 'OCCUPIED', 'RESERVED'], true)) throw new Exception('Trạng thái không hợp lệ.');
-            $stmt = $pdo->prepare('UPDATE service_table SET status = ? WHERE tableId = ? AND isDeleted = 0');
-            $stmt->execute([$status, (int)($_POST['id'] ?? 0)]);
-            if (!$stmt->rowCount()) {
-                $check = $pdo->prepare('SELECT tableId FROM service_table WHERE tableId = ? AND isDeleted = 0');
-                $check->execute([(int)($_POST['id'] ?? 0)]);
-                if (!$check->fetch()) throw new Exception('Không tìm thấy bàn.');
-            }
-            echo json_encode(['success' => true]);
-        } elseif ($action === 'save_table') {
-            $id = (int)($_POST['id'] ?? 0);
-            $number = trim($_POST['tableNumber'] ?? '');
-            $area = trim($_POST['area'] ?? '');
-            $capacity = (int)($_POST['capacity'] ?? 0);
-            $status = strtoupper(trim($_POST['status'] ?? 'AVAILABLE'));
-            if ($number === '' || $area === '' || $capacity < 1) throw new Exception('Vui lòng nhập đầy đủ thông tin bàn.');
-            if (!in_array($status, ['AVAILABLE', 'OCCUPIED', 'RESERVED'], true)) throw new Exception('Trạng thái không hợp lệ.');
-            if ($id > 0) {
-                $stmt = $pdo->prepare('UPDATE service_table SET tableNumber=?, area=?, capacity=?, status=? WHERE tableId=? AND isDeleted=0');
-                $stmt->execute([$number, $area, $capacity, $status, $id]);
-            } else {
-                $stmt = $pdo->prepare('INSERT INTO service_table (tableNumber, area, capacity, status, isDeleted) VALUES (?, ?, ?, ?, 0)');
-                $stmt->execute([$number, $area, $capacity, $status]);
-            }
-            echo json_encode(['success' => true]);
-        } elseif ($action === 'delete_table') {
-            $stmt = $pdo->prepare('UPDATE service_table SET isDeleted = 1 WHERE tableId = ? AND isDeleted = 0');
-            $stmt->execute([(int)($_POST['id'] ?? 0)]);
-            if (!$stmt->rowCount()) throw new Exception('Không tìm thấy bàn để xóa.');
-            echo json_encode(['success' => true]);
-        } else {
-            throw new Exception('Yêu cầu không hợp lệ.');
-        }
-    } catch (Throwable $e) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-    }
-    exit;
-}
-
-$stmt = $pdo->query('SELECT tableId, tableNumber, area, capacity, status FROM service_table WHERE isDeleted = 0 ORDER BY tableId ASC');
-$tables = $stmt->fetchAll();
+$tables = $tables ?? [];
+$reservations = $reservations ?? [];
 $totalTables = count($tables);
 $statusCounts = ['AVAILABLE' => 0, 'OCCUPIED' => 0, 'RESERVED' => 0];
-foreach ($tables as $row) if (isset($statusCounts[$row['status']])) $statusCounts[$row['status']]++;
+foreach ($tables as $row) {
+    if (isset($statusCounts[$row['status']])) {
+        $statusCounts[$row['status']]++;
+    }
+}
 
 $areaMap = [
     'Trong nhà' => ['slug' => 'tang1-trong', 'label' => 'Tầng 1 - Trong nhà', 'icon' => 'bx-building-house'],
@@ -90,13 +25,39 @@ $areaMap = [
     'Phòng riêng' => ['slug' => 'tang2-rieng', 'label' => 'Tầng 2 - Phòng riêng', 'icon' => 'bx-door-open']
 ];
 $areaGroups = [];
-foreach ($tables as $table) $areaGroups[$table['area'] ?: 'Chưa phân khu'][] = $table;
-
-function h($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); }
-function statusText($status) {
-    return ['AVAILABLE' => 'Trống', 'OCCUPIED' => 'Đang phục vụ', 'RESERVED' => 'Đã đặt trước'][$status] ?? $status;
+foreach ($tables as $table) {
+    $areaGroups[$table['area'] ?: 'Chưa phân khu'][] = $table;
 }
-function statusClass($status) { return strtolower((string)$status); }
+
+if (!function_exists('h')) {
+    function h($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); }
+}
+if (!function_exists('statusText')) {
+    function statusText($status) {
+        return ['AVAILABLE' => 'Trống', 'OCCUPIED' => 'Đang phục vụ', 'RESERVED' => 'Đã đặt trước'][$status] ?? $status;
+    }
+}
+if (!function_exists('statusClass')) {
+    function statusClass($status) { return strtolower((string)$status); }
+}
+if (!function_exists('resStatusText')) {
+    function resStatusText($status) {
+        return [
+            'PENDING' => 'Chờ xác nhận',
+            'CONFIRMED' => 'Đã xác nhận',
+            'CANCELLED' => 'Đã hủy'
+        ][strtoupper((string)$status)] ?? $status;
+    }
+}
+if (!function_exists('resStatusClass')) {
+    function resStatusClass($status) {
+        return [
+            'PENDING' => 'pending',
+            'CONFIRMED' => 'confirmed',
+            'CANCELLED' => 'cancelled'
+        ][strtoupper((string)$status)] ?? 'default';
+    }
+}
 
 include_once __DIR__ . '/../layouts/admin_header.php';
 ?>
@@ -310,6 +271,104 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 <div class="quick-available__body" id="quickAvailableBody">
                     <div class="quick-available__grid" id="quickGrid">
                         <!-- Sẽ được JS tạo tự động từ các bàn trống -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===========================
+                 DANH SÁCH LỊCH HẸN ĐẶT BÀN
+            ============================ -->
+            <div class="reservation-section" id="reservationsSection">
+                <div class="reservation-section__header">
+                    <div class="reservation-section__title">
+                        <div class="reservation-section__icon"><i class="bx bx-calendar-event"></i></div>
+                        <h2>Danh sách lịch hẹn đặt bàn</h2>
+                        <span class="reservation-section__count" id="resCountBadge"><?= count($reservations) ?> lịch hẹn</span>
+                    </div>
+                </div>
+
+                <div class="list-card reservation-card">
+                    <div class="table-wrapper">
+                        <table class="tables-table reservation-table" id="resTable">
+                            <thead>
+                                <tr>
+                                    <th>MÃ ĐẶT</th>
+                                    <th>KHÁCH HÀNG</th>
+                                    <th>SỐ ĐIỆN THOẠI</th>
+                                    <th>NGÀY & GIỜ HẸN</th>
+                                    <th>SỐ KHÁCH</th>
+                                    <th>BÀN / KHU VỰC</th>
+                                    <th>CHI NHÁNH</th>
+                                    <th>GHI CHÚ</th>
+                                    <th>TRẠNG THÁI</th>
+                                    <th class="th-action">HÀNH ĐỘNG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($reservations)): ?>
+                                    <tr>
+                                        <td colspan="10" class="res-empty-state">
+                                            <i class="bx bx-calendar-x"></i>
+                                            Chưa có lịch hẹn đặt bàn nào trong hệ thống.
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($reservations as $res):
+                                        $resId = (int)$res['reservationId'];
+                                        $resStatus = strtoupper(trim((string)$res['status']));
+                                        $formattedDate = !empty($res['reservationDate']) ? date('d/m/Y', strtotime($res['reservationDate'])) : '—';
+                                        $formattedTime = !empty($res['reservationTime']) ? date('H:i', strtotime($res['reservationTime'])) : '—';
+                                        $assignedTable = !empty($res['tableNumber']) ? ('<span class="res-table-assigned">Bàn ' . h($res['tableNumber']) . ($res['area'] ? ' (' . h($res['area']) . ')' : '') . '</span>') : '<span class="res-table-unassigned">Chưa xếp bàn</span>';
+                                    ?>
+                                        <tr id="res-row-<?= $resId ?>">
+                                            <td><strong>#<?= $resId ?></strong></td>
+                                            <td>
+                                                <div class="res-customer__name"><?= h($res['guestName']) ?></div>
+                                                <?php if (!empty($res['guestEmail'])): ?>
+                                                    <div class="res-customer__email"><?= h($res['guestEmail']) ?></div>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= h($res['guestPhone']) ?></td>
+                                            <td>
+                                                <div class="res-datetime__date"><i class="bx bx-calendar"></i> <?= $formattedDate ?></div>
+                                                <div class="res-datetime__time"><i class="bx bx-time"></i> <?= $formattedTime ?></div>
+                                            </td>
+                                            <td><?= (int)$res['guestCount'] ?> khách</td>
+                                            <td><?= $assignedTable ?></td>
+                                            <td><?= h($res['branch'] ?: '—') ?></td>
+                                            <td class="res-note-cell">
+                                                <?= !empty($res['note']) ? h($res['note']) : '<span class="text-muted-action">—</span>' ?>
+                                            </td>
+                                            <td>
+                                                <span class="status-badge status-badge--<?= resStatusClass($resStatus) ?>" id="res-badge-<?= $resId ?>">
+                                                    <?= h(resStatusText($resStatus)) ?>
+                                                </span>
+                                            </td>
+                                            <td class="td-action" id="res-action-<?= $resId ?>">
+                                                <?php if ($resStatus === 'PENDING'): ?>
+                                                    <div class="reservation-actions">
+                                                        <button type="button" class="btn-confirm-reservation" onclick="confirmReservation(<?= $resId ?>)" title="Xác nhận lịch hẹn #<?= $resId ?>">
+                                                            <i class="bx bx-check-circle"></i> Xác nhận
+                                                        </button>
+                                                        <button type="button" class="btn-cancel-reservation" onclick="cancelReservation(<?= $resId ?>)" title="Hủy lịch hẹn #<?= $resId ?>">
+                                                            <i class="bx bx-x-circle"></i> Hủy lịch
+                                                        </button>
+                                                    </div>
+                                                <?php elseif ($resStatus === 'CONFIRMED'): ?>
+                                                    <div class="reservation-actions">
+                                                        <button type="button" class="btn-cancel-reservation" onclick="cancelReservation(<?= $resId ?>)" title="Hủy lịch hẹn #<?= $resId ?>">
+                                                            <i class="bx bx-x-circle"></i> Hủy lịch
+                                                        </button>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <span class="text-muted-action">—</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -535,6 +594,30 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             return result;
         }
 
+        function applyTableStatusDOM(id, newStatus) {
+            const normalized = String(newStatus).toUpperCase();
+            const config = statusConfig[normalized];
+            const card = document.querySelector(`.table-card[data-id="${id}"]`);
+            if (card && config) {
+                Object.values(statusConfig).forEach(item => card.classList.remove(item.class));
+                card.classList.add(config.class);
+                card.dataset.status = normalized.toLowerCase();
+                const statusText = card.querySelector('.table-card__status-text');
+                if (statusText) statusText.textContent = config.text;
+                updateCardActions(card, normalized.toLowerCase());
+            }
+            const row = document.querySelector(`.tables-table tbody tr[data-id="${id}"]`);
+            if (row && config) {
+                const badge = row.querySelector('.status-badge');
+                if (badge) {
+                    badge.className = `status-badge status-badge--${normalized.toLowerCase()}`;
+                    badge.textContent = config.text;
+                }
+            }
+            updateStats();
+            updateQuickAvailable();
+        }
+
         async function changeStatus(id, newStatus) {
             const normalized = String(newStatus).toUpperCase();
             const config = statusConfig[normalized];
@@ -542,17 +625,9 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             if (!card || !config) return;
             try {
                 await postTableData({action:'update_status', id, status:normalized});
-                Object.values(statusConfig).forEach(item => card.classList.remove(item.class));
-                card.classList.add(config.class);
-                card.dataset.status = normalized.toLowerCase();
-                const statusText = card.querySelector('.table-card__status-text');
-                if (statusText) statusText.textContent = config.text;
-                const row = document.querySelector(`.tables-table tbody tr[data-id="${id}"]`);
-                if (row) row.querySelector('.status-badge').textContent = config.text;
-                updateCardActions(card, normalized.toLowerCase());
+                applyTableStatusDOM(id, normalized);
                 const menu = document.getElementById(`menu-${id}`);
                 if (menu) menu.classList.remove('active');
-                updateStats(); updateQuickAvailable();
                 showToast('Đã cập nhật trạng thái bàn.', 'success');
             } catch (error) { showToast(error.message, 'error'); }
         }
@@ -803,6 +878,88 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                 window.location.reload();
             } catch (error) { showToast(error.message, 'error'); }
         });
+
+        // ============================
+        //  XÁC NHẬN LỊCH HẸN ĐẶT BÀN
+        // ============================
+        async function confirmReservation(id) {
+            if (!confirm(`Bạn có chắc chắn muốn xác nhận lịch hẹn #${id} này không?`)) {
+                return;
+            }
+
+            try {
+                const result = await postTableData({
+                    action: 'confirm_reservation',
+                    id: id
+                });
+
+                // Cập nhật badge trạng thái sang "Đã xác nhận"
+                const badge = document.getElementById(`res-badge-${id}`);
+                if (badge) {
+                    badge.className = 'status-badge status-badge--confirmed';
+                    badge.textContent = 'Đã xác nhận';
+                }
+
+                // Cập nhật cột action: bỏ nút xác nhận, giữ nút hủy
+                const actionCell = document.getElementById(`res-action-${id}`);
+                if (actionCell) {
+                    actionCell.innerHTML = `
+                        <div class="reservation-actions">
+                            <button type="button" class="btn-cancel-reservation" onclick="cancelReservation(${id})" title="Hủy lịch hẹn #${id}">
+                                <i class="bx bx-x-circle"></i> Hủy lịch
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // Cập nhật trạng thái bàn trên sơ đồ nếu có gán bàn
+                if (result.tableId && result.tableStatus) {
+                    applyTableStatusDOM(result.tableId, result.tableStatus);
+                }
+
+                showToast(result.message || 'Đã xác nhận lịch hẹn thành công!', 'success');
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // ============================
+        //  HỦY LỊCH HẸN ĐẶT BÀN
+        // ============================
+        async function cancelReservation(id) {
+            if (!confirm(`Bạn có chắc chắn muốn hủy lịch hẹn #${id} này không?`)) {
+                return;
+            }
+
+            try {
+                const result = await postTableData({
+                    action: 'cancel_reservation',
+                    id: id
+                });
+
+                // Cập nhật badge trạng thái sang "Đã hủy"
+                const badge = document.getElementById(`res-badge-${id}`);
+                if (badge) {
+                    badge.className = 'status-badge status-badge--cancelled';
+                    badge.textContent = 'Đã hủy';
+                }
+
+                // Cập nhật cột action
+                const actionCell = document.getElementById(`res-action-${id}`);
+                if (actionCell) {
+                    actionCell.innerHTML = '<span class="text-muted-action">—</span>';
+                }
+
+                // Cập nhật trạng thái bàn trên sơ đồ nếu có gán bàn
+                if (result.tableId && result.tableStatus) {
+                    applyTableStatusDOM(result.tableId, result.tableStatus);
+                }
+
+                showToast(result.message || 'Đã hủy lịch hẹn thành công!', 'success');
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
     </script>
 
     <!-- KẾT THÚC VÙNG NỘI DUNG CHÍNH -->

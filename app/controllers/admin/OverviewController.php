@@ -17,8 +17,9 @@ class OverviewController extends BaseController
         $occupiedCount = 0;
         $totalTables   = 0;
         $customerCount = 0;
-        $hourlyHeights = array_fill(10, 13, 10);
-        $hourlyVal     = array_fill(10, 13, 0);
+        // array_fill(sô bắt đâuf, số lượng phần tử của mảng cb tạo, giá trị đc gán vào từng phần tử mới )
+        $hourlyHeights = array_fill(10, 13, 10); // độ cao trần của sơ đồ là 10
+        $hourlyVal     = array_fill(10, 13, 0); // giá trị mặc định sơ đồ là 0
         $recentOrders  = [];
         $featuredFoods = [];
         $stockAlerts   = [];
@@ -30,7 +31,7 @@ class OverviewController extends BaseController
             $foodModel       = new FoodModel();
             $ingredientModel = new IngredientModel();
 
-            $revenue       = $orderModel->grossIncome();
+            $revenue       = $orderModel->revenue();
             $totalOrders   = $orderModel->countOrder();
             $customerCount = $customerModel->countCustomer();
 

@@ -444,10 +444,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                     <span style="font-size: 0.8rem; color: var(--text3);">Ngày tạo tài khoản:</span>
                     <p id="detailCreatedAt" style="font-weight: 600; margin-top: 2px;">15/01/2026</p>
                 </div>
-                <div>
-                    <span style="font-size: 0.8rem; color: var(--text3);">Bảng dữ liệu:</span>
-                    <p id="detailType" style="font-weight: 600; margin-top: 2px;">admin</p>
-                </div>
+
             </div>
         </div>
         <div class="modal__footer">
@@ -578,7 +575,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
         document.getElementById('detailPhone').textContent = u.phone;
         document.getElementById('detailEmail').textContent = u.email;
         document.getElementById('detailCreatedAt').textContent = u.createdAt;
-        document.getElementById('detailType').textContent = (u.type === 'admin') ? 'Bảng admin (Quản trị)' : 'Bảng customer (Khách hàng)';
+
 
         detailModal.classList.add('active');
         document.body.style.overflow = 'hidden';

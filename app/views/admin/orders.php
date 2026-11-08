@@ -286,10 +286,6 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <span>Voucher giảm giá (<span id="detailVoucherCode">KM10</span>):</span>
                         <span style="color: var(--green);" id="detailDiscount">-125,000đ</span>
                     </div>
-                    <div class="bill-row">
-                        <span>Thuế VAT (8%):</span>
-                        <span id="detailVat">90,000đ</span>
-                    </div>
                     <div class="bill-row bill-row--total">
                         <span>TỔNG CỘNG THANH TOÁN:</span>
                         <span id="detailTotal">1,215,000đ</span>
@@ -474,7 +470,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <div>Bàn: <strong id="printInvoiceTable">Bàn 04</strong> - Khách: <span
                                 id="printInvoiceCust">Nguyễn Hữu An</span></div>
                         <div>Giờ vào: <span id="printInvoiceTimeIn">11:30 28/09/2026</span></div>
-                        <div>Thu ngân: <span>Hồ Kim Lưu Thống</span></div>
+                        <div>Thu ngân: <span id="printInvoiceServer">Quản trị viên</span></div>
                     </div>
 
                     <table class="invoice-print__items">
@@ -499,10 +495,6 @@ include_once __DIR__ . '/../layouts/admin_header.php';
                         <div style="display: flex; justify-content: space-between;">
                             <span>Giảm giá (Voucher):</span>
                             <span id="printInvoiceDiscount">-125,000đ</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>VAT (8%):</span>
-                            <span id="printInvoiceVat">90,000đ</span>
                         </div>
                         <div
                             style="display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; border-top: 1px dashed #000; padding-top: 4px; margin-top: 4px;">
@@ -1085,7 +1077,6 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             document.getElementById('detailSubtotal').textContent = formatVND(order.subtotal);
             document.getElementById('detailVoucherCode').textContent = order.voucherCode || 'Không có';
             document.getElementById('detailDiscount').textContent = order.discount > 0 ? `-${formatVND(order.discount)}` : '0đ';
-            document.getElementById('detailVat').textContent = formatVND(order.vat);
             document.getElementById('detailTotal').textContent = formatVND(order.total);
 
             // Nút thanh toán trong modal
@@ -1340,9 +1331,9 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             document.getElementById('printInvoiceTable').textContent = order.tableShort;
             document.getElementById('printInvoiceCust').textContent = order.customer;
             document.getElementById('printInvoiceTimeIn').textContent = order.time;
+            document.getElementById('printInvoiceServer').textContent = order.server || 'Quản trị viên';
             document.getElementById('printInvoiceSubtotal').textContent = formatVND(order.subtotal);
             document.getElementById('printInvoiceDiscount').textContent = order.discount > 0 ? `-${formatVND(order.discount)}` : '0đ';
-            document.getElementById('printInvoiceVat').textContent = formatVND(order.vat);
             document.getElementById('printInvoiceTotal').textContent = formatVND(order.total);
             document.getElementById('printInvoicePaymentMethod').textContent = order.paymentName;
 
@@ -1443,8 +1434,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
             // Tái tính toán
             order.subtotal = order.dishes.reduce((s, i) => s + (i.price * i.qty), 0);
             if (order.voucherCode === 'GIAM10%') order.discount = order.subtotal * 0.1;
-            order.vat = Math.round((order.subtotal - order.discount) * 0.08);
-            order.total = order.subtotal - order.discount + order.vat;
+            order.total = Math.max(0, order.subtotal - order.discount);
 
             openOrderDetail(order.id);
             updateStatCards();

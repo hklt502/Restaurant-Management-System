@@ -117,8 +117,8 @@ class OrderModel
             $dishes = [];
             if (!empty($itemsByOrder[$row['orderId']])) {
                 foreach ($itemsByOrder[$row['orderId']] as $it) {
-                    $itemSt = strtoupper($it['itemStatus'] ?? 'SERVED');
-                    $dishStatus = ($itemSt === 'COOKING' || $itemSt === 'ORDER') ? 'cooking' : ($status === 'cancelled' ? 'cancelled' : 'done');
+                    $itemSt = strtoupper(trim($it['itemStatus'] ?? 'ORDERED'));
+                    $dishStatus = in_array($itemSt, ['ORDERED', 'ORDER', 'COOKING'], true) ? 'cooking' : ($status === 'cancelled' ? 'cancelled' : 'done');
                     $dishes[] = [
                         'name'   => $it['foodName'],
                         'qty'    => (int)$it['quantity'],
@@ -140,7 +140,6 @@ class OrderModel
             $subtotal = (float)$row['subtotal'];
             $discount = (float)$row['discountAmount'];
             $total    = (float)$row['totalAmount'];
-            $vat      = max(0, round(($subtotal - $discount) * 0.08));
 
             $formattedOrders[] = [
                 'id'          => 'DH-' . str_pad($row['orderId'], 4, '0', STR_PAD_LEFT),
@@ -151,20 +150,19 @@ class OrderModel
                 'table'       => $tableFull,
                 'tableShort'  => $tableShort,
                 'customer'    => $row['customerName'] ?: ($row['guestCount'] ? "Khách đi {$row['guestCount']} người" : 'Khách lẻ'),
-                'phone'       => $row['customerPhone'] ?: '0901 234 567',
+                'phone'       => $row['customerPhone'] ?: '—',
                 'guests'      => (int)($row['guestCount'] ?: 2),
                 'time'        => $orderDate->format('H:i d/m/Y'),
                 'dishes'      => $dishes,
                 'subtotal'    => $subtotal,
                 'voucherCode' => $row['voucherCode'] ?: '',
                 'discount'    => $discount,
-                'vat'         => $vat,
                 'total'       => $total,
                 'payment'     => $payment,
                 'paymentName' => $paymentName,
                 'status'      => $status,
                 'statusName'  => $statusName,
-                'server'      => $row['adminName'] ?: 'Hồ Kim Lưu Thống'
+                'server'      => $row['adminName'] ?: 'Quản trị viên'
             ];
         }
 
@@ -345,7 +343,6 @@ class OrderModel
 
         $discount = min($subtotal, $discount);
         $total    = max(0, $subtotal - $discount);
-        $vat      = max(0, round(($subtotal - $discount) * 0.08));
 
         $payment = strtolower(trim($post['paymentMethod'] ?? 'cash'));
         $paymentName = 'Tiền mặt';
@@ -356,7 +353,7 @@ class OrderModel
         $custInput = trim($post['customerName'] ?? 'Khách lẻ') ?: 'Khách lẻ';
         $custId    = null;
         $custName  = $custInput;
-        $custPhone = trim($post['customerPhone'] ?? '') ?: '0901 234 567';
+        $custPhone = trim($post['customerPhone'] ?? '');
 
         if (mb_strtolower($custInput, 'UTF-8') !== 'khách lẻ') {
             $cStmt = $this->db->prepare("SELECT customerId, customerName, customerPhone FROM customer WHERE (LOWER(customerName) = LOWER(?) OR customerPhone = ?) AND isDeleted = 0 LIMIT 1");
@@ -401,13 +398,12 @@ class OrderModel
             'subtotal'    => $subtotal,
             'voucherCode' => $voucherCode,
             'discount'    => $discount,
-            'vat'         => $vat,
             'total'       => $total,
             'payment'     => $payment,
             'paymentName' => $paymentName,
             'status'      => 'cooking',
             'statusName'  => 'Đang chế biến',
-            'server'      => $_SESSION['admin']['adminName'] ?? 'Hồ Kim Lưu Thống'
+            'server'      => $_SESSION['admin']['adminName'] ?? 'Quản trị viên'
         ];
     }
 
@@ -471,10 +467,15 @@ class OrderModel
         return $bill;
     }
 
-    public function grossIncome()
+    public function revenue()
     {
         $res = $this->db->query("SELECT COALESCE(SUM(totalAmount), 0) AS total FROM orders WHERE status = 'PAID' AND DATE(orderDate) = CURDATE()");
         return (float)($res ? ($res->fetch_assoc()['total'] ?? 0) : 0);
+    }
+
+    public function grossIncome()
+    {
+        return $this->revenue();
     }
 
     public function countOrder()

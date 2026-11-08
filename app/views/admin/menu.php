@@ -22,7 +22,7 @@ include_once __DIR__ . '/../layouts/admin_header.php';
     <div class="page-header__left">
         <h1 class="page-header__title">Quản lý Menu</h1>
         <p class="page-header__subtitle">
-            Quản lý danh sách các món ăn, giảm giá, món nổi bật và danh mục thực đơn từ cơ sở dữ liệu.
+            Quản lý danh sách các món ăn, giảm giá, món nổi bật và danh mục thực đơn.
         </p>
     </div>
     <div class="page-header__action">

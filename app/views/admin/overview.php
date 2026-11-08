@@ -37,7 +37,6 @@ include_once __DIR__ . '/../layouts/admin_header.php';
   <div class="stat-card">
     <div class="stat-card__header">
       <div class="stat-card__icon"><i class="bx bx-clipboard"></i></div>
-      <span class="stat-card__badge stat-card__badge--up">+2.5%</span>
     </div>
     <p class="stat-card__label">Đơn hàng hôm nay</p>
     <p class="stat-card__value"><?= $totalOrders ?></p>
@@ -55,7 +54,6 @@ include_once __DIR__ . '/../layouts/admin_header.php';
   <div class="stat-card">
     <div class="stat-card__header">
       <div class="stat-card__icon"><i class="bx bx-group"></i></div>
-      <span class="stat-card__badge stat-card__badge--up">Active</span>
     </div>
     <p class="stat-card__label">Khách hàng mới</p>
     <p class="stat-card__value"><?= $customerCount ?></p>

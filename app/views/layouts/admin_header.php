@@ -40,7 +40,20 @@ $linkStatistics = $isDirectView ? 'statistics.php' : 'index.php?page=admin-stati
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <!-- Mỗi trang admin sẽ nạp file CSS riêng thông qua biến $pageCss nếu cần -->
   <?php if (!empty($pageCss)): ?>
-    <link rel="stylesheet" href="<?= $pageCss ?>" />
+    <?php
+      $cleanCssPath = ltrim(explode('?', $pageCss)[0], '/');
+      $cleanCssPath = preg_replace('/^(\.\.\/)+/', '', $cleanCssPath);
+      $realPath = realpath(__DIR__ . '/../../../' . $cleanCssPath);
+      if (!$realPath) {
+          $realPath = realpath(__DIR__ . '/../../' . $cleanCssPath);
+      }
+      if (!$realPath) {
+          $realPath = realpath(__DIR__ . '/' . $cleanCssPath);
+      }
+      $v = ($realPath && file_exists($realPath)) ? filemtime($realPath) : time();
+      $cssUrl = $pageCss . (strpos($pageCss, '?') !== false ? '&v=' : '?v=') . $v;
+    ?>
+    <link rel="stylesheet" href="<?= htmlspecialchars($cssUrl, ENT_QUOTES, 'UTF-8') ?>" />
   <?php endif; ?>
   <?php if (!empty($extraHead)): ?>
     <?= $extraHead ?>
